@@ -1,5 +1,14 @@
 'use strict'
 
+class SegmentTable {
+  constructor () {
+    this.segments = {};
+  }
+  addSegment(code, position, required, repetition) {
+    this.segments[code] = [position, required, repetition];
+  }
+};
+
 export class Parser {
   constructor() {
     this._hooks = {};
