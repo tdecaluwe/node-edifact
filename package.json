@@ -1,0 +1,18 @@
+{ "name": "edifact"
+, "version": "0.0.2"
+, "repository":
+  { "type": "git"
+  , "url": "https://github.com/tdecaluwe/node-edifact.git"
+  }
+, "license": "Apache-2.0"
+, "author":
+  { "name": "Tom De Caluwé"
+  , "email": "decaluwe.t@gmail.com"
+  }
+, "devDependencies":
+  { "jasmine-es6": "^0.0.18"
+  }
+, "scripts":
+  { "test": "jasmine"
+  }
+}
