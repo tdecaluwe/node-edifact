@@ -1,5 +1,7 @@
 { "name": "edifact"
-, "version": "0.0.2"
+, "description": "JavaScript parser for UN/EDIFACT documents."
+, "main": "edifact.js"
+, "version": "0.0.3"
 , "repository":
   { "type": "git"
   , "url": "https://github.com/tdecaluwe/node-edifact.git"

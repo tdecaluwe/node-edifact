@@ -9,7 +9,7 @@ class SegmentTable {
   }
 };
 
-export class Parser {
+class Parser {
   constructor() {
     this._hooks = {};
     this._state = {};
@@ -94,3 +94,5 @@ export class Parser {
     }
   }
 };
+
+module.exports.Parser = Parser;

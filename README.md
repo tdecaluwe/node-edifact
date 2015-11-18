@@ -7,3 +7,11 @@ This package is not yet functional and still under development! It intends to pr
 * Constructing structured javascript objects from UN/EDIFACT messages.
 * Support for the UNA header and custom separators.
 * Writing and cosntructing UN/EDIFACT messages.
+
+## Installation
+
+The module can be installled through:
+
+```shell
+npm install edifact
+```
