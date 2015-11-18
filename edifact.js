@@ -13,6 +13,7 @@ class Parser {
   constructor() {
     this._hooks = {};
     this._state = {};
+    this._regexes = {};
   }
   reset() {
     this._index = 0;
@@ -20,6 +21,41 @@ class Parser {
   }
   state(key) {
     return this._state[key];
+  }
+  component(input, format, options) {
+    options = options || {};
+    let decimal_mark = options.decimal_mark || '.';
+
+    let match;
+    let parts;
+    if (parts = /^(a|an|n)(\.\.)?([1-9][0-9]*)?$/.exec(format)) {
+      let maximum = parseInt(parts[3]);
+      let minimum = parts[2] === '..' ? 0 : maximum;
+      if (parts[1] === 'a') {
+        if (match = /^[A-Za-z ]*$/.exec(input)) {
+          if (match[0].length >= minimum && match[0].length <= maximum) {
+            return match[0];
+          }
+        }
+      } else if (parts[1] === 'an') {
+        if (match = /^[0-9A-Za-z ]*$/.exec(input)) {
+          if (match[0].length >= minimum && match[0].length <= maximum) {
+            return match[0];
+          }
+        }
+      } else if (parts[1] === 'n') {
+        let length;
+        if (match = /^([0-9]*)\.?([0-9]*)$/.exec(input)) {
+          length = match[1].length + match[2].length;
+          if (length >= minimum && length <= maximum) {
+            return parseFloat(match[1] + '.' + match[2]);
+          }
+        }
+      }
+      throw new Error('Couldn\'t parse ' + input + ' with format string ' + format);
+    } else {
+      throw new Error('Couldn\'t understand the format string ' + format);
+    }
   }
   parse(input, options) {
     let match;
