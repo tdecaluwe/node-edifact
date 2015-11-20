@@ -9,6 +9,10 @@ class SegmentTable {
   }
 };
 
+/**
+ * The base Parser class encapsulates an online parsing algorithm which can be
+ * extended through the use of user-defined hooks.
+ */
 class Parser {
   constructor() {
     this._segmentHooks = {};
@@ -28,8 +32,12 @@ class Parser {
    * @summary Request a state variable.
    * @param key The name of the state variable.
    */
-  state(key) {
-    return this._state[key];
+  state(key, value) {
+    if (value) {
+      this._state[key] = value;
+    } else {
+      return this._state[key];
+    }
   }
   /**
    * @summary Add a hook to the parser.
@@ -195,4 +203,35 @@ class Parser {
   }
 };
 
+/**
+ * The Reader class extends Parser. It adds a default hook which constructs a
+ * javascript array representing the original document.
+ */
+class Reader extends Parser {
+  constructor() {
+    super();
+    this.hook(Reader.addSegment);
+  }
+  reset() {
+    super.reset();
+    this.state('result', []);
+  }
+  /**
+   * @summary Parse the input document and return it as a javascript array.
+   * @param {String} input The input document.
+   * @param {Object} options Any options to use.
+   */
+  parse(document, options) {
+    super.parse(document, options);
+    return this.state('result');
+  }
+  static addSegment(parser) {
+    let segment = {};
+    segment.name = parser.state('segment');
+    segment.elements = parser.state('elements');
+    parser.state('result').push(segment);
+  }
+};
+
 module.exports.Parser = Parser;
+module.exports.Reader = Reader;
