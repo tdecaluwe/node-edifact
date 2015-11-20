@@ -15,13 +15,30 @@ class Parser {
     this._state = {};
     this._regexes = {};
   }
+  /**
+   * @summary Reset the parser to it's initial state.
+   */
   reset() {
     this._index = 0;
     this._state.mode = 'segment';
   }
+  /**
+   * @summary Request a state variable.
+   * @param key The name of the state variable.
+   */
   state(key) {
     return this._state[key];
   }
+  /**
+   * @summary
+   * @param {String} input The component string to parse.
+   * @param {String} format The format string to parse the input string.
+   * @param {Object} options Options to use (like a custom decimal mark).
+   *
+   * This method will parse an input string using a format string. If succesful
+   * it will return the input using an appropriate type, otherwise it will throw
+   * an error.
+   */
   component(input, format, options) {
     options = options || {};
     let decimal_mark = options.decimal_mark || '.';
@@ -57,6 +74,15 @@ class Parser {
       throw new Error('Couldn\'t understand the format string ' + format);
     }
   }
+  /**
+   * @summary Parse a UN/EDIFACT document.
+   * @param {String} input The input document.
+   * @param {Object} options Any options to use.
+   *
+   * This parser behaves similar to a SAX parser. It parses the document but by
+   * itself does not construct any output. To get the parser to do anything
+   * useful, user-defined hooks should be provided.
+   */
   parse(input, options) {
     let match;
 
