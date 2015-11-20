@@ -110,13 +110,13 @@ class Parser {
       let maximum = parseInt(parts[3]);
       let minimum = parts[2] === '..' ? 0 : maximum;
       if (parts[1] === 'a') {
-        if (match = /^[A-Za-z.,-()/= ]*$/.exec(input)) {
+        if (match = /^[A-Za-z.,\-()/= ]*$/.exec(input)) {
           if (match[0].length >= minimum && match[0].length <= maximum) {
             return match[0];
           }
         }
       } else if (parts[1] === 'an') {
-        if (match = /^[0-9A-Za-z.,-()/= ]*$/.exec(input)) {
+        if (match = /^[0-9A-Za-z.,\-()/= ]*$/.exec(input)) {
           if (match[0].length >= minimum && match[0].length <= maximum) {
             return match[0];
           }
