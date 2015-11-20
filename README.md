@@ -1,6 +1,6 @@
 # node-edifact
 
-This package is not yet production ready! Currently supported functionality (also check the tests to find out what it can and can't do):
+Currently supported functionality (also check the tests to find out what it can and can't do):
 
 * A stream parser reading UN/EDIFACT messages.
 * Providing parse events for segments (through the use of hooks).
@@ -13,8 +13,6 @@ This library further intends to support:
 * Checking data elements and components accepted by a given segment.
 * Parsing and checking standard UN/EDIFACT messages (orders, desadv...).
 
-Currently
-
 ## Installation
 
 The module can be installled through:
@@ -22,6 +20,8 @@ The module can be installled through:
 ```shell
 npm install edifact
 ```
+
+Keep in mind that this is an ES6 library. It currently can be used with node 4.0 or higher.
 
 ## The `Reader` class
 
