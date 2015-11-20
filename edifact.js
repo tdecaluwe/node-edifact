@@ -18,6 +18,8 @@ class Parser {
     this._segmentHooks = {};
     this._hooks = [];
     this._state = {};
+    this._segments = {};
+    this._elements = {};
   }
   /**
    * @summary Reset the parser to it's initial state.
@@ -56,6 +58,39 @@ class Parser {
     }
   }
   /**
+   * @summary Define segment and element structures.
+   * @param {Object} definitions An object containing the definitions.
+   * @param options Set options like the overriding policy.
+   *
+   * By default the parser accepts any wellformed input if it doesn't find
+   * definitinons for the current segment or element being parsed. Additionally
+   * the parser can be forced to check the number and format of the elements and
+   * components if the right definitions are included.
+   *
+   * To define a segment or element the definitions object should contain the
+   * name as a key, and an object describing it's structure as a value. This
+   * object contains the `requires` key to define the number of mandatory
+   * elements or components. The key `elements` should be included containing a
+   * list of element names to describe a segment. Similarly, an element
+   * definition contains a `components` array describing the format of the
+   * components.
+   *
+   * To simplify things, a non-composite element is regarded as an element
+   * having only one component.
+   */
+  define(definitions, options) {
+    options = options || {};
+
+    for (let key in definitions) {
+      if (definitions[key].elements && key.length === 3) {
+        this._segments[key] = definitions[key];
+      }
+      if (definitions[key].components && key.length === 4) {
+        this._elements[key] = definitions[key];
+      }
+    }
+  }
+  /**
    * @summary
    * @param {String} input The component string to parse.
    * @param {String} format The format string to parse the input string.
@@ -75,13 +110,13 @@ class Parser {
       let maximum = parseInt(parts[3]);
       let minimum = parts[2] === '..' ? 0 : maximum;
       if (parts[1] === 'a') {
-        if (match = /^[A-Za-z ]*$/.exec(input)) {
+        if (match = /^[A-Za-z.,-()/= ]*$/.exec(input)) {
           if (match[0].length >= minimum && match[0].length <= maximum) {
             return match[0];
           }
         }
       } else if (parts[1] === 'an') {
-        if (match = /^[0-9A-Za-z ]*$/.exec(input)) {
+        if (match = /^[0-9A-Za-z.,-()/= ]*$/.exec(input)) {
           if (match[0].length >= minimum && match[0].length <= maximum) {
             return match[0];
           }
@@ -168,6 +203,7 @@ class Parser {
     while (match = regex.exec(input)) {
       let value = match[1];
       let transition = match[2];
+      let definition;
       if (this._index !== match.index) {
         throw Error('Unmatched sequence at index ' + this._index + ': ' + value);
       }
@@ -175,10 +211,24 @@ class Parser {
         case 'segment':
         this._state.segment = value;
         this._state.elements = [];
+        this._state.element = undefined;
         break;
         case 'element':
+        definition = this._segments[this._state.segment];
+        if (definition) {
+          if (this._state.elements.length < definition.elements.length) {
+            this._state.element = definition.elements[this._state.elements.length];
+          } else {
+            throw Error('Maximum number of elements exceeded for segment ' + this._state.segment);
+          }
+        }
         this._state.components = this._state.elements[this._state.elements.push([]) - 1];
         case 'component':
+        definition = this._elements[this._state.element];
+        if (definition && this._state.components.length < definition.components.length) {
+          let format = definition.components[this._state.components.length];
+          value = this.component(value, format);
+        }
         this._state.components.push(value);
         break;
       }
