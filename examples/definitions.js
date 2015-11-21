@@ -11,23 +11,35 @@ reader.define(segments);
 reader.define(elements);
 
 document += 'UNA:+.? \'\n';
-document += 'UNB+IATB:1+6XPPC+LHPPC+940101:0950+1\'\n';
-document += 'UNH+1+PAORES:93:1:IA\'\n';
-document += 'MSG+1:45\'\n';
-document += 'IFT+3+XYZCOMPANY AVAILABILITY\'\n';
-document += 'ERC+A7V:1:AMD\'\n';
-document += 'IFT+3+NO MORE FLIGHTS\'\n';
-document += 'ODI\'\n';
-document += 'TVL+240493:1000::1220+FRA+JFK+DL+400+C\'\n';
-document += 'PDI++C:3+Y::3+F::1\'\n';
-document += 'APD+74C:0:::6++++++6X\'\n';
-document += 'TVL+240493:1740::2030+JFK+MIA+DL+081+C\'\n';
-document += 'PDI++C:4\'\n';
-document += 'APD+EM2:0:1630::6+++++++DA\'\n';
-document += 'UNT+13+1\'\n';
-document += 'UNZ+1+1\'\n';
+document += 'UNB+UNOA:1+005435656:1+006415160:1+060515:1434+00000000000778\'\n';
+document += 'UNH+00000000000117+INVOIC:D:97B:UN\'\n';
+document += 'BGM+380+342459+9\'\n';
+document += 'DTM+3:20060515:102\'\n';
+document += 'RFF+ON:521052\'\n';
+document += 'NAD+BY+792820524::16++CUMMINS MID-RANGE ENGINE PLANT\'\n';
+document += 'NAD+SE+005435656::16++GENERAL WIDGET COMPANY\'\n';
+document += 'CUX+1:USD\'\n';
+document += 'LIN+1++157870:IN\'\n';
+document += 'IMD+F++:::WIDGET\'\n';
+document += 'QTY+47:1020:EA\'\n';
+document += 'ALI+US\'\n';
+document += 'MOA+203:1202.58\'\n';
+document += 'PRI+INV:1.179\'\n';
+document += 'LIN+2++157871:IN\'\n';
+document += 'IMD+F++:::DIFFERENT WIDGET\'\n';
+document += 'QTY+47:20:EA\'\n';
+document += 'ALI+JP\'\n';
+document += 'MOA+203:410\'\n';
+document += 'PRI+INV:20.5\'\n';
+document += 'UNS+S\'\n';
+document += 'MOA+39:2137.58\'\n';
+document += 'ALC+C+ABG\'\n';
+document += 'MOA+8:525\'\n';
+document += 'UNT+23+00000000000117\'\n';
+document += 'UNZ+1+00000000000778\'\n';
 
 let result = reader.parse(document);
+
 for (let i = 0; i < result.length; i++) {
   console.log(result[i].name + ': ' + result[i].elements);
 }
