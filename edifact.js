@@ -219,15 +219,19 @@ class Parser {
           if (this._state.elements.length < definition.elements.length) {
             this._state.element = definition.elements[this._state.elements.length];
           } else {
-            throw Error('Maximum number of elements exceeded for segment ' + this._state.segment);
+            throw new Error('Maximum number of elements exceeded for segment ' + this._state.segment);
           }
         }
         this._state.components = this._state.elements[this._state.elements.push([]) - 1];
         case 'component':
         definition = this._elements[this._state.element];
-        if (definition && this._state.components.length < definition.components.length) {
-          let format = definition.components[this._state.components.length];
-          value = this.component(value, format);
+        if (definition) {
+          if (this._state.components.length < definition.components.length) {
+            let format = definition.components[this._state.components.length];
+            value = this.component(value, format);
+          } else {
+            throw new Error('Maximum number of components exceeded for element ' + this._state.element + ' in segment ' + this._state.segment);
+          }
         }
         this._state.components.push(value);
         break;
@@ -235,6 +239,19 @@ class Parser {
       this._state.mode = machine[this._state.mode][transition];
       if (this._state.mode === undefined) {
         throw Error('Invalid character ' + transition + ' after reading: ' + value);
+      }
+      switch (this._state.mode) {
+        case 'wrap':
+        definition = this._segments[this._state.segment];
+        if (definition && this._state.elements.length < this._segments[this._state.segment].requires) {
+          throw new Error('Segment ' + this._state.segment + ' requires at least ' + this._segments[this._state.segment].requires + ' elements');
+        }
+        case 'element':
+        definition = this._elements[this._state.element];
+        if (definition && this._state.components.length < this._elements[this._state.element].requires) {
+          throw new Error('Element ' + this._state.element + ' in segment ' + this._state.segment + ' requires at least ' + this._elements[this._state.element].requires + ' components');
+        }
+        break;
       }
       switch (this._state.mode) {
         case 'wrap':
@@ -249,6 +266,12 @@ class Parser {
         break;
       }
       this._index = regex.lastIndex;
+    }
+    if (this._state.mode !== 'wrap' && this._state.mode !== 'segment') {
+      throw new Error('Encountered an unterminated segment at the end of the input');
+    }
+    if (this._index !== input.length) {
+      throw new Error('Invalid input encountered at index ' + regex.lastIndex);
     }
   }
 };
