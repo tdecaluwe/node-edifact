@@ -1,7 +1,7 @@
 'use strict'
 
 var elements = {
-  'C002': { requires: 4, components: ['an..3', 'an..17', 'an..3', 'an..35'] },
+  'C002': { requires: 0, components: ['an..3', 'an..17', 'an..3', 'an..35'] },
   'C040': { requires: 0, components: ['an..17', 'an..3', 'an..3', 'an..35'] },
   'C056': { requires: 0, components: ['an..17', 'an..35'] },
   'C058': { requires: 1, components: ['an..35', 'an..35', 'an..35', 'an..35', 'an..35'] },
@@ -9,7 +9,7 @@ var elements = {
   'C076': { requires: 2, components: ['an..512', 'an..3'] },
   'C082': { requires: 1, components: ['an..35', 'an..17', 'an..3'] },
   'C100': { requires: 0, components: ['an..3', 'an..3', 'an..3', 'an..70', 'an..70'] },
-  'C106': { requires: 3, components: ['an..35', 'an..9', 'an..6'] },
+  'C106': { requires: 0, components: ['an..35', 'an..9', 'an..6'] },
   'C107': { requires: 1, components: ['an..17', 'an..17', 'an..3'] },
   'C108': { requires: 1, components: ['an..512', 'an..512', 'an..512', 'an..512', 'an..512'] },
   'C174': { requires: 1, components: ['an..3', 'an..18', 'n..18', 'n..18', 'n..2'] },
@@ -72,6 +72,7 @@ var elements = {
   '1225': { requires: 1, components: ['an..3'] },
   '1227': { requires: 1, components: ['an..3'] },
   '1229': { requires: 1, components: ['an..3'] },
+  '1373': { requires: 1, components: ['an..3'] },
   '3035': { requires: 1, components: ['an..3'] },
   '3139': { requires: 1, components: ['an..3'] },
   '3164': { requires: 1, components: ['an..35'] },

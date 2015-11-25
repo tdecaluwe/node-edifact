@@ -158,7 +158,7 @@ class Parser {
     let segment_terminator = options.segment_terminator || '\'';
 
     // Match the UNA header if present.
-    let una = /UNA(.)(.)(.)(.)\ (.)/g;
+    let una = /UNA(.)(.)(.)(.)\ (.)[\n\r]*/g;
     if (match = una.exec(input)) {
       component_data_separator = match[1];
       data_element_separator = match[2];
@@ -173,25 +173,20 @@ class Parser {
     machine['segment'] = {};
     machine['element'] = {};
     machine['component'] = {};
-    machine['wrap'] = {};
     machine['segment'][data_element_separator] = 'element';
-    machine['segment'][segment_terminator] = 'wrap';
-    machine['segment']['\n'] = 'segment';
-    machine['segment']['\r'] = 'segment';
+    machine['segment'][segment_terminator] = 'segment';
     machine['element'][data_element_separator] = 'element';
     machine['element'][component_data_separator] = 'component';
-    machine['element'][segment_terminator] = 'wrap';
+    machine['element'][segment_terminator] = 'segment';
     machine['component'][data_element_separator] = 'element';
     machine['component'][component_data_separator] = 'component';
-    machine['component'][segment_terminator] = 'wrap';
-    machine['wrap']['\n'] = 'segment';
-    machine['wrap']['\r'] = 'segment';
+    machine['component'][segment_terminator] = 'segment';
 
     // Construct a regex to match tokens from the EDIFACT message.
-    let separator = (component_data_separator + '|' + data_element_separator + '|' + segment_terminator + '|\n|\r').replace(/([+?*(){}\[\]])/g, '\\$1');
+    let separator = (component_data_separator + '|' + data_element_separator + '|' + segment_terminator).replace(/([+?*(){}\[\]])/g, '\\$1');
     let escape = release_character.replace(/([+?*(){}\[\]])/g, '\\$1');
     // A regex with reluctant matchers.
-    let expression = '((?:(?:' + escape + ')?.)*?)(' + separator + ')';
+    let expression = '((?:(?:' + escape + ')?.)*?)(' + separator + ')[\n\r]*';
     // A regex with greedy matchers.
     //let expression = '((?:' + escape + '.|(?!' + separator + ').)*)(' + separator + ')';
     // A regex based on negative lookaround.
@@ -241,7 +236,7 @@ class Parser {
         throw Error('Invalid character ' + transition + ' after reading: ' + value);
       }
       switch (this._state.mode) {
-        case 'wrap':
+        case 'segment':
         definition = this._segments[this._state.segment];
         if (definition && this._state.elements.length < this._segments[this._state.segment].requires) {
           throw new Error('Segment ' + this._state.segment + ' requires at least ' + this._segments[this._state.segment].requires + ' elements');
@@ -254,7 +249,7 @@ class Parser {
         break;
       }
       switch (this._state.mode) {
-        case 'wrap':
+        case 'segment':
         for (let i = 0; i < this._hooks.length; i++) {
           this._hooks[i](this);
         }
@@ -267,7 +262,7 @@ class Parser {
       }
       this._index = regex.lastIndex;
     }
-    if (this._state.mode !== 'wrap' && this._state.mode !== 'segment') {
+    if (this._state.mode !== 'segment') {
       throw new Error('Encountered an unterminated segment at the end of the input');
     }
     if (this._index !== input.length) {

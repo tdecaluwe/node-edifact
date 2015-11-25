@@ -2,7 +2,7 @@
 
 let segments = {
   'ALI': { requires: 0, elements: ['3239', '9213', '4183', '4183', '4183', '4183', '4183'] },
-  'BGM': { requires: 0, elements: ['C002', 'C106', '1225', '4343'] },
+  'BGM': { requires: 0, elements: ['C002', 'C106', '1225', '4343', '1373', '3453'] },
   'CNT': { requires: 1, elements: ['C270'] },
   'COD': { requires: 0, elements: ['C823', 'C824'] },
   'COM': { requires: 1, elements: ['C076'] },
