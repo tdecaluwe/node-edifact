@@ -290,6 +290,7 @@ class Reader extends Parser {
       let path = __dirname + '/messages/' + parser.state('elements')[1][0] + '.js';
       if (fs.existsSync(path)) {
         parser._tracker = new Tracker(require(path));
+        parser._tracker.accept(parser.state('segment'));
       }
     }, 'UNH');
     this.hook(function (parser) {
