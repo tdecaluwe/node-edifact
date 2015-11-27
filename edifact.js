@@ -1,5 +1,9 @@
 'use strict'
 
+let fs = require('fs');
+
+let Tracker = require('./tracker.js').Tracker;
+
 class SegmentTable {
   constructor () {
     this.segments = {};
@@ -91,7 +95,7 @@ class Parser {
     }
   }
   /**
-   * @summary
+   * @summary Interpret a string according to an EDIFACT format string.
    * @param {String} input The component string to parse.
    * @param {String} format The format string to parse the input string.
    * @param {Object} options Options to use (like a custom decimal mark).
@@ -278,11 +282,31 @@ class Parser {
 class Reader extends Parser {
   constructor() {
     super();
-    this.hook(Reader.addSegment);
+    this.hook(function (parser) {
+      parser._tracker && parser._tracker.accept(parser.state('segment'));
+      parser.push(parser.state('segment'), parser.state('elements'));
+    });
+    this.hook(function (parser) {
+      let path = __dirname + '/messages/' + parser.state('elements')[1][0] + '.js';
+      if (fs.existsSync(path)) {
+        parser._tracker = new Tracker(require(path));
+      }
+    }, 'UNH');
+    this.hook(function (parser) {
+      delete parser._tracker;
+    }, 'UNT');
   }
   reset() {
     super.reset();
-    this.state('result', []);
+    this._result = [];
+  }
+  /**
+   * @summary Push a segment to the parse result.
+   * @param {String} segment The segment code.
+   * @param {Array} elements A list of elements passed along with the segment.
+   */
+  push(segment, elements) {
+    this._result.push({ name: segment, elements: elements });
   }
   /**
    * @summary Parse the input document and return it as a javascript array.
@@ -291,13 +315,7 @@ class Reader extends Parser {
    */
   parse(document, options) {
     super.parse(document, options);
-    return this.state('result');
-  }
-  static addSegment(parser) {
-    let segment = {};
-    segment.name = parser.state('segment');
-    segment.elements = parser.state('elements');
-    parser.state('result').push(segment);
+    return this._result;
   }
 };
 
