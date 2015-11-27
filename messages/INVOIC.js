@@ -1,418 +1,418 @@
 'use strict'
 
 let order = [
-  { segment: 'UNH', required: true, repetition: 1, data: ['INVOIC'] },
-  { segment: 'BGM', required: true, repetition: 1 },
-  { segment: 'DTM', required: true, repetition: 35 },
-  { segment: 'PAI', required: false, repetition: 1 },
-  { segment: 'ALI', required: false, repetition: 5 },
-  { segment: 'IMD', required: false, repetition: 1 },
-  { segment: 'FTX', required: false, repetition: 99 },
-  { segment: 'LOC', required: false, repetition: 10 },
-  { segment: 'GEI', required: false, repetition: 10 },
-  { segment: 'DGS', required: false, repetition: 1 },
-  { segment: 'GIR', required: false, repetition: 10 },
+  { content: 'UNH', mandatory: true, repetition: 1, data: ['INVOIC'] },
+  { content: 'BGM', mandatory: true, repetition: 1 },
+  { content: 'DTM', mandatory: true, repetition: 35 },
+  { content: 'PAI', mandatory: false, repetition: 1 },
+  { content: 'ALI', mandatory: false, repetition: 5 },
+  { content: 'IMD', mandatory: false, repetition: 1 },
+  { content: 'FTX', mandatory: false, repetition: 99 },
+  { content: 'LOC', mandatory: false, repetition: 10 },
+  { content: 'GEI', mandatory: false, repetition: 10 },
+  { content: 'DGS', mandatory: false, repetition: 1 },
+  { content: 'GIR', mandatory: false, repetition: 10 },
   {
-    segment: [
-      { segment: 'RFF', required: true, repetition: 1 },
-      { segment: 'DTM', required: false, repetition: 5 },
-      { segment: 'GIR', required: false, repetition: 5 },
-      { segment: 'LOC', required: false, repetition: 2 },
-      { segment: 'MEA', required: false, repetition: 5 },
-      { segment: 'QTY', required: false, repetition: 2 },
-      { segment: 'FTX', required: false, repetition: 5 },
-      { segment: 'MOA', required: false, repetition: 2 },
-      { segment: 'RTE', required: false, repetition: 99 },
-    ], required: false, repetition: 99999,
+    content: [
+      { content: 'RFF', mandatory: true, repetition: 1 },
+      { content: 'DTM', mandatory: false, repetition: 5 },
+      { content: 'GIR', mandatory: false, repetition: 5 },
+      { content: 'LOC', mandatory: false, repetition: 2 },
+      { content: 'MEA', mandatory: false, repetition: 5 },
+      { content: 'QTY', mandatory: false, repetition: 2 },
+      { content: 'FTX', mandatory: false, repetition: 5 },
+      { content: 'MOA', mandatory: false, repetition: 2 },
+      { content: 'RTE', mandatory: false, repetition: 99 },
+    ], mandatory: false, repetition: 99999,
   },
   {
-    segment: [
-      { segment: 'NAD', required: true, repetition: 1 },
-      { segment: 'LOC', required: false, repetition: 25 },
-      { segment: 'FII', required: false, repetition: 5 },
-      { segment: 'MOA', required: false, repetition: 99 },
+    content: [
+      { content: 'NAD', mandatory: true, repetition: 1 },
+      { content: 'LOC', mandatory: false, repetition: 25 },
+      { content: 'FII', mandatory: false, repetition: 5 },
+      { content: 'MOA', mandatory: false, repetition: 99 },
       {
-        segment: [
-          { segment: 'RFF', required: true, repetition: 1 },
-          { segment: 'DTM', required: false, repetition: 5 },
-        ], required: false, repetition: 9999,
+        content: [
+          { content: 'RFF', mandatory: true, repetition: 1 },
+          { content: 'DTM', mandatory: false, repetition: 5 },
+        ], mandatory: false, repetition: 9999,
       },
       {
-        segment: [
-          { segment: 'DOC', required: true, repetition: 1 },
-          { segment: 'DTM', required: false, repetition: 5 },
-        ], required: false, repetition: 5,
+        content: [
+          { content: 'DOC', mandatory: true, repetition: 1 },
+          { content: 'DTM', mandatory: false, repetition: 5 },
+        ], mandatory: false, repetition: 5,
       },
       {
-        segment: [
-          { segment: 'CTA', required: true, repetition: 1 },
-          { segment: 'COM', required: false, repetition: 5 },
-        ], required: false, repetition: 5,
+        content: [
+          { content: 'CTA', mandatory: true, repetition: 1 },
+          { content: 'COM', mandatory: false, repetition: 5 },
+        ], mandatory: false, repetition: 5,
       },
-    ], required: false, repetition: 99,
+    ], mandatory: false, repetition: 99,
   },
   {
-    segment: [
-      { segment: 'TAX', required: true, repetition: 1 },
-      { segment: 'MOA', required: false, repetition: 1 },
-      { segment: 'LOC', required: false, repetition: 5 },
-    ], required: false, repetition: 5,
+    content: [
+      { content: 'TAX', mandatory: true, repetition: 1 },
+      { content: 'MOA', mandatory: false, repetition: 1 },
+      { content: 'LOC', mandatory: false, repetition: 5 },
+    ], mandatory: false, repetition: 5,
   },
   {
-    segment: [
-      { segment: 'CUX', required: true, repetition: 1 },
-      { segment: 'DTM', required: false, repetition: 5 },
-    ], required: false, repetition: 99,
+    content: [
+      { content: 'CUX', mandatory: true, repetition: 1 },
+      { content: 'DTM', mandatory: false, repetition: 5 },
+    ], mandatory: false, repetition: 99,
   },
   {
-    segment: [
-      { segment: 'PYT', required: true, repetition: 1 },
-      { segment: 'DTM', required: false, repetition: 5 },
-      { segment: 'PCD', required: false, repetition: 1 },
-      { segment: 'MOA', required: false, repetition: 1 },
-      { segment: 'PAI', required: false, repetition: 1 },
-      { segment: 'FII', required: false, repetition: 1 },
-    ], required: false, repetition: 10,
+    content: [
+      { content: 'PYT', mandatory: true, repetition: 1 },
+      { content: 'DTM', mandatory: false, repetition: 5 },
+      { content: 'PCD', mandatory: false, repetition: 1 },
+      { content: 'MOA', mandatory: false, repetition: 1 },
+      { content: 'PAI', mandatory: false, repetition: 1 },
+      { content: 'FII', mandatory: false, repetition: 1 },
+    ], mandatory: false, repetition: 10,
   },
   {
-    segment: [
-      { segment: 'TDT', required: true, repetition: 1 },
-      { segment: 'TSR', required: false, repetition: 1 },
+    content: [
+      { content: 'TDT', mandatory: true, repetition: 1 },
+      { content: 'TSR', mandatory: false, repetition: 1 },
       {
-        segment: [
-          { segment: 'LOC', required: true, repetition: 1 },
-          { segment: 'DTM', required: false, repetition: 5 },
-        ], required: false, repetition: 10,
+        content: [
+          { content: 'LOC', mandatory: true, repetition: 1 },
+          { content: 'DTM', mandatory: false, repetition: 5 },
+        ], mandatory: false, repetition: 10,
       },
       {
-        segment: [
-          { segment: 'RFF', required: true, repetition: 1 },
-          { segment: 'DTM', required: false, repetition: 5 },
-        ], required: false, repetition: 9999,
+        content: [
+          { content: 'RFF', mandatory: true, repetition: 1 },
+          { content: 'DTM', mandatory: false, repetition: 5 },
+        ], mandatory: false, repetition: 9999,
       },
-    ], required: false, repetition: 10,
+    ], mandatory: false, repetition: 10,
   },
   {
-    segment: [
-      { segment: 'TOD', required: true, repetition: 1 },
-      { segment: 'LOC', required: false, repetition: 2 },
-    ], required: false, repetition: 5,
+    content: [
+      { content: 'TOD', mandatory: true, repetition: 1 },
+      { content: 'LOC', mandatory: false, repetition: 2 },
+    ], mandatory: false, repetition: 5,
   },
   {
-    segment: [
-      { segment: 'EQD', required: true, repetition: 1 },
-      { segment: 'SEL', required: false, repetition: 9 },
-    ], required: false, repetition: 99,
+    content: [
+      { content: 'EQD', mandatory: true, repetition: 1 },
+      { content: 'SEL', mandatory: false, repetition: 9 },
+    ], mandatory: false, repetition: 99,
   },
   {
-    segment: [
-      { segment: 'PAC', required: true, repetition: 1 },
-      { segment: 'MEA', required: false, repetition: 5 },
-      { segment: 'EQD', required: false, repetition: 1 },
+    content: [
+      { content: 'PAC', mandatory: true, repetition: 1 },
+      { content: 'MEA', mandatory: false, repetition: 5 },
+      { content: 'EQD', mandatory: false, repetition: 1 },
       {
-        segment: [
-          { segment: 'PCI', required: true, repetition: 1 },
-          { segment: 'RFF', required: false, repetition: 1 },
-          { segment: 'DTM', required: false, repetition: 5 },
-          { segment: 'GIN', required: false, repetition: 5 },
-        ], required: false, repetition: 5,
+        content: [
+          { content: 'PCI', mandatory: true, repetition: 1 },
+          { content: 'RFF', mandatory: false, repetition: 1 },
+          { content: 'DTM', mandatory: false, repetition: 5 },
+          { content: 'GIN', mandatory: false, repetition: 5 },
+        ], mandatory: false, repetition: 5,
       },
-    ], required: false, repetition: 1000,
+    ], mandatory: false, repetition: 1000,
   },
   {
-    segment: [
-      { segment: 'ALC', required: true, repetition: 1 },
-      { segment: 'ALI', required: false, repetition: 5 },
-      { segment: 'FTX', required: false, repetition: 1 },
+    content: [
+      { content: 'ALC', mandatory: true, repetition: 1 },
+      { content: 'ALI', mandatory: false, repetition: 5 },
+      { content: 'FTX', mandatory: false, repetition: 1 },
       {
-        segment: [
-          { segment: 'RFF', required: true, repetition: 1 },
-          { segment: 'DTM', required: false, repetition: 5 },
-        ], required: false, repetition: 5,
+        content: [
+          { content: 'RFF', mandatory: true, repetition: 1 },
+          { content: 'DTM', mandatory: false, repetition: 5 },
+        ], mandatory: false, repetition: 5,
       },
       {
-        segment: [
-          { segment: 'QTY', required: true, repetition: 1 },
-          { segment: 'RNG', required: false, repetition: 1 },
-        ], required: false, repetition: 1,
+        content: [
+          { content: 'QTY', mandatory: true, repetition: 1 },
+          { content: 'RNG', mandatory: false, repetition: 1 },
+        ], mandatory: false, repetition: 1,
       },
       {
-        segment: [
-          { segment: 'PCD', required: true, repetition: 1 },
-          { segment: 'RNG', required: false, repetition: 1 },
-        ], required: false, repetition: 1,
+        content: [
+          { content: 'PCD', mandatory: true, repetition: 1 },
+          { content: 'RNG', mandatory: false, repetition: 1 },
+        ], mandatory: false, repetition: 1,
       },
       {
-        segment: [
-          { segment: 'MOA', required: true, repetition: 1 },
-          { segment: 'RNG', required: false, repetition: 1 },
-          { segment: 'CUX', required: false, repetition: 1 },
-          { segment: 'DTM', required: false, repetition: 1 },
-        ], required: false, repetition: 2,
+        content: [
+          { content: 'MOA', mandatory: true, repetition: 1 },
+          { content: 'RNG', mandatory: false, repetition: 1 },
+          { content: 'CUX', mandatory: false, repetition: 1 },
+          { content: 'DTM', mandatory: false, repetition: 1 },
+        ], mandatory: false, repetition: 2,
       },
       {
-        segment: [
-          { segment: 'RTE', required: true, repetition: 1 },
-          { segment: 'RNG', required: false, repetition: 1 },
-        ], required: false, repetition: 1,
+        content: [
+          { content: 'RTE', mandatory: true, repetition: 1 },
+          { content: 'RNG', mandatory: false, repetition: 1 },
+        ], mandatory: false, repetition: 1,
       },
       {
-        segment: [
-          { segment: 'TAX', required: true, repetition: 1 },
-          { segment: 'MOA', required: false, repetition: 1 },
-        ], required: false, repetition: 5,
+        content: [
+          { content: 'TAX', mandatory: true, repetition: 1 },
+          { content: 'MOA', mandatory: false, repetition: 1 },
+        ], mandatory: false, repetition: 5,
       },
-    ], required: false, repetition: 9999,
+    ], mandatory: false, repetition: 9999,
   },
   {
-    segment: [
-      { segment: 'RCS', required: true, repetition: 1 },
-      { segment: 'RFF', required: false, repetition: 5 },
-      { segment: 'DTM', required: false, repetition: 5 },
-      { segment: 'FTX', required: false, repetition: 5 },
-    ], required: false, repetition: 100,
+    content: [
+      { content: 'RCS', mandatory: true, repetition: 1 },
+      { content: 'RFF', mandatory: false, repetition: 5 },
+      { content: 'DTM', mandatory: false, repetition: 5 },
+      { content: 'FTX', mandatory: false, repetition: 5 },
+    ], mandatory: false, repetition: 100,
   },
   {
-    segment: [
-      { segment: 'AJT', required: true, repetition: 1 },
-      { segment: 'FTX', required: false, repetition: 5 },
-    ], required: false, repetition: 1,
+    content: [
+      { content: 'AJT', mandatory: true, repetition: 1 },
+      { content: 'FTX', mandatory: false, repetition: 5 },
+    ], mandatory: false, repetition: 1,
   },
   {
-    segment: [
-      { segment: 'INP', required: true, repetition: 1 },
-      { segment: 'FTX', required: false, repetition: 5 },
-    ], required: false, repetition: 1,
+    content: [
+      { content: 'INP', mandatory: true, repetition: 1 },
+      { content: 'FTX', mandatory: false, repetition: 5 },
+    ], mandatory: false, repetition: 1,
   },
   {
-    segment: [
-      { segment: 'EFI', required: true, repetition: 1 },
-      { segment: 'CED', required: false, repetition: 99 },
-      { segment: 'COM', required: false, repetition: 9 },
-      { segment: 'RFF', required: false, repetition: 9 },
-      { segment: 'DTM', required: false, repetition: 9 },
-      { segment: 'QTY', required: false, repetition: 9 },
-    ], required: false, repetition: 99,
+    content: [
+      { content: 'EFI', mandatory: true, repetition: 1 },
+      { content: 'CED', mandatory: false, repetition: 99 },
+      { content: 'COM', mandatory: false, repetition: 9 },
+      { content: 'RFF', mandatory: false, repetition: 9 },
+      { content: 'DTM', mandatory: false, repetition: 9 },
+      { content: 'QTY', mandatory: false, repetition: 9 },
+    ], mandatory: false, repetition: 99,
   },
   {
-    segment: [
-      { segment: 'LIN', required: true, repetition: 1 },
-      { segment: 'PIA', required: false, repetition: 25 },
-      { segment: 'PGI', required: false, repetition: 99 },
-      { segment: 'IMD', required: false, repetition: 99 },
-      { segment: 'MEA', required: false, repetition: 5 },
-      { segment: 'QTY', required: false, repetition: 5 },
-      { segment: 'PCD', required: false, repetition: 1 },
-      { segment: 'ALI', required: false, repetition: 5 },
-      { segment: 'DTM', required: false, repetition: 35 },
-      { segment: 'GIN', required: false, repetition: 1000 },
-      { segment: 'GIR', required: false, repetition: 1000 },
-      { segment: 'QVR', required: false, repetition: 1 },
-      { segment: 'EQD', required: false, repetition: 1 },
-      { segment: 'FTX', required: false, repetition: 99 },
-      { segment: 'DGS', required: false, repetition: 1 },
+    content: [
+      { content: 'LIN', mandatory: true, repetition: 1 },
+      { content: 'PIA', mandatory: false, repetition: 25 },
+      { content: 'PGI', mandatory: false, repetition: 99 },
+      { content: 'IMD', mandatory: false, repetition: 99 },
+      { content: 'MEA', mandatory: false, repetition: 5 },
+      { content: 'QTY', mandatory: false, repetition: 5 },
+      { content: 'PCD', mandatory: false, repetition: 1 },
+      { content: 'ALI', mandatory: false, repetition: 5 },
+      { content: 'DTM', mandatory: false, repetition: 35 },
+      { content: 'GIN', mandatory: false, repetition: 1000 },
+      { content: 'GIR', mandatory: false, repetition: 1000 },
+      { content: 'QVR', mandatory: false, repetition: 1 },
+      { content: 'EQD', mandatory: false, repetition: 1 },
+      { content: 'FTX', mandatory: false, repetition: 99 },
+      { content: 'DGS', mandatory: false, repetition: 1 },
       {
-        segment: [
-          { segment: 'MOA', required: true, repetition: 1 },
-          { segment: 'CUX', required: false, repetition: 1 },
-        ], required: false, repetition: 99,
+        content: [
+          { content: 'MOA', mandatory: true, repetition: 1 },
+          { content: 'CUX', mandatory: false, repetition: 1 },
+        ], mandatory: false, repetition: 99,
       },
       {
-        segment: [
-          { segment: 'PYT', required: true, repetition: 1 },
-          { segment: 'DTM', required: false, repetition: 5 },
-          { segment: 'PCD', required: false, repetition: 99 },
-          { segment: 'MOA', required: false, repetition: 1 },
-        ], required: false, repetition: 10,
+        content: [
+          { content: 'PYT', mandatory: true, repetition: 1 },
+          { content: 'DTM', mandatory: false, repetition: 5 },
+          { content: 'PCD', mandatory: false, repetition: 99 },
+          { content: 'MOA', mandatory: false, repetition: 1 },
+        ], mandatory: false, repetition: 10,
       },
       {
-        segment: [
-          { segment: 'PRI', required: true, repetition: 1 },
-          { segment: 'CUX', required: false, repetition: 1 },
-          { segment: 'APR', required: false, repetition: 1 },
-          { segment: 'RNG', required: false, repetition: 1 },
-          { segment: 'DTM', required: false, repetition: 5 },
-        ], required: false, repetition: 25,
+        content: [
+          { content: 'PRI', mandatory: true, repetition: 1 },
+          { content: 'CUX', mandatory: false, repetition: 1 },
+          { content: 'APR', mandatory: false, repetition: 1 },
+          { content: 'RNG', mandatory: false, repetition: 1 },
+          { content: 'DTM', mandatory: false, repetition: 5 },
+        ], mandatory: false, repetition: 25,
       },
       {
-        segment: [
-          { segment: 'RFF', required: true, repetition: 1 },
-          { segment: 'DTM', required: false, repetition: 5 },
-        ], required: false, repetition: 10,
+        content: [
+          { content: 'RFF', mandatory: true, repetition: 1 },
+          { content: 'DTM', mandatory: false, repetition: 5 },
+        ], mandatory: false, repetition: 10,
       },
       {
-        segment: [
-          { segment: 'PAC', required: true, repetition: 1 },
-          { segment: 'MEA', required: false, repetition: 10 },
-          { segment: 'EQD', required: false, repetition: 1 },
+        content: [
+          { content: 'PAC', mandatory: true, repetition: 1 },
+          { content: 'MEA', mandatory: false, repetition: 10 },
+          { content: 'EQD', mandatory: false, repetition: 1 },
           {
-            segment: [
-              { segment: 'PCI', required: true, repetition: 1 },
-              { segment: 'RFF', required: false, repetition: 1 },
-              { segment: 'DTM', required: false, repetition: 5 },
-              { segment: 'GIN', required: false, repetition: 10 },
-            ], required: false, repetition: 10,
+            content: [
+              { content: 'PCI', mandatory: true, repetition: 1 },
+              { content: 'RFF', mandatory: false, repetition: 1 },
+              { content: 'DTM', mandatory: false, repetition: 5 },
+              { content: 'GIN', mandatory: false, repetition: 10 },
+            ], mandatory: false, repetition: 10,
           },
-        ], required: false, repetition: 999,
+        ], mandatory: false, repetition: 999,
       },
       {
-        segment: [
-          { segment: 'LOC', required: true, repetition: 1 },
-          { segment: 'QTY', required: false, repetition: 100 },
-          { segment: 'DTM', required: false, repetition: 5 },
-        ], required: false, repetition: 9999,
+        content: [
+          { content: 'LOC', mandatory: true, repetition: 1 },
+          { content: 'QTY', mandatory: false, repetition: 100 },
+          { content: 'DTM', mandatory: false, repetition: 5 },
+        ], mandatory: false, repetition: 9999,
       },
       {
-        segment: [
-          { segment: 'TAX', required: true, repetition: 1 },
-          { segment: 'MOA', required: false, repetition: 2 },
-          { segment: 'LOC', required: false, repetition: 5 },
-        ], required: false, repetition: 99,
+        content: [
+          { content: 'TAX', mandatory: true, repetition: 1 },
+          { content: 'MOA', mandatory: false, repetition: 2 },
+          { content: 'LOC', mandatory: false, repetition: 5 },
+        ], mandatory: false, repetition: 99,
       },
       {
-        segment: [
-          { segment: 'NAD', required: true, repetition: 1 },
-          { segment: 'LOC', required: false, repetition: 5 },
-          { segment: 'FII', required: false, repetition: 5 },
+        content: [
+          { content: 'NAD', mandatory: true, repetition: 1 },
+          { content: 'LOC', mandatory: false, repetition: 5 },
+          { content: 'FII', mandatory: false, repetition: 5 },
           {
-            segment: [
-              { segment: 'RFF', required: true, repetition: 1 },
-              { segment: 'DTM', required: false, repetition: 5 },
-            ], required: false, repetition: 99,
-          },
-          {
-            segment: [
-              { segment: 'DOC', required: true, repetition: 1 },
-              { segment: 'DTM', required: false, repetition: 5 },
-            ], required: false, repetition: 5,
+            content: [
+              { content: 'RFF', mandatory: true, repetition: 1 },
+              { content: 'DTM', mandatory: false, repetition: 5 },
+            ], mandatory: false, repetition: 99,
           },
           {
-            segment: [
-              { segment: 'CTA', required: true, repetition: 1 },
-              { segment: 'COM', required: false, repetition: 5 },
-            ], required: false, repetition: 5,
-          },
-        ], required: false, repetition: 99,
-      },
-      {
-        segment: [
-          { segment: 'ALC', required: true, repetition: 1 },
-          { segment: 'ALI', required: false, repetition: 5 },
-          { segment: 'DTM', required: false, repetition: 5 },
-          { segment: 'FTX', required: false, repetition: 1 },
-          {
-            segment: [
-              { segment: 'QTY', required: true, repetition: 1 },
-              { segment: 'RNG', required: false, repetition: 1 },
-            ], required: false, repetition: 1,
+            content: [
+              { content: 'DOC', mandatory: true, repetition: 1 },
+              { content: 'DTM', mandatory: false, repetition: 5 },
+            ], mandatory: false, repetition: 5,
           },
           {
-            segment: [
-              { segment: 'PCD', required: true, repetition: 1 },
-              { segment: 'RNG', required: false, repetition: 1 },
-            ], required: false, repetition: 1,
+            content: [
+              { content: 'CTA', mandatory: true, repetition: 1 },
+              { content: 'COM', mandatory: false, repetition: 5 },
+            ], mandatory: false, repetition: 5,
+          },
+        ], mandatory: false, repetition: 99,
+      },
+      {
+        content: [
+          { content: 'ALC', mandatory: true, repetition: 1 },
+          { content: 'ALI', mandatory: false, repetition: 5 },
+          { content: 'DTM', mandatory: false, repetition: 5 },
+          { content: 'FTX', mandatory: false, repetition: 1 },
+          {
+            content: [
+              { content: 'QTY', mandatory: true, repetition: 1 },
+              { content: 'RNG', mandatory: false, repetition: 1 },
+            ], mandatory: false, repetition: 1,
           },
           {
-            segment: [
-              { segment: 'MOA', required: true, repetition: 1 },
-              { segment: 'RNG', required: false, repetition: 1 },
-              { segment: 'CUX', required: false, repetition: 1 },
-              { segment: 'DTM', required: false, repetition: 1 },
-            ], required: false, repetition: 2,
+            content: [
+              { content: 'PCD', mandatory: true, repetition: 1 },
+              { content: 'RNG', mandatory: false, repetition: 1 },
+            ], mandatory: false, repetition: 1,
           },
           {
-            segment: [
-              { segment: 'RTE', required: true, repetition: 1 },
-              { segment: 'RNG', required: false, repetition: 1 },
-            ], required: false, repetition: 1,
+            content: [
+              { content: 'MOA', mandatory: true, repetition: 1 },
+              { content: 'RNG', mandatory: false, repetition: 1 },
+              { content: 'CUX', mandatory: false, repetition: 1 },
+              { content: 'DTM', mandatory: false, repetition: 1 },
+            ], mandatory: false, repetition: 2,
           },
           {
-            segment: [
-              { segment: 'TAX', required: true, repetition: 1 },
-              { segment: 'MOA', required: false, repetition: 1 },
-            ], required: false, repetition: 5,
+            content: [
+              { content: 'RTE', mandatory: true, repetition: 1 },
+              { content: 'RNG', mandatory: false, repetition: 1 },
+            ], mandatory: false, repetition: 1,
           },
-        ], required: false, repetition: 30,
-      },
-      {
-        segment: [
-          { segment: 'TDT', required: true, repetition: 1 },
           {
-            segment: [
-              { segment: 'LOC', required: true, repetition: 1 },
-              { segment: 'DTM', required: false, repetition: 5 },
-            ], required: false, repetition: 10,
+            content: [
+              { content: 'TAX', mandatory: true, repetition: 1 },
+              { content: 'MOA', mandatory: false, repetition: 1 },
+            ], mandatory: false, repetition: 5,
           },
-        ], required: false, repetition: 10,
+        ], mandatory: false, repetition: 30,
       },
       {
-        segment: [
-          { segment: 'TOD', required: true, repetition: 1 },
-          { segment: 'LOC', required: false, repetition: 2 },
-        ], required: false, repetition: 5,
+        content: [
+          { content: 'TDT', mandatory: true, repetition: 1 },
+          {
+            content: [
+              { content: 'LOC', mandatory: true, repetition: 1 },
+              { content: 'DTM', mandatory: false, repetition: 5 },
+            ], mandatory: false, repetition: 10,
+          },
+        ], mandatory: false, repetition: 10,
       },
       {
-        segment: [
-          { segment: 'RCS', required: true, repetition: 1 },
-          { segment: 'RFF', required: false, repetition: 5 },
-          { segment: 'DTM', required: false, repetition: 5 },
-          { segment: 'FTX', required: false, repetition: 5 },
-        ], required: false, repetition: 100,
+        content: [
+          { content: 'TOD', mandatory: true, repetition: 1 },
+          { content: 'LOC', mandatory: false, repetition: 2 },
+        ], mandatory: false, repetition: 5,
       },
       {
-        segment: [
-          { segment: 'GEI', required: true, repetition: 1 },
-          { segment: 'RFF', required: false, repetition: 9 },
-          { segment: 'IMD', required: false, repetition: 99 },
-          { segment: 'DTM', required: false, repetition: 5 },
-          { segment: 'GIR', required: false, repetition: 5 },
-          { segment: 'LOC', required: false, repetition: 2 },
-          { segment: 'MEA', required: false, repetition: 5 },
-          { segment: 'QTY', required: false, repetition: 9 },
-          { segment: 'FTX', required: false, repetition: 5 },
-          { segment: 'MOA', required: false, repetition: 2 },
-        ], required: false, repetition: 999,
+        content: [
+          { content: 'RCS', mandatory: true, repetition: 1 },
+          { content: 'RFF', mandatory: false, repetition: 5 },
+          { content: 'DTM', mandatory: false, repetition: 5 },
+          { content: 'FTX', mandatory: false, repetition: 5 },
+        ], mandatory: false, repetition: 100,
       },
       {
-        segment: [
-          { segment: 'EFI', required: true, repetition: 1 },
-          { segment: 'CED', required: false, repetition: 99 },
-          { segment: 'COM', required: false, repetition: 9 },
-          { segment: 'RFF', required: false, repetition: 9 },
-          { segment: 'DTM', required: false, repetition: 9 },
-          { segment: 'QTY', required: false, repetition: 9 },
-        ], required: false, repetition: 99,
+        content: [
+          { content: 'GEI', mandatory: true, repetition: 1 },
+          { content: 'RFF', mandatory: false, repetition: 9 },
+          { content: 'IMD', mandatory: false, repetition: 99 },
+          { content: 'DTM', mandatory: false, repetition: 5 },
+          { content: 'GIR', mandatory: false, repetition: 5 },
+          { content: 'LOC', mandatory: false, repetition: 2 },
+          { content: 'MEA', mandatory: false, repetition: 5 },
+          { content: 'QTY', mandatory: false, repetition: 9 },
+          { content: 'FTX', mandatory: false, repetition: 5 },
+          { content: 'MOA', mandatory: false, repetition: 2 },
+        ], mandatory: false, repetition: 999,
+      },
+      {
+        content: [
+          { content: 'EFI', mandatory: true, repetition: 1 },
+          { content: 'CED', mandatory: false, repetition: 99 },
+          { content: 'COM', mandatory: false, repetition: 9 },
+          { content: 'RFF', mandatory: false, repetition: 9 },
+          { content: 'DTM', mandatory: false, repetition: 9 },
+          { content: 'QTY', mandatory: false, repetition: 9 },
+        ], mandatory: false, repetition: 99,
       },
     ],
   },
-  { segment: 'UNS', required: true, repetition: 1 },
-  { segment: 'CNT', required: false, repetition: 10 },
+  { content: 'UNS', mandatory: true, repetition: 1 },
+  { content: 'CNT', mandatory: false, repetition: 10 },
   {
-    segment: [
-      { segment: 'MOA', required: true, repetition: 1 },
+    content: [
+      { content: 'MOA', mandatory: true, repetition: 1 },
       {
-        segment: [
-          { segment: 'RFF', required: true, repetition: 1 },
-          { segment: 'DTM', required: false, repetition: 5 },
-        ], required: false, repetition: 1,
+        content: [
+          { content: 'RFF', mandatory: true, repetition: 1 },
+          { content: 'DTM', mandatory: false, repetition: 5 },
+        ], mandatory: false, repetition: 1,
       },
-    ], required: false, repetition: 100,
+    ], mandatory: false, repetition: 100,
   },
   {
-    segment: [
-      { segment: 'TAX', required: true, repetition: 1 },
-      { segment: 'MOA', required: false, repetition: 9 },
-    ], required: false, repetition: 10,
+    content: [
+      { content: 'TAX', mandatory: true, repetition: 1 },
+      { content: 'MOA', mandatory: false, repetition: 9 },
+    ], mandatory: false, repetition: 10,
   },
   {
-    segment: [
-      { segment: 'ALC', required: true, repetition: 1 },
-      { segment: 'ALI', required: false, repetition: 1 },
-      { segment: 'MOA', required: false, repetition: 2 },
-      { segment: 'FTX', required: false, repetition: 1 },
-    ], required: false, repetition: 10,
+    content: [
+      { content: 'ALC', mandatory: true, repetition: 1 },
+      { content: 'ALI', mandatory: false, repetition: 1 },
+      { content: 'MOA', mandatory: false, repetition: 2 },
+      { content: 'FTX', mandatory: false, repetition: 1 },
+    ], mandatory: false, repetition: 10,
   },
-  { segment: 'UNT', required: true, repetition: 1 },
+  { content: 'UNT', mandatory: true, repetition: 1 },
 ];
 
 module.exports = order;

@@ -3,23 +3,23 @@
 class Pointer {
   constructor(array, position) {
     this.array = array;
-    this.position = position;
+    this.position = position || 0;
     this.count = 0;
   }
   content() {
-    return this.array[this.position].segment;
+    return this.array[this.position].content;
   }
   mandatory() {
-    return this.array[this.position].required;
+    return this.array[this.position].mandatory;
   }
   repetition() {
     return this.array[this.position].repetition;
   }
   toString() {
-    if (Array.isArray(this.array[this.position].segment)) {
+    if (Array.isArray(this.array[this.position].content)) {
       return 'group';
     } else {
-      return 'segment ' + this.array[this.position].segment;
+      return 'segment ' + this.array[this.position].content;
     }
   }
 };
