@@ -287,11 +287,11 @@ class Reader extends Parser {
       parser.push(parser.state('segment'), parser.state('elements'));
     });
     this.hook(function (parser) {
-      let path = __dirname + '/messages/' + parser.state('elements')[1][0] + '.js';
-      if (fs.existsSync(path)) {
+      let path = __dirname + '/messages/' + parser.state('elements')[1][0] + '.json';
+      try {
         parser._tracker = new Tracker(require(path));
         parser._tracker.accept(parser.state('segment'));
-      }
+      } catch (error) {}
     }, 'UNH');
     this.hook(function (parser) {
       delete parser._tracker;
