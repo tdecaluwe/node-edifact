@@ -63,19 +63,19 @@ class Tracker {
         this.pointer.count = 0;
         if (this.pointer.position === this.pointer.array.length) {
           // We reached the end of this group.
-          if (this.count > this.pointer.repetition) {
-            throw new Error('Cannot exceed ' + this.pointer.repetition() + ' repetitions of ' + this.pointer);
-          }
-          if (this.stack.length === 0) {
-            throw new Error('Cannot match ' + this.pointer + ' to the message structure');
-          }
           this.stack.pop();
+          if (this.stack.length === 0) {
+            throw new Error('Cannot match ' + segment + ' to the message structure');
+          }
           this.pointer = this.stack[this.stack.length - 1];
         }
       }
     }
     this.level = this.stack.length;
     this.pointer.count += 1;
+    if (this.pointer.count > this.pointer.repetition()) {
+      throw new Error('Cannot exceed ' + this.pointer.repetition() + ' repetitions of ' + this.pointer);
+    }
   }
 };
 
