@@ -1,0 +1,83 @@
+[![view on npm](http://img.shields.io/npm/v/edifact.svg)](https://www.npmjs.org/package/edifact)
+[![npm module downloads per month](http://img.shields.io/npm/dm/edifact.svg)](https://www.npmjs.org/package/edifact)
+
+# node-edifact
+
+Currently supported functionality:
+
+* A stream parser reading UN/EDIFACT messages.
+* Provide your own hooks do get the parser to do something useful.
+* Construct structured javascript objects from UN/EDIFACT messages.
+* Support for the UNA header and custom separators.
+* Validating data elements and components accepted by a given segment.
+* Parsing and checking standard UN/EDIFACT messages with segment tables.
+
+This library further intends to support:
+
+* Writing and constructing UN/EDIFACT messages.
+* Out of the box support for envelopes.
+
+## Installation
+
+The module can be installled through:
+
+```shell
+npm install edifact
+```
+
+Keep in mind that this is an ES6 library. It currently can be used with node 4.0 or higher.
+
+## Overview
+
+This module provides two main classes, the `Parser` and the `Reader` class. The `Parser` base class only contains the bare stream parser but doesn't do anything useful with the data read. It can be customized through the use of hooks and the addition of segment and element definitions.
+
+The `Reader` class inherits the parser class and intends to build usable javascript objects from UN/EDIFACT messages. Segment and element definitions should still be provided by the user. If no such definitions are found, element and component validation is skipped. Using this class can be as easy as:
+
+```javascript
+let doc = ...;
+let reader = new Reader;
+let array = reader.parse(doc);
+```
+
+### Segment and element definitions
+
+Definitions can be provided to describe the structure of segments and elements. An example of a segment definition:
+
+```json
+{
+  "BGM": {
+    "requires": 0,
+    "elements": ["C002", "C106", "1225", "4343"]
+  }
+}
+```
+
+An example of some element definitions:
+
+```json
+{
+  "C002": {
+    "requires": 4,
+    "components": ["an..3", "an..17", "an..3", "an..35"]
+  },
+  "C106": {
+    "requires": 3,
+    "components": ["an..35", "an..9", "an..6"]
+  }
+}
+```
+
+An incomplete set of definitions is included with the library in the files `segments.js` and `elements.js` and can be included as follows:
+
+```javascript
+let reader = new edifact.Reader;
+
+reader.define(require('edifact/segments.js'));
+reader.define(require('edifact/elements.js'));
+```
+
+A working example using segment and element definitions can be found in the `examples` directory.
+
+## Reference
+
+{{>main}}

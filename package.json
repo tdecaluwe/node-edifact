@@ -17,8 +17,10 @@
   }
 , "devDependencies":
   { "jasmine-es6": "^0.0.18"
+  , "jsdoc-to-markdown": "^1.2.1"
   }
 , "scripts":
-  { "test": "jasmine"
+  { "test": "node-modules/.bin/jasmine"
+  , "docs": "node_modules/.bin/jsdoc2md -d 3 --template README.hbs -f *.js > README.md"
   }
 }

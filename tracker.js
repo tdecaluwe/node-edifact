@@ -1,5 +1,10 @@
 'use strict'
 
+/**
+ * A utility class representing the current position in a segment group.
+ *
+ * @private
+ */
 class Pointer {
   constructor(array, position) {
     this.array = array;
@@ -25,18 +30,24 @@ class Pointer {
 };
 
 /**
- * Utility class which validates segment order against a given message
+ * A utility class which validates segment order against a given message
  * structure.
  */
 class Tracker {
-  constructor(message) {
+  /**
+   * @summary Construct a new tracker pointing to the first segment in the table.
+   * @param {Array} table The segment table to track against.
+   * @constructs Tracker
+   */
+  constructor(table) {
     this.stack = [];
     this.level = 0;
-    this.pointer = new Pointer(message, 0);
+    this.pointer = new Pointer(table, 0);
     this.stack.push(this.pointer);
   }
   /**
-   * @summary Match a segment to the message structure.
+   * @summary Match a segment to the message structure and update the current
+   * position of the tracker.
    * @param {String} segment The segment name.
    * @throws {Error} Throws if a mandatory segment was omitted.
    * @throws {Error} Throws if unidentified segments are encountered.
