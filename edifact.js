@@ -2,15 +2,6 @@
 
 let Tracker = require('./tracker.js').Tracker;
 
-class SegmentTable {
-  constructor () {
-    this.segments = {};
-  }
-  addSegment(code, position, required, repetition) {
-    this.segments[code] = [position, required, repetition];
-  }
-};
-
 /**
  * The base Parser class encapsulates an online parsing algorithm which can be
  * extended through the use of user-defined hooks.
