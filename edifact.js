@@ -32,7 +32,7 @@ class Parser {
   /**
    * @summary Request a state variable.
    * @param key The name of the state variable.
-   * @returns The state associated with the provided name.
+   * @returns {Object} The state associated with the provided name.
    */
   state(key, value) {
     if (value) {
@@ -42,14 +42,14 @@ class Parser {
     }
   }
   /**
-   * @summary Add a hook to the parser.
-   * @param {Function} hook The hook to be called after a segment is completed.
-   * @param {String} [segment] The segment triggering this hook.
-   *
    * If no segment is provided, the hook will be called after each segment read
    * by the parser. The hook should be a function accepting one argument which
    * the parser will use to pass itself. This allows one to access the current
    * state of the parser.
+   *
+   * @summary Add a hook to the parser.
+   * @param {Function} hook The hook to be called after a segment is completed.
+   * @param {String} [segment] The segment triggering this hook.
    */
   hook(hook, segment) {
     if (segment) {
@@ -60,10 +60,6 @@ class Parser {
     }
   }
   /**
-   * @summary Define segment and element structures.
-   * @param {Object} definitions An object containing the definitions.
-   * @param options Set options like the overriding policy.
-   *
    * By default the parser accepts any wellformed input if it doesn't find
    * definitinons for the current segment or element being parsed. Additionally
    * the parser can be forced to check the number and format of the elements and
@@ -79,6 +75,10 @@ class Parser {
    *
    * To simplify things, a non-composite element is regarded as an element
    * having only one component.
+   *
+   * @summary Define segment and element structures.
+   * @param {Object} definitions An object containing the definitions.
+   * @param options Set options like the overriding policy.
    */
   define(definitions, options) {
     options = options || {};
@@ -93,15 +93,15 @@ class Parser {
     }
   }
   /**
+   * This method will parse an input string using a format string. If succesful
+   * it will return the input using an appropriate type, otherwise it will throw
+   * an error.
+   *
    * @summary Interpret a string according to an EDIFACT format string.
    * @param {String} input The component string to parse.
    * @param {String} format The format string to parse the input string.
    * @param {Object} options Options to use (like a custom decimal mark).
-   * @returns The input string interpreted with the provided format string.
-   *
-   * This method will parse an input string using a format string. If succesful
-   * it will return the input using an appropriate type, otherwise it will throw
-   * an error.
+   * @returns {String|Number} The input string interpreted with the provided format string.
    */
   component(input, format, options) {
     options = options || {};
@@ -322,7 +322,7 @@ class Reader extends Parser {
    * @summary Parse the input document and return it as a javascript array.
    * @param {String} input The input document.
    * @param {Object} options Any options to use.
-   * @returns An array of objects representing the segments.
+   * @returns {Array} An array of objects representing the segments.
    * @override
    */
   parse(document, options) {

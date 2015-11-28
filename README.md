@@ -111,10 +111,10 @@ definitions.
 
 * [Parser](#Parser)
   * [.reset()](#Parser+reset)
-  * [.state(key)](#Parser+state) ⇒
+  * [.state(key)](#Parser+state) ⇒ <code>Object</code>
   * [.hook(hook, [segment])](#Parser+hook)
   * [.define(definitions, options)](#Parser+define)
-  * [.component(input, format, options)](#Parser+component) ⇒
+  * [.component(input, format, options)](#Parser+component) ⇒ <code>String</code> &#124; <code>Number</code>
   * [.parse(input, options)](#Parser+parse)
 
 <a name="Parser+reset"></a>
@@ -122,10 +122,10 @@ definitions.
 **Kind**: instance method of <code>[Parser](#Parser)</code>  
 **Summary**: Reset the parser to it&#x27;s initial state.  
 <a name="Parser+state"></a>
-#### parser.state(key) ⇒
+#### parser.state(key) ⇒ <code>Object</code>
 **Kind**: instance method of <code>[Parser](#Parser)</code>  
 **Summary**: Request a state variable.  
-**Returns**: The state associated with the provided name.  
+**Returns**: <code>Object</code> - The state associated with the provided name.  
 
 | Param | Description |
 | --- | --- |
@@ -133,33 +133,54 @@ definitions.
 
 <a name="Parser+hook"></a>
 #### parser.hook(hook, [segment])
+If no segment is provided, the hook will be called after each segment read
+by the parser. The hook should be a function accepting one argument which
+the parser will use to pass itself. This allows one to access the current
+state of the parser.
+
 **Kind**: instance method of <code>[Parser](#Parser)</code>  
 **Summary**: Add a hook to the parser.  
 
 | Param | Type | Description |
 | --- | --- | --- |
 | hook | <code>function</code> | The hook to be called after a segment is completed. |
-| [segment] | <code>String</code> | The segment triggering this hook. If no segment is provided, the hook will be called after each segment read by the parser. The hook should be a function accepting one argument which the parser will use to pass itself. This allows one to access the current state of the parser. |
+| [segment] | <code>String</code> | The segment triggering this hook. |
 
 <a name="Parser+define"></a>
 #### parser.define(definitions, options)
+By default the parser accepts any wellformed input if it doesn't find
+definitinons for the current segment or element being parsed. Additionally
+the parser can be forced to check the number and format of the elements and
+components if the right definitions are included.
+
+To define a segment or element the definitions object should contain the
+name as a key, and an object describing it's structure as a value. This
+object contains the `requires` key to define the number of mandatory
+elements or components. The key `elements` should be included containing a
+list of element names to describe a segment. Similarly, an element
+definition contains a `components` array describing the format of the
+components.
+
+To simplify things, a non-composite element is regarded as an element
+having only one component.
+
 **Kind**: instance method of <code>[Parser](#Parser)</code>  
 **Summary**: Define segment and element structures.  
 
 | Param | Type | Description |
 | --- | --- | --- |
 | definitions | <code>Object</code> | An object containing the definitions. |
-| options |  | Set options like the overriding policy. By default the parser accepts any wellformed input if it doesn't find definitinons for the current segment or element being parsed. Additionally the parser can be forced to check the number and format of the elements and components if the right definitions are included. To define a segment or element the definitions object should contain the name as a key, and an object describing it's structure as a value. This object contains the `requires` key to define the number of mandatory elements or components. The key `elements` should be included containing a list of element names to describe a segment. Similarly, an element definition contains a `components` array describing the format of the components. To simplify things, a non-composite element is regarded as an element having only one component. |
+| options |  | Set options like the overriding policy. |
 
 <a name="Parser+component"></a>
-#### parser.component(input, format, options) ⇒
-**Kind**: instance method of <code>[Parser](#Parser)</code>  
-**Summary**: Interpret a string according to an EDIFACT format string.  
-**Returns**: The input string interpreted with the provided format string.
-
+#### parser.component(input, format, options) ⇒ <code>String</code> &#124; <code>Number</code>
 This method will parse an input string using a format string. If succesful
 it will return the input using an appropriate type, otherwise it will throw
-an error.  
+an error.
+
+**Kind**: instance method of <code>[Parser](#Parser)</code>  
+**Summary**: Interpret a string according to an EDIFACT format string.  
+**Returns**: <code>String</code> &#124; <code>Number</code> - The input string interpreted with the provided format string.  
 
 | Param | Type | Description |
 | --- | --- | --- |
@@ -192,10 +213,10 @@ message using an appropriate segment table, if the parser can find one.
 * [Reader](#Reader) ⇐ <code>[Parser](#Parser)</code>
   * [.push(segment, elements)](#Reader+push)
   * [.reset()](#Parser+reset)
-  * [.state(key)](#Parser+state) ⇒
+  * [.state(key)](#Parser+state) ⇒ <code>Object</code>
   * [.hook(hook, [segment])](#Parser+hook)
   * [.define(definitions, options)](#Parser+define)
-  * [.component(input, format, options)](#Parser+component) ⇒
+  * [.component(input, format, options)](#Parser+component) ⇒ <code>String</code> &#124; <code>Number</code>
   * [.parse(input, options)](#Parser+parse)
 
 <a name="Reader+push"></a>
@@ -214,10 +235,10 @@ message using an appropriate segment table, if the parser can find one.
 **Summary**: Reset the parser to it&#x27;s initial state.  
 **Overrides:** <code>[reset](#Parser+reset)</code>  
 <a name="Parser+state"></a>
-#### reader.state(key) ⇒
+#### reader.state(key) ⇒ <code>Object</code>
 **Kind**: instance method of <code>[Reader](#Reader)</code>  
 **Summary**: Request a state variable.  
-**Returns**: The state associated with the provided name.  
+**Returns**: <code>Object</code> - The state associated with the provided name.  
 
 | Param | Description |
 | --- | --- |
@@ -225,33 +246,54 @@ message using an appropriate segment table, if the parser can find one.
 
 <a name="Parser+hook"></a>
 #### reader.hook(hook, [segment])
+If no segment is provided, the hook will be called after each segment read
+by the parser. The hook should be a function accepting one argument which
+the parser will use to pass itself. This allows one to access the current
+state of the parser.
+
 **Kind**: instance method of <code>[Reader](#Reader)</code>  
 **Summary**: Add a hook to the parser.  
 
 | Param | Type | Description |
 | --- | --- | --- |
 | hook | <code>function</code> | The hook to be called after a segment is completed. |
-| [segment] | <code>String</code> | The segment triggering this hook. If no segment is provided, the hook will be called after each segment read by the parser. The hook should be a function accepting one argument which the parser will use to pass itself. This allows one to access the current state of the parser. |
+| [segment] | <code>String</code> | The segment triggering this hook. |
 
 <a name="Parser+define"></a>
 #### reader.define(definitions, options)
+By default the parser accepts any wellformed input if it doesn't find
+definitinons for the current segment or element being parsed. Additionally
+the parser can be forced to check the number and format of the elements and
+components if the right definitions are included.
+
+To define a segment or element the definitions object should contain the
+name as a key, and an object describing it's structure as a value. This
+object contains the `requires` key to define the number of mandatory
+elements or components. The key `elements` should be included containing a
+list of element names to describe a segment. Similarly, an element
+definition contains a `components` array describing the format of the
+components.
+
+To simplify things, a non-composite element is regarded as an element
+having only one component.
+
 **Kind**: instance method of <code>[Reader](#Reader)</code>  
 **Summary**: Define segment and element structures.  
 
 | Param | Type | Description |
 | --- | --- | --- |
 | definitions | <code>Object</code> | An object containing the definitions. |
-| options |  | Set options like the overriding policy. By default the parser accepts any wellformed input if it doesn't find definitinons for the current segment or element being parsed. Additionally the parser can be forced to check the number and format of the elements and components if the right definitions are included. To define a segment or element the definitions object should contain the name as a key, and an object describing it's structure as a value. This object contains the `requires` key to define the number of mandatory elements or components. The key `elements` should be included containing a list of element names to describe a segment. Similarly, an element definition contains a `components` array describing the format of the components. To simplify things, a non-composite element is regarded as an element having only one component. |
+| options |  | Set options like the overriding policy. |
 
 <a name="Parser+component"></a>
-#### reader.component(input, format, options) ⇒
-**Kind**: instance method of <code>[Reader](#Reader)</code>  
-**Summary**: Interpret a string according to an EDIFACT format string.  
-**Returns**: The input string interpreted with the provided format string.
-
+#### reader.component(input, format, options) ⇒ <code>String</code> &#124; <code>Number</code>
 This method will parse an input string using a format string. If succesful
 it will return the input using an appropriate type, otherwise it will throw
-an error.  
+an error.
+
+**Kind**: instance method of <code>[Reader](#Reader)</code>  
+**Summary**: Interpret a string according to an EDIFACT format string.  
+**Returns**: <code>String</code> &#124; <code>Number</code> - The input string interpreted with the provided format string.  
 
 | Param | Type | Description |
 | --- | --- | --- |
