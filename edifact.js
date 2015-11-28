@@ -1,7 +1,5 @@
 'use strict'
 
-let fs = require('fs');
-
 let Tracker = require('./tracker.js').Tracker;
 
 class SegmentTable {
