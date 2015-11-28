@@ -3,10 +3,16 @@
 let Tracker = require('./tracker.js').Tracker;
 
 /**
- * The base Parser class encapsulates an online parsing algorithm which can be
- * extended through the use of user-defined hooks.
+ * The base Parser class encapsulates an online parsing algorithm, similar to a
+ * SAX-parser. By itself it doesn't do anything useful, however it can be
+ * customized through the use of user-defined hooks segment and element
+ * definitions.
  */
 class Parser {
+  /**
+   * @summary Constructs a new parser.
+   * @constructs Parser
+   */
   constructor() {
     this._segmentHooks = {};
     this._hooks = [];
@@ -26,6 +32,7 @@ class Parser {
   /**
    * @summary Request a state variable.
    * @param key The name of the state variable.
+   * @returns The state associated with the provided name.
    */
   state(key, value) {
     if (value) {
@@ -37,10 +44,12 @@ class Parser {
   /**
    * @summary Add a hook to the parser.
    * @param {Function} hook The hook to be called after a segment is completed.
-   * @param {String} segment The segment triggering this hook.
+   * @param {String} [segment] The segment triggering this hook.
    *
    * If no segment is provided, the hook will be called after each segment read
-   * by the parser.
+   * by the parser. The hook should be a function accepting one argument which
+   * the parser will use to pass itself. This allows one to access the current
+   * state of the parser.
    */
   hook(hook, segment) {
     if (segment) {
@@ -88,6 +97,7 @@ class Parser {
    * @param {String} input The component string to parse.
    * @param {String} format The format string to parse the input string.
    * @param {Object} options Options to use (like a custom decimal mark).
+   * @returns The input string interpreted with the provided format string.
    *
    * This method will parse an input string using a format string. If succesful
    * it will return the input using an appropriate type, otherwise it will throw
@@ -132,10 +142,6 @@ class Parser {
    * @summary Parse a UN/EDIFACT document.
    * @param {String} input The input document.
    * @param {Object} options Any options to use.
-   *
-   * This parser behaves similar to a SAX parser. It parses the document but by
-   * itself does not construct any output. To get the parser to do anything
-   * useful, user-defined hooks should be provided.
    */
   parse(input, options) {
     let match;
@@ -265,10 +271,20 @@ class Parser {
 };
 
 /**
- * The Reader class extends Parser. It adds a default hook which constructs a
- * javascript array representing the original document.
+ * The Reader class provides an easy to use parsing interface to convert
+ * UN/EDIFACT documents to an array of javascript objects, representing the
+ * segments in the original document.
+ *
+ * If a message type is provided in the UNH segment, it will try to validate the
+ * message using an appropriate segment table, if the parser can find one.
+ *
+ * @extends Parser
  */
 class Reader extends Parser {
+  /**
+   * @summary Constructs a new reader.
+   * @constructs Reader
+   */
   constructor() {
     super();
     this.hook(function (parser) {
@@ -286,6 +302,10 @@ class Reader extends Parser {
       delete parser._tracker;
     }, 'UNT');
   }
+  /**
+   * @summary Reset the parser to it's initial state.
+   * @override
+   */
   reset() {
     super.reset();
     this._result = [];
@@ -302,6 +322,8 @@ class Reader extends Parser {
    * @summary Parse the input document and return it as a javascript array.
    * @param {String} input The input document.
    * @param {Object} options Any options to use.
+   * @returns An array of objects representing the segments.
+   * @override
    */
   parse(document, options) {
     super.parse(document, options);
