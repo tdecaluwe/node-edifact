@@ -46,6 +46,23 @@ class Tracker {
     this.stack.push(this.pointer);
   }
   /**
+   * @summary Advance the tracker to the next segment in the table.
+   * @throws {Error} Throws when the end of the segment table is reached.
+   */
+  advance() {
+    // Advance to the next item in the current group.
+    this.pointer.position += 1;
+    this.pointer.count = 0;
+    if (this.pointer.position === this.pointer.array.length) {
+      // We reached the end of this group.
+      this.stack.pop();
+      if (this.stack.length === 0) {
+        throw new Error('Reached the end of the segment table');
+      }
+      this.pointer = this.stack[this.stack.length - 1];
+    }
+  }
+  /**
    * @summary Match a segment to the message structure and update the current
    * position of the tracker.
    * @param {String} segment The segment name.
@@ -54,6 +71,10 @@ class Tracker {
    * @throws {Error} Throws if a segment is repeated too much.
    */
   accept(segment) {
+    // Pop pointers which do not allow more repetitions of the stack.
+    while (this.pointer.count === this.pointer.repetition()) {
+      this.advance();
+    }
     while (segment !== this.pointer.content()) {
       let repeatable = this.pointer.count === 0 || this.stack.length < this.level;
       // Check if we are omitting mandatory content.
@@ -69,24 +90,11 @@ class Tracker {
         this.pointer = new Pointer(this.pointer.content(), 0);
         this.stack.push(this.pointer);
       } else {
-        // Advance to the next item in the current group.
-        this.pointer.position += 1;
-        this.pointer.count = 0;
-        if (this.pointer.position === this.pointer.array.length) {
-          // We reached the end of this group.
-          this.stack.pop();
-          if (this.stack.length === 0) {
-            throw new Error('Cannot match ' + segment + ' to the message structure');
-          }
-          this.pointer = this.stack[this.stack.length - 1];
-        }
+        this.advance();
       }
     }
     this.level = this.stack.length;
     this.pointer.count += 1;
-    if (this.pointer.count > this.pointer.repetition()) {
-      throw new Error('Cannot exceed ' + this.pointer.repetition() + ' repetitions of ' + this.pointer);
-    }
   }
 };
 

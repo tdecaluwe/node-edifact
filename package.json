@@ -1,5 +1,5 @@
 { "name": "edifact"
-, "version": "0.4.2"
+, "version": "0.4.4"
 , "description": "JavaScript parser for UN/EDIFACT documents."
 , "keywords": ["edifact", "edi"]
 , "main": "edifact.js"
