@@ -1,16 +1,11 @@
 'use strict'
 
 let edifact = require('../edifact.js');
-let segments = require('../segments.js');
-let elements = require('../elements.js');
 
-let reader = new edifact.Reader;
+let parser = new edifact.Parser();
+
 let document = '';
 
-reader.define(segments);
-reader.define(elements);
-
-document += 'UNA:+.? \'\n';
 document += 'UNB+UNOA:1+005435656:1+006415160:1+060515:1434+00000000000778\'\n';
 document += 'UNH+00000000000117+INVOIC:D:97B:UN\'\n';
 document += 'BGM+380+342459+9\'\n';
@@ -38,7 +33,26 @@ document += 'MOA+8:525\'\n';
 document += 'UNT+23+00000000000117\'\n';
 document += 'UNZ+1+00000000000778\'\n';
 
-let result = reader.parse(document);
+let result;
+let elements;
+let components;
+
+parser.onopensegment = function (segment) {
+  elements = [];
+  result.push({ name: segment, elements: elements });
+}
+
+parser.onelement = function () {
+  components = [];
+  elements.push(components);
+}
+
+parser.oncomponent = function (value) {
+  components.push(value);
+}
+
+result = [];
+parser.write(document);
 
 for (let i = 0; i < result.length; i++) {
   console.log(result[i].name + ': ' + result[i].elements);

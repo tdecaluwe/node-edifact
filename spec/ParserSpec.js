@@ -2,41 +2,46 @@
 
 import {Parser} from "../edifact.js";
 
-describe('Parser.parse', function () {
+describe('Parser.write', function () {
   let parser;
   beforeEach(function() {
     parser = new Parser();
+    expect(parser.write).toEqual(jasmine.any(Function));
+    expect(parser.close).toEqual(jasmine.any(Function));
   });
   it('should accept a valid UNA header', function () {
-    expect(function() { parser.parse('UNA:+.? \''); }).not.toThrow();
+    expect(function() { parser.write('UNA:+.? \''); }).not.toThrow();
+    expect(function() { parser.close(); }).not.toThrow();
   });
   it('should accept an empty segment', function () {
-    expect(function() { parser.parse('SEG\''); }).not.toThrow();
+    expect(function() { parser.write('SEG\''); }).not.toThrow();
+    expect(function() { parser.close(); }).not.toThrow();
   });
-  it('shouldn\'t parse an empty segment without a terminator', function () {
-    expect(function() { parser.parse('SEG'); }).toThrow();
+  it('shouldn\'t accept an empty segment without a terminator', function () {
+    expect(function() { parser.write('SEG'); }).not.toThrow();
+    expect(function() { parser.close(); }).toThrow();
   });
   it('should call hooks after every segment', function () {
     let hook = jasmine.createSpy('hook');
     parser.hook(hook);
-    parser.parse('UNH\'\nSEG\'');
+    parser.write('UNH\'\nSEG\'');
     expect(hook.calls.count()).toEqual(2);
   });
   it('should call segment hooks when the segment is encountered', function () {
     let hook = jasmine.createSpy('segment hook');
     parser.hook(hook, 'SEG');
-    parser.parse('SEG\'');
+    parser.write('SEG\'');
     expect(hook).toHaveBeenCalled();
   });
   it('shouldn\'t call segment hooks when the segment is not encountered', function () {
     let hook = jasmine.createSpy('segment hook');
     parser.hook(hook, 'UNH');
-    parser.parse('SEG\'');
+    parser.write('SEG\'');
     expect(hook).not.toHaveBeenCalled();
   });
 });
 
-describe('Parser.component', function () {
+/*describe('Parser.component', function () {
   let parser;
   beforeEach(function() {
     parser = new Parser();
@@ -89,4 +94,4 @@ describe('Parser.component', function () {
       expect(function () { parser.component('1234', 'n3') }).toThrow();
     });
   });
-});
+});*/
