@@ -2,7 +2,11 @@
 
 let edifact = require('../edifact.js');
 
-let parser = new edifact.Parser();
+let validator = new edifact.Validator();
+let parser = new edifact.Parser(validator);
+
+validator.define(require('../segments.js'));
+validator.define(require('../elements.js'));
 
 let document = '';
 
