@@ -1,7 +1,5 @@
 'use strict'
 
-let state = 'segment';
-
 class Parser {
   constructor(validator) {
     this._controls = {
@@ -64,7 +62,10 @@ class Parser {
       case Parser.states.component:
         this._validator.oncomponent();
       case Parser.states.continued:
-        index = this._validator.read(chunk, index);
+        start = this._validator.regex().lastIndex = index;
+        this._validator.regex().test(chunk);
+        index = this._validator.regex().lastIndex;
+        this._validator.ondata(chunk, start, index);
         switch (chunk.codePointAt(index)) {
         case this._controls.component_data_separator:
           this.oncomponent(this._validator.value());
@@ -82,7 +83,7 @@ class Parser {
           this._segment = '';
           break;
         case this._controls.decimal_mark:
-          this._validator.decimal(chunk.charAt(index));
+          this._validator.ondecimal(chunk.charAt(index));
           break;
         case this._controls.carriage_return:
         case this._controls.line_feed:

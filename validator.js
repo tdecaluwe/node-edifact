@@ -143,7 +143,7 @@ class Validator {
       }
     }
   }
-  decimal(character) {
+  ondecimal(character) {
     switch (this._regex) {
     case Validator.regexes.integer:
       this._regex = Validator.regexes.decimal;
@@ -158,12 +158,8 @@ class Validator {
       throw Validator.errors.secondDecimalMark();
     }
   }
-  read(chunk, index) {
-    let start = this._regex.lastIndex = index;
-    this._regex.test(chunk);
-    index = this._regex.lastIndex;
-    this._value += chunk.slice(start, index);
-    return index;
+  ondata(chunk, start, stop) {
+    this._value += chunk.slice(start, stop);
   }
   value() {
     switch (this._regex) {
@@ -202,11 +198,11 @@ Validator.states = {
 };
 
 Validator.regexes = {
-  plain: /[A-Z0-9 ]*/g,
-  alphanumeric: /[A-Z0-9 ]*/g,
-  alpha: /[A-Z ]*/g,
-  integer: /[0-9]/g,
-  decimal: /[0-9]/g
+  plain: /[A-Z0-9- ]*/g,
+  alphanumeric: /[A-Z0-9- ]*/g,
+  alpha: /[A-Z- ]*/g,
+  integer: /[0-9]*/g,
+  decimal: /[0-9]*/g
 };
 
 Validator.types = {
