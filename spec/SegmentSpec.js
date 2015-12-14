@@ -1,6 +1,6 @@
 'use strict'
 
-import {Validator} from "../edifact.js";
+import {Validator} from "../index.js";
 import * as segments from "../segments.js";
 import * as elements from "../elements.js";
 

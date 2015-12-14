@@ -1,6 +1,6 @@
 'use strict'
 
-let edifact = require('../edifact.js');
+let edifact = require('../index.js');
 
 let validator = new edifact.Validator();
 let parser = new edifact.Parser(validator);
@@ -10,32 +10,32 @@ validator.define(require('../elements.js'));
 
 let document = '';
 
-document += 'UNB+UNOA:1+005435656:1+006415160:1+060515:1434+00000000000778\'\n';
-document += 'UNH+00000000000117+INVOIC:D:97B:UN\'\n';
-document += 'BGM+380+342459+9\'\n';
-document += 'DTM+3:20060515:102\'\n';
-document += 'RFF+ON:521052\'\n';
-document += 'NAD+BY+792820524::16++CUMMINS MID-RANGE ENGINE PLANT\'\n';
-document += 'NAD+SE+005435656::16++GENERAL WIDGET COMPANY\'\n';
-document += 'CUX+1:USD\'\n';
-document += 'LIN+1++157870:IN\'\n';
-document += 'IMD+F++:::WIDGET\'\n';
-document += 'QTY+47:1020:EA\'\n';
-document += 'ALI+US\'\n';
-document += 'MOA+203:1202.58\'\n';
-document += 'PRI+INV:1.179\'\n';
-document += 'LIN+2++157871:IN\'\n';
-document += 'IMD+F++:::DIFFERENT WIDGET\'\n';
-document += 'QTY+47:20:EA\'\n';
-document += 'ALI+JP\'\n';
-document += 'MOA+203:410\'\n';
-document += 'PRI+INV:20.5\'\n';
-document += 'UNS+S\'\n';
-document += 'MOA+39:2137.58\'\n';
-document += 'ALC+C+ABG\'\n';
-document += 'MOA+8:525\'\n';
-document += 'UNT+23+00000000000117\'\n';
-document += 'UNZ+1+00000000000778\'\n';
+document += 'UNB+UNOA:1+005435656:1+006415160:1+060515:1434+00000000000778\'';
+document += 'UNH+00000000000117+INV\n\rOIC:D:97B:UN\'';
+document += 'BGM+380+342459+9\'';
+document += 'DTM+3:20060515:102\'';
+document += 'RFF+ON:521052\'';
+document += 'NAD+BY+792820524::16++CUMMINS MID-RANGE ENGINE PLANT\'';
+document += 'NAD+SE+005435656::16++GENERAL WIDGET COMPANY\'';
+document += 'CUX+1:USD\'';
+document += 'LIN+1++157870:IN\'';
+document += 'IMD+F++:::WIDGET\'';
+document += 'QTY+47:1020:EA\'';
+document += 'ALI+US\'';
+document += 'MOA+203:1202.58\'';
+document += 'PRI+INV:1.179\'';
+document += 'LIN+2++157871:IN\'';
+document += 'IMD+F++:::DIFFERENT WIDGET\'';
+document += 'QTY+47:20:EA\'';
+document += 'ALI+JP\'';
+document += 'MOA+203:410\'';
+document += 'PRI+INV:20.5\'';
+document += 'UNS+S\'';
+document += 'MOA+39:2137.58\'';
+document += 'ALC+C+ABG\'';
+document += 'MOA+8:525\'';
+document += 'UNT+23+00000000000117\'';
+document += 'UNZ+1+00000000000778\'';
 
 let result;
 let elements;

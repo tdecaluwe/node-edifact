@@ -1,6 +1,6 @@
 'use strict'
 
-import {Counter, Parser} from "../edifact.js";
+import {Counter, Parser} from "../index.js";
 
 describe('Parser.write', function () {
   let parser;
