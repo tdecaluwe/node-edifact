@@ -117,8 +117,8 @@ class Validator {
   onelement() {
     switch (this._state) {
     case Validator.states.all:
-      if (this._counts.components < this._element.requires) {
-        throw Validator.errors.tooFewComponents(segment, this._counts.elements, this._segment.requires, this._counts.components);
+      if (this._counts.component < this._element.requires) {
+        throw Validator.errors.tooFewComponents(this._segment.elements[this._counts.element], this._element.requires, this._counts.component);
       }
     case Validator.states.enter:
     case Validator.states.elements:
@@ -165,12 +165,12 @@ class Validator {
   onclosesegment(segment) {
     switch (this._state) {
     case Validator.states.all:
-      if (this._counts.components < this._element.requires) {
-        throw Validator.errors.tooFewComponents(segment, this._counts.elements, this._segment.requires, this._counts.components);
+      if (this._counts.component < this._element.requires) {
+        throw Validator.errors.tooFewComponents(this._segment.elements[this._counts.element], this._element.requires, this._counts.component);
       }
     case Validator.states.elements:
-      if (this._counts.elements < this._segment.requires) {
-        throw Validator.errors.tooFewElements(segment, this._segment.requires, this._counts.elements);
+      if (this._counts.element < this._segment.requires) {
+        throw Validator.errors.tooFewElements(segment, this._segment.requires, this._counts.element);
       }
     }
   }
@@ -268,9 +268,9 @@ Validator.errors = {
     message += ' with format ' + format;
     return new Error(message);
   },
-  tooFewComponents: function (segment, element, requires, count) {
+  tooFewComponents: function (element, requires, count) {
     let message = '';
-    message += 'Element ' + element + ' in segment ' + segment;
+    message += 'Element ' + element;
     message += ' requires at least ' + requires + ' components';
     return new Error(message);
   },
