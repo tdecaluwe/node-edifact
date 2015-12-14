@@ -15,6 +15,11 @@ describe('Parser.write', function () {
     expect(function() { parser.write('UNA:+.? \''); }).not.toThrow();
     expect(function() { parser.close(); }).not.toThrow();
   });
+  it('should use special characters as defined in the UNA header', function () {
+    parser.write('UNA+:.? ;');
+    expect(function() { parser.write('SEG:+:;'); }).not.toThrow();
+    expect(function() { parser.close(); }).not.toThrow();
+  });
   it('should accept an empty segment', function () {
     expect(function() { parser.write('SEG\''); }).not.toThrow();
     expect(function() { parser.close(); }).not.toThrow();
