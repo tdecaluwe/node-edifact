@@ -8,9 +8,10 @@
 class Parser {
   /**
    * @summary Constructs a new parser.
-   * @constructs Parser
    * @param {Validator} [validator] Accepts a validator class for handling
    * data validation.
+   * @constructs Parser
+   * @private
    */
   constructor(validator) {
     function noop () {};

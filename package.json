@@ -1,8 +1,8 @@
 { "name": "edifact"
-, "version": "0.4.4"
+, "version": "1.0.0"
 , "description": "JavaScript parser for UN/EDIFACT documents."
 , "keywords": ["edifact", "edi"]
-, "main": "edifact.js"
+, "main": "index.js"
 , "engines":
   { "node": ">=4.0"
   }
@@ -21,6 +21,7 @@
   }
 , "scripts":
   { "test": "node-modules/.bin/jasmine"
-  , "docs": "node_modules/.bin/jsdoc2md -d 3 --template README.hbs -f *.js > README.md"
+  , "template": "cat docs/*.md > template.md"
+  , "docs": "npm run template && node_modules/.bin/jsdoc2md -d 3 -t template.md -f {parser,validator,tracker,counter,reader}.js > README.md && rm template.md"
   }
 }

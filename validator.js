@@ -1,6 +1,7 @@
 'use strict'
 
-/** The `Validator` can be used as an add-on to `Parser` class, to enable
+/**
+ * The `Validator` can be used as an add-on to `Parser` class, to enable
  * validation of segments, elements and components. This class implements a
  * tolerant validator, only segments and elemens for which definitions are
  * provided will be validated. Other segments or elements will pass through
@@ -10,6 +11,10 @@
  * * Checking components against they're required format.
  */
 class Validator {
+  /**
+   * @constructs Validator
+   * @private
+   */
   constructor() {
     this._segments = {};
     this._elements = {};
@@ -94,7 +99,7 @@ class Validator {
   }
   /**
    * @summary Open a new segment.
-   * @param {String} The segment name.
+   * @param {String} segment The segment name.
    */
   onopensegment(segment) {
     switch (this._state) {
@@ -176,7 +181,7 @@ class Validator {
   }
   /**
    * @summary Read a decimal mark.
-   * @param The character being used as a decimal mark.
+   * @param {String} character The character being used as a decimal mark.
    * @throws {Error} When the current context doesn't accept a decimal mark.
    */
   ondecimal(character) {
@@ -202,6 +207,7 @@ class Validator {
   }
   /**
    * @summary Get the value currently stored in the buffer.
+   * @returns {String} The value in the component buffer.
    * @throws {Error} If the buffer doesn't contain a valid component.
    */
   value() {

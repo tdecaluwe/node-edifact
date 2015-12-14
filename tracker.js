@@ -6,6 +6,10 @@
  * @private
  */
 class Pointer {
+  /**
+   * @constructs Pointer
+   * @private
+   */
   constructor(array, position) {
     this.array = array;
     this.position = position || 0;
@@ -38,6 +42,7 @@ class Tracker {
    * @summary Construct a new tracker pointing to the first segment in the table.
    * @param {Array} table The segment table to track against.
    * @constructs Tracker
+   * @private
    */
   constructor(table) {
     this.stack = [];
