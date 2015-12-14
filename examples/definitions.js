@@ -1,6 +1,6 @@
 'use strict'
 
-let edifact = require('../edifact.js');
+let edifact = require('../index.js');
 
 let validator = new edifact.Validator();
 let parser = new edifact.Parser(validator);
