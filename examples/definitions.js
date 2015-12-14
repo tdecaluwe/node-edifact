@@ -5,8 +5,8 @@ let edifact = require('../index.js');
 let validator = new edifact.Validator();
 let parser = new edifact.Parser(validator);
 
-validator.define(require('../segments.js'));
-validator.define(require('../elements.js'));
+validator.define(require('../definitions/segments.json'));
+validator.define(require('../definitions/elements.json'));
 
 let document = '';
 

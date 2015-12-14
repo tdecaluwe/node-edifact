@@ -104,11 +104,11 @@ The `requires` property indicates the number of elements which are required to o
 }
 ```
 
-An incomplete set of definitions is included with the library in the files `segments.js` and `elements.js` and can be included as follows:
+An incomplete set of definitions is included with the library in the `definitions` directory and can be included as follows:
 
 ```javascript
-var segments = require('edifact/segments.js');
-var elements = require('edifact/elements.js');
+var segments = require('edifact/definitions/segments.json');
+var elements = require('edifact/definitions/elements.json');
 ```
 
 A working example using segment and element definitions can be found in the `examples` directory.
