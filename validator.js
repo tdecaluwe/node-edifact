@@ -1,5 +1,14 @@
 'use strict'
 
+/** The `Validator` can be used as an add-on to `Parser` class, to enable
+ * validation of segments, elements and components. This class implements a
+ * tolerant validator, only segments and elemens for which definitions are
+ * provided will be validated. Other segments or elements will pass through
+ * untouched. Validation includes:
+ * * Checking data element counts, including mandatory elements.
+ * * Checking component counts, including mandatory components.
+ * * Checking components against they're required format.
+ */
 class Validator {
   constructor() {
     this._segments = {};
@@ -12,18 +21,19 @@ class Validator {
     };
     this._state = Validator.states.all;
   }
+  /**
+   * @summary Disable validation.
+   */
   disable() {
     this._state = Validator.states.none;
   }
+  /**
+   * @summary Enable validation on the next segment.
+   */
   enable() {
     this._state = Validator.states.enable;
   }
   /**
-   * By default the parser accepts any wellformed input if it doesn't find
-   * definitinons for the current segment or element being parsed. Additionally
-   * the parser can be forced to check the number and format of the elements and
-   * components if the right definitions are included.
-   *
    * To define a segment or element the definitions object should contain the
    * name as a key, and an object describing it's structure as a value. This
    * object contains the `requires` key to define the number of mandatory
@@ -37,7 +47,6 @@ class Validator {
    *
    * @summary Define segment and element structures.
    * @param {Object} definitions An object containing the definitions.
-   * @param options Set options like the overriding policy.
    */
   define(definitions) {
     for (let key in definitions) {
@@ -49,7 +58,12 @@ class Validator {
       }
     }
   }
+  /**
+   * @summary Request a component definition associated with a format string.
+   * @returns {Object} A component definition.
+   */
   format(formatString) {
+    // Check if we have a component definition in cache for this format string.
     if (this._formats[formatString]) {
       return this._formats[formatString];
     } else {
@@ -71,9 +85,17 @@ class Validator {
       }
     }
   }
+  /**
+   * @summary Request a regex usable for accepting component data.
+   * @returns {RegExp}
+   */
   regex() {
     return this._regex;
   }
+  /**
+   * @summary Open a new segment.
+   * @param {String} The segment name.
+   */
   onopensegment(segment) {
     switch (this._state) {
     case Validator.states.all:
@@ -89,6 +111,9 @@ class Validator {
     this._counts.segment += 1;
     this._counts.element = 0;
   }
+  /**
+   * @summary Start validation for a new element.
+   */
   onelement() {
     switch (this._state) {
     case Validator.states.all:
@@ -106,6 +131,9 @@ class Validator {
     this._counts.element += 1;
     this._counts.component = 0;
   }
+  /**
+   * @summary Start validation for a new component.
+   */
   oncomponent() {
     switch (this._state) {
     case Validator.states.all:
@@ -131,6 +159,9 @@ class Validator {
     this._counts.component += + 1;
     this._value = '';
   }
+  /**
+   * @summary Finish validation for the current segment.
+   */
   onclosesegment(segment) {
     switch (this._state) {
     case Validator.states.all:
@@ -143,6 +174,11 @@ class Validator {
       }
     }
   }
+  /**
+   * @summary Read a decimal mark.
+   * @param The character being used as a decimal mark.
+   * @throws {Error} When the current context doesn't accept a decimal mark.
+   */
   ondecimal(character) {
     switch (this._regex) {
     case Validator.regexes.integer:
@@ -158,28 +194,35 @@ class Validator {
       throw Validator.errors.secondDecimalMark();
     }
   }
+  /**
+   * @summary Read some data.
+   */
   ondata(chunk, start, stop) {
     this._value += chunk.slice(start, stop);
   }
+  /**
+   * @summary Get the value currently stored in the buffer.
+   * @throws {Error} If the buffer doesn't contain a valid component.
+   */
   value() {
     switch (this._regex) {
     case Validator.regexes.integer:
     case Validator.regexes.alpha:
     case Validator.regexes.alphanumeric:
       if (this._value.length < this._component.minimum) {
-        throw Error('Could not accept ' + this._value + ' with format ' + this._element.components[this._counts.component]);
+        throw Validator.errors.invalidData(data, format);
       }
       if (this._value.length > this._component.maximum) {
-        throw Error('Could not accept ' + this._value + ' with format ' + this._element.components[this._counts.component]);
+        throw Validator.errors.invalidData(data, format);
       }
       break;
     case Validator.regexes.integer:
     case Validator.regexes.decimal:
       if (this._value.length - 1 < this._component.minimum) {
-        throw Error('Could not accept ' + this._value + ' with format ' + this._element.components[this._counts.component]);
+        throw Validator.errors.invalidData(data, format);
       }
       if (this._value.length - 1 > this._component.maximum) {
-        throw Error('Could not accept ' + this._value + ' with format ' + this._element.components[this._counts.component]);
+        throw Validator.errors.invalidData(data, format);
       }
       this._value = parseFloat(this._value);
       break;
@@ -217,6 +260,12 @@ Validator.errors = {
   },
   secondDecimalMark: function () {
     let message = 'Cannot accept a second decimal mark while parsing a number';
+    return new Error(message);
+  },
+  invalidData: function (data, format) {
+    let message = '';
+    message += 'Could not accept ' + data;
+    message += ' with format ' + format;
     return new Error(message);
   },
   tooFewComponents: function (segment, element, requires, count) {
