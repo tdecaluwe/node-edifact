@@ -1,7 +1,19 @@
 'use strict'
 
+/**
+ * The `Parser` class encapsulates an online parsing algorithm, similar to a
+ * SAX-parser. By itself it doesn't do anything useful, however several
+ * callbacks can be provided for different parsing events.
+ */
 class Parser {
+  /**
+   * @summary Constructs a new parser.
+   * @constructs Parser
+   * @param {Validator} [validator] Accepts a validator class for handling
+   * data validation.
+   */
   constructor(validator) {
+    function noop () {};
     this._controls = {
       data_element_separator: '+'.codePointAt(0),
       component_data_separator: ':'.codePointAt(0),
@@ -11,7 +23,6 @@ class Parser {
       line_feed: '\n'.codePointAt(0),
       carriage_return: '\r'.codePointAt(0)
     };
-    function noop () {};
     this._validator = validator || Parser.defaultValidator;
     this._state = Parser.states.empty;
     this._segment = '';
@@ -20,8 +31,16 @@ class Parser {
     this.onelement = noop;
     this.oncomponent = noop;
   }
+  /**
+   * @summary Ends the EDI interchange.
+   * @throws {Error} If more data is expected.
+   */
   close() {
   }
+  /**
+   * @summary Write some data to the parser.
+   * @param {String} chunk A chunk of UN/EDIFACT data.
+   */
   write(chunk) {
     // The begin and end position of the current token.
     let start = 0;
@@ -30,10 +49,12 @@ class Parser {
       switch (this._state) {
       case Parser.states.empty:
       case Parser.states.segment:
+        // Read segment name data from the buffer.
         start = Parser.regexes.segment.lastIndex = index;
         Parser.regexes.segment.test(chunk);
         index = Parser.regexes.segment.lastIndex;
         this._segment += chunk.slice(start, index);
+        // Determine the next parser state.
         switch (chunk.codePointAt(index)) {
         case this._controls.data_element_separator:
           this._validator.onopensegment(this._segment);
@@ -56,15 +77,19 @@ class Parser {
         }
         break;
       case Parser.states.element:
+        // Start reading a new element.
         this._validator.onelement();
         this.onelement();
       case Parser.states.component:
+        // Start reading a new component.
         this._validator.oncomponent();
       case Parser.states.continued:
         start = this._validator.regex().lastIndex = index;
         this._validator.regex().test(chunk);
         index = this._validator.regex().lastIndex;
+        // Send the data to the validator.
         this._validator.ondata(chunk, start, index);
+        // Determine the next parser state.
         switch (chunk.codePointAt(index)) {
         case this._controls.component_data_separator:
           this.oncomponent(this._validator.value());
@@ -92,9 +117,11 @@ class Parser {
         }
         break;
       }
+      // Consume the control character.
       index = index + 1;
     }
-    return [];
+    // Allow chained calls.
+    return this;
   }
 };
 
