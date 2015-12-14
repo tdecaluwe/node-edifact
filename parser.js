@@ -153,7 +153,7 @@ Parser.states = {
 
 Parser.regexes = {
   segment: /[A-Z]*/g,
-  plain: /[A-Z0-9 ]*/g
+  plain: /[A-Z0-9.,\-()/= ]*/g
 };
 
 Parser.errors = {
@@ -181,7 +181,7 @@ Parser.defaultValidator = {
   onopensegment: function (segment) {},
   onelement: function () {},
   oncomponent: function () {
-    this._value ='';
+    this._value = '';
   },
   onclosesegment: function (segment) {},
   ondata: function (chunk, start, index) {
