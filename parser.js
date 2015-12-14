@@ -23,10 +23,9 @@ class Parser {
   close() {
   }
   write(chunk) {
-    // Track the current position in the buffer.
-    let index = 0;
-    // The starting position of the substring we're currently looking at.
+    // The begin and end position of the current token.
     let start = 0;
+    let index = 0;
     while (index < chunk.length) {
       switch (this._state) {
       case Parser.states.empty:
@@ -84,10 +83,12 @@ class Parser {
           break;
         case this._controls.decimal_mark:
           this._validator.ondecimal(chunk.charAt(index));
-          break;
         case this._controls.carriage_return:
         case this._controls.line_feed:
+          this._state = Parser.states.continued;
           break;
+        default:
+          throw Parser.errors.invalidCharacter(chunk.charAt(index), index);
         }
         break;
       }
@@ -111,6 +112,12 @@ Parser.regexes = {
 };
 
 Parser.errors = {
+  invalidCharacter: function (character, index) {
+    let message = '';
+    message += 'Invalid control character ' + character;
+    message += ' at position ' + index;
+    return new Error(message);
+  },
   invalidControlAfterSegment: function (segment, character) {
     let message = '';
     message += 'Invalid control character ' + character;

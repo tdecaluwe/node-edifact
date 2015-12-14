@@ -198,9 +198,9 @@ Validator.states = {
 };
 
 Validator.regexes = {
-  plain: /[A-Z0-9- ]*/g,
-  alphanumeric: /[A-Z0-9- ]*/g,
-  alpha: /[A-Z- ]*/g,
+  plain: /[A-Z0-9.,\-()/= ]*/g,
+  alphanumeric: /[A-Z0-9.,\-()/= ]*/g,
+  alpha: /[A-Z.,\-()/= ]*/g,
   integer: /[0-9]*/g,
   decimal: /[0-9]*/g
 };
