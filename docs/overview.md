@@ -112,3 +112,7 @@ var elements = require('edifact/elements.js');
 ```
 
 A working example using segment and element definitions can be found in the `examples` directory.
+
+### Performance
+
+A significant performance improvement was included in the 1.0 release, resulting in a threefold increase in parsing speed. Parsing speed including validation but without matching against a segment table is around 20Mbps. Around 30% of the time spent seems to be needed for the validation part.
