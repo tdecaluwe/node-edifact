@@ -36,6 +36,9 @@ class Parser {
    * @throws {Error} If more data is expected.
    */
   close() {
+    if (this._state !== Parser.states.segment && this._segment !== '') {
+      throw Parser.errors.incompleteMessage();
+    }
   }
   /**
    * @summary Write some data to the parser.
@@ -48,6 +51,14 @@ class Parser {
     while (index < chunk.length) {
       switch (this._state) {
       case Parser.states.empty:
+        if (/UNA....\ ./g.test(chunk)) {
+          this._controls.component_data_separator = chunk[3].codePointAt(0);
+          this._controls.data_element_separator = chunk[4].codePointAt(0);
+          this._controls.decimal_mark = chunk[5].codePointAt(0);
+          this._controls.release_character = chunk[6].codePointAt(0);
+          this._controls.segment_terminator = chunk[8].codePointAt(0);
+          index = 9;
+        }
       case Parser.states.segment:
         // Read segment name data from the buffer.
         start = Parser.regexes.segment.lastIndex = index;
@@ -69,6 +80,8 @@ class Parser {
           this._state = Parser.states.segment;
           this._segment = '';
           break;
+        case undefined:
+          index--;
         case this._controls.carriage_return:
         case this._controls.line_feed:
           break;
@@ -108,6 +121,10 @@ class Parser {
           break;
         case this._controls.decimal_mark:
           this._validator.ondecimal(chunk.charAt(index));
+          this._state = Parser.states.continued;
+          break;
+        case undefined:
+          index--;
         case this._controls.carriage_return:
         case this._controls.line_feed:
           this._state = Parser.states.continued;
@@ -139,6 +156,9 @@ Parser.regexes = {
 };
 
 Parser.errors = {
+  incompleteMessage: function () {
+    return new Error('Cannot close an incomplete message');
+  },
   invalidCharacter: function (character, index) {
     let message = '';
     message += 'Invalid control character ' + character;
@@ -154,18 +174,17 @@ Parser.errors = {
 }
 
 Parser.defaultValidator = {
+  regex() {
+    return Parser.regexes.plain;
+  },
   onopensegment: function (segment) {},
   onelement: function () {},
   oncomponent: function () {
     this._value ='';
   },
   onclosesegment: function (segment) {},
-  read: function (chunk, index) {
-    let start = Parser.regexes.plain.lastIndex = index;
-    Parser.regexes.plain.test(chunk);
-    index = Parser.regexes.plain.lastIndex;
+  ondata: function (chunk, start, index) {
     this._value += chunk.slice(start, index);
-    return index;
   },
   decimal: function (character) {
     this._value += character;
