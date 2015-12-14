@@ -1,8 +1,8 @@
 'use strict'
 
 import {Validator} from "../index.js";
-import * as segments from "../segments.js";
-import * as elements from "../elements.js";
+import * as segments from "../definitions/segments.json";
+import * as elements from "../definitions/elements.json";
 
 describe('Validator', function () {
   let validator;
