@@ -162,34 +162,31 @@ class Validator {
     let start = this._regex.lastIndex = index;
     this._regex.test(chunk);
     index = this._regex.lastIndex;
-    switch (this._regex) {
-    case Validator.regexes.integer:
-    case Validator.regexes.alpha:
-    case Validator.regexes.alphanumeric:
-      if (index - start + this._value.length < this._component.minimum) {
-        throw Error('Could not accept ' + chunk.slice(start, index) + ' with format ' + this._element.components[this._counts.component]);
-      }
-      if (index - start + this._value.length > this._component.maximum) {
-        throw Error('Could not accept ' + chunk.slice(start, index) + ' with format ' + this._element.components[this._counts.component]);
-      }
-      break;
-    case Validator.regexes.decimal:
-      if (index - start + this._value.length - 1 < this._component.minimum) {
-        throw Error('Could not accept ' + chunk.slice(start, index) + ' with format ' + this._element.components[this._counts.component]);
-      }
-      if (index - start + this._value.length - 1 > this._component.maximum) {
-        throw Error('Could not accept ' + chunk.slice(start, index) + ' with format ' + this._element.components[this._counts.component]);
-      }
-      break;
-    }
     this._value += chunk.slice(start, index);
     return index;
   }
   value() {
     switch (this._regex) {
     case Validator.regexes.integer:
+    case Validator.regexes.alpha:
+    case Validator.regexes.alphanumeric:
+      if (this._value.length < this._component.minimum) {
+        throw Error('Could not accept ' + this._value + ' with format ' + this._element.components[this._counts.component]);
+      }
+      if (this._value.length > this._component.maximum) {
+        throw Error('Could not accept ' + this._value + ' with format ' + this._element.components[this._counts.component]);
+      }
+      break;
+    case Validator.regexes.integer:
     case Validator.regexes.decimal:
+      if (this._value.length - 1 < this._component.minimum) {
+        throw Error('Could not accept ' + this._value + ' with format ' + this._element.components[this._counts.component]);
+      }
+      if (this._value.length - 1 > this._component.maximum) {
+        throw Error('Could not accept ' + this._value + ' with format ' + this._element.components[this._counts.component]);
+      }
       this._value = parseFloat(this._value);
+      break;
     }
     return this._value;
   }
