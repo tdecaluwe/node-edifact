@@ -18,7 +18,7 @@ class Counter {
       component: 0
     };
   }
-  regex() {
+  get regex() {
     return Counter.regexes.plain;
   }
   onopensegment(segment) {

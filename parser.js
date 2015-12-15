@@ -16,13 +16,14 @@ class Parser {
   constructor(validator) {
     function noop () {};
     this._controls = {
-      data_element_separator: '+'.codePointAt(0),
-      component_data_separator: ':'.codePointAt(0),
-      segment_terminator: '\''.codePointAt(0),
-      decimal_mark: '.'.codePointAt(0),
-      release_character: '?'.codePointAt(0),
-      line_feed: '\n'.codePointAt(0),
-      carriage_return: '\r'.codePointAt(0)
+      data_element_separator: 43,
+      component_data_separator: 58,
+      segment_terminator: 39,
+      decimal_mark: 46,
+      release_character: 63,
+      line_feed: 10,
+      carriage_return: 13,
+      end_of_transmission: 4
     };
     this._validator = validator || Parser.defaultValidator;
     this._state = Parser.states.empty;
@@ -39,6 +40,8 @@ class Parser {
   close() {
     if (this._state !== Parser.states.segment && this._segment !== '') {
       throw Parser.errors.incompleteMessage();
+    } else {
+      this._state = Parser.states.empty;
     }
   }
   /**
@@ -53,21 +56,22 @@ class Parser {
       switch (this._state) {
       case Parser.states.empty:
         if (/UNA....\ ./g.test(chunk)) {
-          this._controls.component_data_separator = chunk[3].codePointAt(0);
-          this._controls.data_element_separator = chunk[4].codePointAt(0);
-          this._controls.decimal_mark = chunk[5].codePointAt(0);
-          this._controls.release_character = chunk[6].codePointAt(0);
-          this._controls.segment_terminator = chunk[8].codePointAt(0);
+          this._controls.component_data_separator = chunk.charCodeAt(3);
+          this._controls.data_element_separator = chunk.charCodeAt(4);
+          this._controls.decimal_mark = chunk.charCodeAt(5);
+          this._controls.release_character = chunk.charCodeAt(6);
+          this._controls.segment_terminator = chunk.charCodeAt(8);
           index = 9;
         }
       case Parser.states.segment:
         // Read segment name data from the buffer.
-        start = Parser.regexes.segment.lastIndex = index;
-        Parser.regexes.segment.test(chunk);
-        index = Parser.regexes.segment.lastIndex;
+        start = index;
+        while (chunk.charCodeAt(index) < 91 && chunk.charCodeAt(index) > 64) {
+          index++;
+        }
         this._segment += chunk.slice(start, index);
         // Determine the next parser state.
-        switch (chunk.codePointAt(index)) {
+        switch (chunk.charCodeAt(index) || this._controls.end_of_transmission) {
         case this._controls.data_element_separator:
           this._validator.onopensegment(this._segment);
           this.onopensegment(this._segment);
@@ -81,7 +85,7 @@ class Parser {
           this._state = Parser.states.segment;
           this._segment = '';
           break;
-        case undefined:
+        case this._controls.end_of_transmission:
           index--;
         case this._controls.carriage_return:
         case this._controls.line_feed:
@@ -98,13 +102,13 @@ class Parser {
         // Start reading a new component.
         this._validator.oncomponent();
       case Parser.states.continued:
-        start = this._validator.regex().lastIndex = index;
-        this._validator.regex().test(chunk);
-        index = this._validator.regex().lastIndex;
+        start = this._validator.regex.lastIndex = index;
+        this._validator.regex.test(chunk);
+        index = this._validator.regex.lastIndex;
         // Send the data to the validator.
         this._validator.ondata(chunk, start, index);
         // Determine the next parser state.
-        switch (chunk.codePointAt(index)) {
+        switch (chunk.charCodeAt(index) || this._controls.end_of_transmission) {
         case this._controls.component_data_separator:
           this.oncomponent(this._validator.value());
           this._state = Parser.states.component;
@@ -124,7 +128,7 @@ class Parser {
           this._validator.ondecimal(chunk.charAt(index));
           this._state = Parser.states.continued;
           break;
-        case undefined:
+        case this._controls.end_of_transmission:
           index--;
         case this._controls.carriage_return:
         case this._controls.line_feed:
@@ -136,7 +140,7 @@ class Parser {
         break;
       }
       // Consume the control character.
-      index = index + 1;
+      index++;
     }
     // Allow chained calls.
     return this;
@@ -149,11 +153,6 @@ Parser.states = {
   element: 2,
   component: 3,
   continued: 4
-};
-
-Parser.regexes = {
-  segment: /[A-Z]*/g,
-  plain: /[A-Z0-9.,\-()/= ]*/g
 };
 
 Parser.errors = {
@@ -175,9 +174,7 @@ Parser.errors = {
 }
 
 Parser.defaultValidator = {
-  regex() {
-    return Parser.regexes.plain;
-  },
+  regex: /[A-Z0-9,\-()/= ]*/g,
   onopensegment: function (segment) {},
   onelement: function () {},
   oncomponent: function () {
@@ -187,7 +184,7 @@ Parser.defaultValidator = {
   ondata: function (chunk, start, index) {
     this._value += chunk.slice(start, index);
   },
-  decimal: function (character) {
+  ondecimal: function (character) {
     this._value += character;
   },
   value: function () {

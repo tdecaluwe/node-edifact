@@ -94,7 +94,7 @@ class Validator {
    * @summary Request a regex usable for accepting component data.
    * @returns {RegExp}
    */
-  regex() {
+  get regex() {
     return this._regex;
   }
   /**
@@ -216,19 +216,19 @@ class Validator {
     case Validator.regexes.alpha:
     case Validator.regexes.alphanumeric:
       if (this._value.length < this._component.minimum) {
-        throw Validator.errors.invalidData(data, format);
+        throw Validator.errors.invalidData(this._value, this._element.components[this._counts.component]);
       }
       if (this._value.length > this._component.maximum) {
-        throw Validator.errors.invalidData(data, format);
+        throw Validator.errors.invalidData(this._value, this._element.components[this._counts.component]);
       }
       break;
     case Validator.regexes.integer:
     case Validator.regexes.decimal:
       if (this._value.length - 1 < this._component.minimum) {
-        throw Validator.errors.invalidData(data, format);
+        throw Validator.errors.invalidData(this._value, this._element.components[this._counts.component]);
       }
       if (this._value.length - 1 > this._component.maximum) {
-        throw Validator.errors.invalidData(data, format);
+        throw Validator.errors.invalidData(this._value, this._element.components[this._counts.component]);
       }
       this._value = parseFloat(this._value);
       break;
