@@ -110,15 +110,15 @@ class Parser {
         // Determine the next parser state.
         switch (chunk.charCodeAt(index) || this._controls.end_of_transmission) {
         case this._controls.component_data_separator:
-          this.oncomponent(this._validator.value());
+          this.oncomponent(this._validator.value);
           this._state = Parser.states.component;
           break;
         case this._controls.data_element_separator:
-          this.oncomponent(this._validator.value());
+          this.oncomponent(this._validator.value);
           this._state = Parser.states.element;
           break;
         case this._controls.segment_terminator:
-          this.oncomponent(this._validator.value());
+          this.oncomponent(this._validator.value);
           this._validator.onclosesegment(this._segment);
           this.onclosesegment(this._segment);
           this._state = Parser.states.segment;
@@ -175,20 +175,18 @@ Parser.errors = {
 
 Parser.defaultValidator = {
   regex: /[A-Z0-9,\-()/= ]*/g,
+  value: '',
   onopensegment: function (segment) {},
   onelement: function () {},
   oncomponent: function () {
-    this._value = '';
+    this.value = '';
   },
   onclosesegment: function (segment) {},
   ondata: function (chunk, start, index) {
-    this._value += chunk.slice(start, index);
+    this.value += chunk.slice(start, index);
   },
   ondecimal: function (character) {
-    this._value += character;
-  },
-  value: function () {
-    return this._value;
+    this.value += character;
   }
 };
 

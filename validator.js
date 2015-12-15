@@ -27,6 +27,43 @@ class Validator {
     this._state = Validator.states.all;
   }
   /**
+   * @summary Request a regex usable for accepting component data.
+   * @returns {RegExp}
+   */
+  get regex() {
+    return this._regex;
+  }
+  /**
+   * @summary Get the value currently stored in the buffer.
+   * @returns {String} The value in the component buffer.
+   * @throws {Error} If the buffer doesn't contain a valid component.
+   */
+  get value() {
+    switch (this._regex) {
+    case Validator.regexes.integer:
+    case Validator.regexes.alpha:
+    case Validator.regexes.alphanumeric:
+      if (this._value.length < this._component.minimum) {
+        throw Validator.errors.invalidData(this._value, this._element.components[this._counts.component]);
+      }
+      if (this._value.length > this._component.maximum) {
+        throw Validator.errors.invalidData(this._value, this._element.components[this._counts.component]);
+      }
+      break;
+    case Validator.regexes.integer:
+    case Validator.regexes.decimal:
+      if (this._value.length - 1 < this._component.minimum) {
+        throw Validator.errors.invalidData(this._value, this._element.components[this._counts.component]);
+      }
+      if (this._value.length - 1 > this._component.maximum) {
+        throw Validator.errors.invalidData(this._value, this._element.components[this._counts.component]);
+      }
+      this._value = parseFloat(this._value);
+      break;
+    }
+    return this._value;
+  }
+  /**
    * @summary Disable validation.
    */
   disable() {
@@ -89,13 +126,6 @@ class Validator {
         throw Validator.errors.invalidFormatString(formatString);
       }
     }
-  }
-  /**
-   * @summary Request a regex usable for accepting component data.
-   * @returns {RegExp}
-   */
-  get regex() {
-    return this._regex;
   }
   /**
    * @summary Open a new segment.
@@ -204,36 +234,6 @@ class Validator {
    */
   ondata(chunk, start, stop) {
     this._value += chunk.slice(start, stop);
-  }
-  /**
-   * @summary Get the value currently stored in the buffer.
-   * @returns {String} The value in the component buffer.
-   * @throws {Error} If the buffer doesn't contain a valid component.
-   */
-  value() {
-    switch (this._regex) {
-    case Validator.regexes.integer:
-    case Validator.regexes.alpha:
-    case Validator.regexes.alphanumeric:
-      if (this._value.length < this._component.minimum) {
-        throw Validator.errors.invalidData(this._value, this._element.components[this._counts.component]);
-      }
-      if (this._value.length > this._component.maximum) {
-        throw Validator.errors.invalidData(this._value, this._element.components[this._counts.component]);
-      }
-      break;
-    case Validator.regexes.integer:
-    case Validator.regexes.decimal:
-      if (this._value.length - 1 < this._component.minimum) {
-        throw Validator.errors.invalidData(this._value, this._element.components[this._counts.component]);
-      }
-      if (this._value.length - 1 > this._component.maximum) {
-        throw Validator.errors.invalidData(this._value, this._element.components[this._counts.component]);
-      }
-      this._value = parseFloat(this._value);
-      break;
-    }
-    return this._value;
   }
 }
 

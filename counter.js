@@ -21,6 +21,9 @@ class Counter {
   get regex() {
     return Counter.regexes.plain;
   }
+  get value() {
+    return this._value;
+  }
   onopensegment(segment) {
     this._counts.segment += 1;
   }
@@ -40,9 +43,6 @@ class Counter {
   }
   ondata(chunk, start, stop) {
     this._value += chunk.slice(start, stop);
-  }
-  value() {
-    return this._value;
   }
 }
 
