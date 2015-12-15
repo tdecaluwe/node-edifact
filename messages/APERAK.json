@@ -1,0 +1,29 @@
+[
+  { "content": "UNH", "mandatory": true, "repetition": 1, "data": ["APERAK"] },
+  { "content": "BGM", "mandatory": true, "repetition": 1 },
+  { "content": "DTM", "mandatory": false, "repetition": 9 },
+  { "content": "FTX", "mandatory": false, "repetition": 9 },
+  { "content": "CNT", "mandatory": false, "repetition": 9 },
+  { "content": [
+    { "content": "DOC", "mandatory": true, "repetition": 1 },
+    { "content": "DTM", "mandatory": false, "repetition": 99 }
+  ], "mandatory": false, "repetition": 99 },
+  { "content": [
+    { "content": "RFF", "mandatory": true, "repetition": 1 },
+    { "content": "DTM", "mandatory": false, "repetition": 9 }
+  ], "mandatory": false, "repetition": 9 },
+  { "content": [
+    { "content": "NAD", "mandatory": true, "repetition": 1 },
+    { "content": "CTA", "mandatory": false, "repetition": 9 },
+    { "content": "COM", "mandatory": false, "repetition": 9 }
+  ], "mandatory": false, "repetition": 9 },
+  { "content": [
+    { "content": "ERC", "mandatory": true, "repetition": 1 },
+    { "content": "FTX", "mandatory": false, "repetition": 1 },
+    { "content": [
+      { "content": "RFF", "mandatory": true, "repetition": 1 },
+      { "content": "FTX", "mandatory": false, "repetition": 9 }
+    ], "mandatory": false, "repetition": 9 }
+  ], "mandatory": false, "repetition": 99999 },
+  { "content": "UNT", "mandatory": true, "repetition": 1 }
+]

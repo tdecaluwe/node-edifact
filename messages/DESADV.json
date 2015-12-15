@@ -1,0 +1,159 @@
+[
+  { "content": "UNH", "mandatory": true, "repetition": 1, "data": ["DESADV"] },
+  { "content": "BGM", "mandatory": true, "repetition": 1 },
+  { "content": "DTM", "mandatory": false, "repetition": 10 },
+  { "content": "ALI", "mandatory": false, "repetition": 5 },
+  { "content": "MEA", "mandatory": false, "repetition": 5 },
+  { "content": "MOA", "mandatory": false, "repetition": 5 },
+  { "content": "CUX", "mandatory": false, "repetition": 9 },
+  { "content": [
+    { "content": "RFF", "mandatory": true, "repetition": 1 },
+    { "content": "DTM", "mandatory": false, "repetition": 9 }
+  ], "mandatory": false, "repetition": 99 },
+  { "content": [
+    { "content": "NAD", "mandatory": true, "repetition": 1 },
+    { "content": "LOC", "mandatory": false, "repetition": 10 },
+    { "content": [
+      { "content": "RFF", "mandatory": true, "repetition": 1 },
+      { "content": "DTM", "mandatory": false, "repetition": 99 }
+    ], "mandatory": false, "repetition": 99 },
+    { "content": [
+      { "content": "CTA", "mandatory": true, "repetition": 1 },
+      { "content": "COM", "mandatory": false, "repetition": 5 }
+    ], "mandatory": false, "repetition": 10 }
+  ], "mandatory": false, "repetition": 99 },
+  { "content": [
+    { "content": "TOD", "mandatory": true, "repetition": 1 },
+    { "content": "LOC", "mandatory": false, "repetition": 9999 },
+    { "content": "FTX", "mandatory": false, "repetition": 5 }
+  ], "mandatory": false, "repetition": 10 },
+  { "content": [
+    { "content": "TDT", "mandatory": true, "repetition": 1 },
+    { "content": "PCD", "mandatory": false, "repetition": 6 },
+    { "content": "TMD", "mandatory": false, "repetition": 1 },
+    { "content": [
+      { "content": "LOC", "mandatory": true, "repetition": 1 },
+      { "content": "DTM", "mandatory": false, "repetition": 10 }
+    ], "mandatory": false, "repetition": 10 }
+  ], "mandatory": false, "repetition": 10 },
+  { "content": [
+    { "content": "EQD", "mandatory": true, "repetition": 1 },
+    { "content": "MEA", "mandatory": false, "repetition": 5 },
+    { "content": "SEL", "mandatory": false, "repetition": 25 },
+    { "content": "EQA", "mandatory": false, "repetition": 5 },
+    { "content": [
+      { "content": "HAN", "mandatory": true, "repetition": 1 },
+      { "content": "FTX", "mandatory": false, "repetition": 10 }
+    ], "mandatory": false, "repetition": 10 }
+  ], "mandatory": false, "repetition": 10 },
+  { "content": [
+    { "content": "EFI", "mandatory": true, "repetition": 1 },
+    { "content": "CED", "mandatory": false, "repetition": 99 },
+    { "content": "COM", "mandatory": false, "repetition": 9 },
+    { "content": "RFF", "mandatory": false, "repetition": 9 },
+    { "content": "DTM", "mandatory": false, "repetition": 9 },
+    { "content": "QTY", "mandatory": false, "repetition": 9 }
+  ], "mandatory": false, "repetition": 10 },
+  { "content": [
+    { "content": "CPS", "mandatory": true, "repetition": 1 },
+    { "content": "FTX", "mandatory": false, "repetition": 99 },
+    { "content": "QVR", "mandatory": false, "repetition": 9 },
+    { "content": [
+      { "content": "PAC", "mandatory": true, "repetition": 1 },
+      { "content": "MEA", "mandatory": false, "repetition": 99 },
+      { "content": "QTY", "mandatory": false, "repetition": 9 },
+      { "content": [
+        { "content": "HAN", "mandatory": true, "repetition": 1 },
+        { "content": "FTX", "mandatory": false, "repetition": 10 }
+      ], "mandatory": false, "repetition": 10 },
+      { "content": [
+        { "content": "PCI", "mandatory": true, "repetition": 1 },
+        { "content": "RFF", "mandatory": false, "repetition": 99 },
+        { "content": "DTM", "mandatory": false, "repetition": 9 },
+        { "content": [
+          { "content": "GIR", "mandatory": true, "repetition": 1 },
+          { "content": "DTM", "mandatory": false, "repetition": 5 }
+        ], "mandatory": false, "repetition": 99 },
+        { "content": [
+          { "content": "COD", "mandatory": true, "repetition": 1 },
+          { "content": "MEA", "mandatory": false, "repetition": 9 },
+          { "content": "QTY", "mandatory": false, "repetition": 9 },
+          { "content": "PCD", "mandatory": false, "repetition": 9 }
+        ], "mandatory": false, "repetition": 99 }
+      ], "mandatory": false, "repetition": 1000 },
+      { "content": [
+        { "content": "EFI", "mandatory": true, "repetition": 1 },
+        { "content": "CED", "mandatory": false, "repetition": 99 },
+        { "content": "COM", "mandatory": false, "repetition": 9 },
+        { "content": "RFF", "mandatory": false, "repetition": 9 },
+        { "content": "DTM", "mandatory": false, "repetition": 9 },
+        { "content": "QTY", "mandatory": false, "repetition": 9 }
+      ], "mandatory": false, "repetition": 99 }
+    ], "mandatory": false, "repetition": 9999 },
+    { "content": [
+      { "content": "LIN", "mandatory": true, "repetition": 1 },
+      { "content": "PIA", "mandatory": false, "repetition": 10 },
+      { "content": "IMD", "mandatory": false, "repetition": 99 },
+      { "content": "MEA", "mandatory": false, "repetition": 10 },
+      { "content": "QTY", "mandatory": false, "repetition": 10 },
+      { "content": "ALI", "mandatory": false, "repetition": 10 },
+      { "content": "GIN", "mandatory": false, "repetition": 100 },
+      { "content": "GIR", "mandatory": false, "repetition": 100 },
+      { "content": "DLM", "mandatory": false, "repetition": 100 },
+      { "content": "DTM", "mandatory": false, "repetition": 5 },
+      { "content": "NAD", "mandatory": false, "repetition": 99 },
+      { "content": "TDT", "mandatory": false, "repetition": 1 },
+      { "content": "TMD", "mandatory": false, "repetition": 1 },
+      { "content": "HAN", "mandatory": false, "repetition": 20 },
+      { "content": "FTX", "mandatory": false, "repetition": 99 },
+      { "content": "MOA", "mandatory": false, "repetition": 5 },
+      { "content": "PAC", "mandatory": false, "repetition": 9 },
+      { "content": [
+        { "content": "RFF", "mandatory": true, "repetition": 1 },
+        { "content": "NAD", "mandatory": false, "repetition": 1 },
+        { "content": "CTA", "mandatory": false, "repetition": 1 },
+        { "content": "DTM", "mandatory": false, "repetition": 1 }
+      ], "mandatory": false, "repetition": 99 },
+      { "content": [
+        { "content": "DGS", "mandatory": true, "repetition": 1 },
+        { "content": "QTY", "mandatory": false, "repetition": 1 },
+        { "content": "FTX", "mandatory": false, "repetition": 5 }
+      ], "mandatory": false, "repetition": 9999 },
+      { "content": [
+        { "content": "LOC", "mandatory": true, "repetition": 1 },
+        { "content": "NAD", "mandatory": false, "repetition": 1 },
+        { "content": "DTM", "mandatory": false, "repetition": 1 },
+        { "content": "QTY", "mandatory": false, "repetition": 10 }
+      ], "mandatory": false, "repetition": 100 },
+      { "content": [
+        { "content": "SGP", "mandatory": true, "repetition": 1 },
+        { "content": "QTY", "mandatory": false, "repetition": 10 }
+      ], "mandatory": false, "repetition": 1000 },
+      { "content": [
+        { "content": "PCI", "mandatory": true, "repetition": 1 },
+        { "content": "DTM", "mandatory": false, "repetition": 5 },
+        { "content": "MEA", "mandatory": false, "repetition": 10 },
+        { "content": "QTY", "mandatory": false, "repetition": 1 },
+        { "content": [
+          { "content": "GIN", "mandatory": true, "repetition": 1 },
+          { "content": "DLM", "mandatory": false, "repetition": 100 }
+        ], "mandatory": false, "repetition": 10 },
+        { "content": [
+          { "content": "HAN", "mandatory": true, "repetition": 1 },
+          { "content": "FTX", "mandatory": false, "repetition": 5 },
+          { "content": "GIN", "mandatory": false, "repetition": 1000 }
+        ], "mandatory": false, "repetition": 10 }
+      ], "mandatory": false, "repetition": 9999 },
+      { "content": [
+        { "content": "EFI", "mandatory": true, "repetition": 1 },
+        { "content": "CED", "mandatory": false, "repetition": 99 },
+        { "content": "COM", "mandatory": false, "repetition": 9 },
+        { "content": "RFF", "mandatory": false, "repetition": 9 },
+        { "content": "DTM", "mandatory": false, "repetition": 9 },
+        { "content": "QTY", "mandatory": false, "repetition": 9 }
+      ], "mandatory": false, "repetition": 99 }
+    ], "mandatory": false, "repetition": 9999 }
+  ], "mandatory": false, "repetition": 9999 },
+  { "content": "CNT", "mandatory": false, "repetition": 5 },
+  { "content": "UNT", "mandatory": true, "repetition": 1 }
+]
