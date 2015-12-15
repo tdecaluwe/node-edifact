@@ -1,0 +1,98 @@
+[
+  { "content": "UNH", "mandatory": true, "repetition": 1, "data": ["INVRPT"] },
+  { "content": "BGM", "mandatory": true, "repetition": 1 },
+  { "content": "FTX", "mandatory": false, "repetition": 99 },
+  { "content": "DTM", "mandatory": true, "repetition": 10 },
+  { "content": [
+    { "content": "RFF", "mandatory": true, "repetition": 1 },
+    { "content": "DTM", "mandatory": false, "repetition": 1 }
+  ], "mandatory": false, "repetition": 10 },
+  { "content": [
+    { "content": "NAD", "mandatory": true, "repetition": 1 },
+    { "content": "LOC", "mandatory": false, "repetition": 5 },
+    { "content": [
+      { "content": "RFF", "mandatory": true, "repetition": 1 },
+      { "content": "DTM", "mandatory": false, "repetition": 1 }
+    ], "mandatory": false, "repetition": 99 },
+    { "content": [
+      { "content": "CTA", "mandatory": true, "repetition": 1 },
+      { "content": "COM", "mandatory": false, "repetition": 5 }
+    ], "mandatory": false, "repetition": 10 }
+  ], "mandatory": false, "repetition": 20 },
+  { "content": [
+    { "content": "CUX", "mandatory": true, "repetition": 1 },
+    { "content": "DTM", "mandatory": false, "repetition": 1 }
+  ], "mandatory": false, "repetition": 5 },
+  { "content": [
+    { "content": "CPS", "mandatory": true, "repetition": 1 },
+    { "content": [
+      { "content": "PAC", "mandatory": true, "repetition": 1 },
+      { "content": "PAI", "mandatory": false, "repetition": 1000 },
+      { "content": [
+        { "content": "QTY", "mandatory": true, "repetition": 1 },
+        { "content": "GIN", "mandatory": false, "repetition": 9999 },
+        { "content": "DTM", "mandatory": false, "repetition": 5 }
+      ], "mandatory": false, "repetition": 9999 }
+    ], "mandatory": false, "repetition": 999 }
+  ], "mandatory": false, "repetition": 9999 },
+  { "content": [
+    { "content": "LIN", "mandatory": true, "repetition": 1 },
+    { "content": "PIA", "mandatory": false, "repetition": 10 },
+    { "content": "IMD", "mandatory": false, "repetition": 10 },
+    { "content": "NAD", "mandatory": false, "repetition": 1 },
+    { "content": "MEA", "mandatory": false, "repetition": 10 },
+    { "content": "ALI", "mandatory": false, "repetition": 10 },
+    { "content": "LOC", "mandatory": false, "repetition": 5 },
+    { "content": "DTM", "mandatory": false, "repetition": 5 },
+    { "content": "FTX", "mandatory": false, "repetition": 99 },
+    { "content": [
+      { "content": "RFF", "mandatory": true, "repetition": 1 },
+      { "content": "DTM", "mandatory": false, "repetition": 1 }
+    ], "mandatory": false, "repetition": 10 },
+    { "content": [
+      { "content": "CTA", "mandatory": true, "repetition": 1 },
+      { "content": "COM", "mandatory": false, "repetition": 9 }
+    ], "mandatory": false, "repetition": 1 },
+    { "content": [
+      { "content": "INV", "mandatory": true, "repetition": 1 },
+      { "content": "QTY", "mandatory": true, "repetition": 9 },
+      { "content": "GIN", "mandatory": false, "repetition": 9999 },
+      { "content": "LOC", "mandatory": false, "repetition": 5 },
+      { "content": "DTM", "mandatory": false, "repetition": 5 },
+      { "content": "STS", "mandatory": false, "repetition": 9 },
+      { "content": "FTX", "mandatory": false, "repetition": 9 },
+      { "content": [
+        { "content": "NAD", "mandatory": true, "repetition": 1 },
+        { "content": "LOC", "mandatory": false, "repetition": 1 }
+      ], "mandatory": false, "repetition": 5 },
+      { "content": [
+        { "content": "PRI", "mandatory": true, "repetition": 1 },
+        { "content": "CUX", "mandatory": false, "repetition": 1 },
+        { "content": "DTM", "mandatory": false, "repetition": 1 }
+      ], "mandatory": false, "repetition": 5 },
+      { "content": [
+        { "content": "RFF", "mandatory": true, "repetition": 1 },
+        { "content": "DTM", "mandatory": false, "repetition": 1 }
+      ], "mandatory": false, "repetition": 10 },
+      { "content": [
+        { "content": "CPS", "mandatory": true, "repetition": 1 },
+        { "content": [
+          { "content": "PAC", "mandatory": true, "repetition": 1 },
+          { "content": "MEA", "mandatory": false, "repetition": 10 },
+          { "content": "QTY", "mandatory": false, "repetition": 10 },
+          { "content": [
+            { "content": "PCI", "mandatory": true, "repetition": 1 },
+            { "content": "RFF", "mandatory": false, "repetition": 1 },
+            { "content": "DTM", "mandatory": false, "repetition": 5 },
+            { "content": "GIN", "mandatory": false, "repetition": 9999 },
+            { "content": [
+              { "content": "GIR", "mandatory": true, "repetition": 1 },
+              { "content": "DTM", "mandatory": false, "repetition": 5 }
+            ], "mandatory": false, "repetition": 99 }
+          ], "mandatory": false, "repetition": 9999 }
+        ], "mandatory": false, "repetition": 9999 }
+      ], "mandatory": false, "repetition": 9999 }
+    ], "mandatory": false, "repetition": 9999 }
+  ], "mandatory": false, "repetition": 9999999 },
+  { "content": "UNT", "mandatory": true, "repetition": 1 }
+]
