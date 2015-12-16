@@ -1,0 +1,43 @@
+[
+  { "content": "UNH", "mandatory": true, "repetition": 1, "data": ["BALANC"] },
+  { "content": "BGM", "mandatory": true, "repetition": 1 },
+  { "content": "DTM", "mandatory": true, "repetition": 99 },
+  { "content": "RFF", "mandatory": false, "repetition": 99 },
+  { "content": "CUX", "mandatory": false, "repetition": 99 },
+  { "content": "FTX", "mandatory": false, "repetition": 1 },
+  { "content": [
+    { "content": "NAD", "mandatory": true, "repetition": 1 },
+    { "content": "RFF", "mandatory": false, "repetition": 9 },
+    { "content": [
+      { "content": "CTA", "mandatory": true, "repetition": 1 },
+      { "content": "COM", "mandatory": false, "repetition": 9 }
+    ], "mandatory": false, "repetition": 99 }
+  ], "mandatory": false, "repetition": 99 },
+  { "content": [
+    { "content": "CCI", "mandatory": true, "repetition": 1 },
+    { "content": "CAV", "mandatory": false, "repetition": 1 }
+  ], "mandatory": false, "repetition": 99 },
+  { "content": [
+    { "content": "LIN", "mandatory": true, "repetition": 1 },
+    { "content": "MOA", "mandatory": true, "repetition": 999 },
+    { "content": "DTM", "mandatory": false, "repetition": 1 },
+    { "content": "RFF", "mandatory": false, "repetition": 1 },
+    { "content": "QTY", "mandatory": false, "repetition": 10 },
+    { "content": [
+      { "content": "CPT", "mandatory": true, "repetition": 1 },
+      { "content": [
+        { "content": "CCI", "mandatory": true, "repetition": 1 },
+        { "content": "CAV", "mandatory": false, "repetition": 1 }
+      ], "mandatory": false, "repetition": 99 }
+    ], "mandatory": true, "repetition": 9 }
+  ], "mandatory": true, "repetition": 99999 },
+  { "content": [
+    { "content": "EQN", "mandatory": true, "repetition": 1 },
+    { "content": "MOA", "mandatory": true, "repetition": 9 }
+  ], "mandatory": true, "repetition": 1 },
+  { "content": [
+    { "content": "AUT", "mandatory": true, "repetition": 1 },
+    { "content": "DTM", "mandatory": false, "repetition": 1 }
+  ], "mandatory": false, "repetition": 1 },
+  { "content": "UNT", "mandatory": true, "repetition": 1 }
+]

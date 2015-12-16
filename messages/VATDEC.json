@@ -1,0 +1,69 @@
+[
+  { "content": "UNH", "mandatory": true, "repetition": 1, "data": ["VATDEC"] },
+  { "content": "BGM", "mandatory": true, "repetition": 1 },
+  { "content": "DTM", "mandatory": true, "repetition": 1 },
+  { "content": "LOC", "mandatory": false, "repetition": 1 },
+  { "content": [
+    { "content": "NAD", "mandatory": true, "repetition": 1 },
+    { "content": [
+      { "content": "CTA", "mandatory": true, "repetition": 1 },
+      { "content": "COM", "mandatory": false, "repetition": 9 }
+    ], "mandatory": false, "repetition": 9 },
+    { "content": [
+      { "content": "RFF", "mandatory": true, "repetition": 1 },
+      { "content": "FTX", "mandatory": false, "repetition": 9 }
+    ], "mandatory": false, "repetition": 9 },
+    { "content": "FII", "mandatory": false, "repetition": 9 },
+    { "content": "PAI", "mandatory": false, "repetition": 9 },
+    { "content": "GEI", "mandatory": false, "repetition": 9 },
+    { "content": "LOC", "mandatory": false, "repetition": 9 },
+    { "content": [
+      { "content": "DTM", "mandatory": true, "repetition": 1 },
+      { "content": "GEI", "mandatory": false, "repetition": 9 },
+      { "content": "MEA", "mandatory": false, "repetition": 9 },
+      { "content": [
+        { "content": "DMS", "mandatory": true, "repetition": 1 },
+        { "content": "MOA", "mandatory": false, "repetition": 1 },
+        { "content": "MEA", "mandatory": false, "repetition": 1 },
+        { "content": "PCD", "mandatory": false, "repetition": 1 },
+        { "content": "GEI", "mandatory": false, "repetition": 1 }
+      ], "mandatory": false, "repetition": 9 },
+      { "content": [
+        { "content": "LIN", "mandatory": true, "repetition": 1 },
+        { "content": [
+          { "content": "NAD", "mandatory": true, "repetition": 1 },
+          { "content": [
+            { "content": "CTA", "mandatory": true, "repetition": 1 },
+            { "content": "COM", "mandatory": false, "repetition": 9 }
+          ], "mandatory": false, "repetition": 9999 },
+          { "content": "RFF", "mandatory": false, "repetition": 9 },
+          { "content": "FII", "mandatory": false, "repetition": 1 }
+        ], "mandatory": false, "repetition": 9999 },
+        { "content": "GEI", "mandatory": false, "repetition": 1 },
+        { "content": [
+          { "content": "MOA", "mandatory": true, "repetition": 1 },
+          { "content": "ARD", "mandatory": false, "repetition": 1 },
+          { "content": "PCD", "mandatory": false, "repetition": 1 },
+          { "content": "GEI", "mandatory": false, "repetition": 9 },
+          { "content": [
+            { "content": "DMS", "mandatory": true, "repetition": 1 },
+            { "content": "MOA", "mandatory": false, "repetition": 1 },
+            { "content": "MEA", "mandatory": false, "repetition": 1 },
+            { "content": "PCD", "mandatory": false, "repetition": 1 },
+            { "content": "GEI", "mandatory": true, "repetition": 1 }
+          ], "mandatory": false, "repetition": 9 }
+        ], "mandatory": false, "repetition": 9999 }
+      ], "mandatory": true, "repetition": 9999 },
+      { "content": [
+        { "content": "CNT", "mandatory": true, "repetition": 1 },
+        { "content": "MOA", "mandatory": false, "repetition": 1 }
+      ], "mandatory": false, "repetition": 1 }
+    ], "mandatory": true, "repetition": 99 }
+  ], "mandatory": true, "repetition": 9999 },
+  { "content": [
+    { "content": "AUT", "mandatory": true, "repetition": 1 },
+    { "content": "DTM", "mandatory": false, "repetition": 1 },
+    { "content": "RFF", "mandatory": false, "repetition": 1 }
+  ], "mandatory": false, "repetition": 1 },
+  { "content": "UNT", "mandatory": true, "repetition": 1 }
+]
