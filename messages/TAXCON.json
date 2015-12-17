@@ -1,0 +1,28 @@
+[
+  { "content": "UNH", "mandatory": true, "repetition": 1, "data": ["TAXCON"] },
+  { "content": "BGM", "mandatory": true, "repetition": 1 },
+  { "content": "DTM", "mandatory": true, "repetition": 5 },
+  { "content": [
+    { "content": "RFF", "mandatory": true, "repetition": 1 },
+    { "content": "DTM", "mandatory": false, "repetition": 5 }
+  ], "mandatory": false, "repetition": 5 },
+  { "content": [
+    { "content": "NAD", "mandatory": true, "repetition": 1 },
+    { "content": "RFF", "mandatory": false, "repetition": 1 }
+  ], "mandatory": true, "repetition": 5 },
+  { "content": "UNS", "mandatory": true, "repetition": 1 },
+  { "content": [
+    { "content": "RFF", "mandatory": true, "repetition": 1 },
+    { "content": "DTM", "mandatory": false, "repetition": 5 },
+    { "content": [
+      { "content": "DOC", "mandatory": true, "repetition": 1 },
+      { "content": "MOA", "mandatory": false, "repetition": 9 },
+      { "content": "CNT", "mandatory": false, "repetition": 1 },
+      { "content": [
+        { "content": "TAX", "mandatory": true, "repetition": 1 },
+        { "content": "MOA", "mandatory": true, "repetition": 3 }
+      ], "mandatory": true, "repetition": 9 }
+    ], "mandatory": true, "repetition": 9 }
+  ], "mandatory": true, "repetition": 9999 },
+  { "content": "UNT", "mandatory": true, "repetition": 1 }
+]

@@ -1,0 +1,50 @@
+[
+  { "content": "UNH", "mandatory": true, "repetition": 1, "data": ["AUTHOR"] },
+  { "content": "BGM", "mandatory": true, "repetition": 1 },
+  { "content": "DTM", "mandatory": false, "repetition": 1 },
+  { "content": "BUS", "mandatory": false, "repetition": 1 },
+  { "content": [
+    { "content": "RFF", "mandatory": true, "repetition": 1 },
+    { "content": "DTM", "mandatory": false, "repetition": 1 }
+  ], "mandatory": false, "repetition": 2 },
+  { "content": [
+    { "content": "FII", "mandatory": true, "repetition": 1 },
+    { "content": "CTA", "mandatory": false, "repetition": 1 },
+    { "content": "COM", "mandatory": false, "repetition": 5 }
+  ], "mandatory": false, "repetition": 5 },
+  { "content": [
+    { "content": "NAD", "mandatory": true, "repetition": 1 },
+    { "content": "CTA", "mandatory": false, "repetition": 1 },
+    { "content": "COM", "mandatory": false, "repetition": 5 }
+  ], "mandatory": false, "repetition": 3 },
+  { "content": [
+    { "content": "LIN", "mandatory": true, "repetition": 1 },
+    { "content": [
+      { "content": "RFF", "mandatory": true, "repetition": 1 },
+      { "content": "DTM", "mandatory": false, "repetition": 1 }
+    ], "mandatory": false, "repetition": 5 },
+    { "content": [
+      { "content": "SEQ", "mandatory": true, "repetition": 1 },
+      { "content": "GEI", "mandatory": true, "repetition": 1 },
+      { "content": "DTM", "mandatory": false, "repetition": 2 },
+      { "content": "MOA", "mandatory": false, "repetition": 1 },
+      { "content": "DOC", "mandatory": false, "repetition": 5 }
+    ], "mandatory": false, "repetition": 9999 },
+    { "content": [
+      { "content": "FII", "mandatory": true, "repetition": 1 },
+      { "content": "CTA", "mandatory": false, "repetition": 1 },
+      { "content": "COM", "mandatory": false, "repetition": 5 }
+    ], "mandatory": false, "repetition": 2 },
+    { "content": [
+      { "content": "NAD", "mandatory": true, "repetition": 1 },
+      { "content": "CTA", "mandatory": false, "repetition": 1 },
+      { "content": "COM", "mandatory": false, "repetition": 5 }
+    ], "mandatory": false, "repetition": 2 }
+  ], "mandatory": true, "repetition": 9999 },
+  { "content": "CNT", "mandatory": false, "repetition": 5 },
+  { "content": [
+    { "content": "AUT", "mandatory": true, "repetition": 1 },
+    { "content": "DTM", "mandatory": false, "repetition": 1 }
+  ], "mandatory": false, "repetition": 5 },
+  { "content": "UNT", "mandatory": true, "repetition": 1 }
+]

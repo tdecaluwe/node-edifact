@@ -1,0 +1,39 @@
+[
+  { "content": "UNH", "mandatory": true, "repetition": 1, "data": ["OSTENQ"] },
+  { "content": "BGM", "mandatory": true, "repetition": 1 },
+  { "content": "DTM", "mandatory": true, "repetition": 5 },
+  { "content": "IRQ", "mandatory": false, "repetition": 1 },
+  { "content": "FTX", "mandatory": false, "repetition": 20 },
+  { "content": [
+    { "content": "RFF", "mandatory": true, "repetition": 1 },
+    { "content": "DTM", "mandatory": false, "repetition": 9 }
+  ], "mandatory": false, "repetition": 9 },
+  { "content": [
+    { "content": "NAD", "mandatory": true, "repetition": 1 },
+    { "content": [
+      { "content": "CTA", "mandatory": true, "repetition": 1 },
+      { "content": "COM", "mandatory": false, "repetition": 5 }
+    ], "mandatory": false, "repetition": 5 }
+  ], "mandatory": true, "repetition": 25 },
+  { "content": [
+    { "content": "DOC", "mandatory": true, "repetition": 1 },
+    { "content": "DTM", "mandatory": false, "repetition": 5 },
+    { "content": [
+      { "content": "LIN", "mandatory": true, "repetition": 1 },
+      { "content": "PIA", "mandatory": false, "repetition": 25 },
+      { "content": "IMD", "mandatory": false, "repetition": 10 },
+      { "content": "MEA", "mandatory": false, "repetition": 5 },
+      { "content": "STS", "mandatory": false, "repetition": 9 },
+      { "content": [
+        { "content": "RFF", "mandatory": true, "repetition": 1 },
+        { "content": "DTM", "mandatory": false, "repetition": 1 }
+      ], "mandatory": false, "repetition": 99 },
+      { "content": [
+        { "content": "LOC", "mandatory": true, "repetition": 1 },
+        { "content": "DTM", "mandatory": false, "repetition": 5 },
+        { "content": "QTY", "mandatory": false, "repetition": 1 }
+      ], "mandatory": false, "repetition": 99 }
+    ], "mandatory": false, "repetition": 200000 }
+  ], "mandatory": false, "repetition": 999 },
+  { "content": "UNT", "mandatory": true, "repetition": 1 }
+]
