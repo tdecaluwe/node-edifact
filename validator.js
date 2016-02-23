@@ -27,43 +27,6 @@ class Validator {
     this._state = Validator.states.all;
   }
   /**
-   * @summary Request a regex usable for accepting component data.
-   * @returns {RegExp}
-   */
-  get regex() {
-    return this._regex;
-  }
-  /**
-   * @summary Get the value currently stored in the buffer.
-   * @returns {String} The value in the component buffer.
-   * @throws {Error} If the buffer doesn't contain a valid component.
-   */
-  get value() {
-    switch (this._regex) {
-    case Validator.regexes.integer:
-    case Validator.regexes.alpha:
-    case Validator.regexes.alphanumeric:
-      if (this._value.length < this._component.minimum) {
-        throw Validator.errors.invalidData(this._value, this._element.components[this._counts.component]);
-      }
-      if (this._value.length > this._component.maximum) {
-        throw Validator.errors.invalidData(this._value, this._element.components[this._counts.component]);
-      }
-      break;
-    case Validator.regexes.integer:
-    case Validator.regexes.decimal:
-      if (this._value.length - 1 < this._component.minimum) {
-        throw Validator.errors.invalidData(this._value, this._element.components[this._counts.component]);
-      }
-      if (this._value.length - 1 > this._component.maximum) {
-        throw Validator.errors.invalidData(this._value, this._element.components[this._counts.component]);
-      }
-      this._value = parseFloat(this._value);
-      break;
-    }
-    return this._value;
-  }
-  /**
    * @summary Disable validation.
    */
   disable() {
@@ -111,17 +74,22 @@ class Validator {
     } else {
       let parts;
       if (parts = /^(a|an|n)(\.\.)?([1-9][0-9]*)?$/.exec(formatString)) {
-        let maximum = parseInt(parts[3]);
-        let minimum = parts[2] === '..' ? 0 : maximum;
-        let type;
-        if (parts[1] === 'a') {
-          type = Validator.types.alpha;
-        } else if (parts[1] === 'n') {
-          type = Validator.types.numeric;
-        } else if (parts[1] === 'an') {
-          type = Validator.types.alphanumeric;
+        let max = parseInt(parts[3]);
+        let min = parts[2] === '..' ? 0 : max;
+        let alpha, numeric;
+        switch (parts[1]) {
+        case 'a':
+          alpha = true;
+          break;
+        case 'n':
+          numeric = true;
+          break;
+        case 'an':
+          alpha = true;
+          numeric = true;
+          break;
         }
-        return this._formats[formatString] = { type: type, minimum: minimum, maximum: maximum };
+        return this._formats[formatString] = { alpha: alpha, numeric: numeric, minimum: min, maximum: max };
       } else {
         throw Validator.errors.invalidFormatString(formatString);
       }
@@ -168,31 +136,46 @@ class Validator {
   }
   /**
    * @summary Start validation for a new component.
+   * @param {Object} buffer - An object which implements the buffer interface.
+   *
+   * The buffer object should allow the mode to be set to alpha, numeric or
+   * alphanumeric with their corresponding methods.
    */
-  oncomponent() {
+  onopencomponent(buffer) {
     switch (this._state) {
     case Validator.states.all:
       this._component = this.format(this._element.components[this._counts.component]);
-      switch (this._component.type) {
-      case Validator.types.alpha:
-        this._regex = Validator.regexes.alpha;
-        break;
-      case Validator.types.numeric:
-        this._regex = Validator.regexes.integer;
-        break;
-      case Validator.types.alphanumeric:
-        this._regex = Validator.regexes.alphanumeric;
-        break;
+      this._minimum = this._component.minimum;
+      this._maximum = this._component.maximum;
+      if (this._component.alpha) {
+        if (this._component.numeric) {
+          buffer.alphanumeric();
+        } else {
+          buffer.alpha();
+        }
+      } else {
+        if (this._component.numeric) {
+          buffer.numeric();
+        } else {
+          buffer.alphanumeric();
+        }
       }
       break;
-    case Validator.states.elements:
-    case Validator.states.segments:
-    case Validator.states.none:
-      this._regex = Validator.regexes.plain;
-      break;
+    default:
+      buffer.alphanumeric();
     }
-    this._counts.component += + 1;
-    this._value = '';
+    this._counts.component += 1;
+  }
+  onclosecomponent(buffer) {
+    let length;
+
+    switch (this._state) {
+    case Validator.states.all:
+      length = buffer.length();
+      if (length < this._minimum || length > this._maximum) {
+        throw Validator.errors.invalidData(buffer.content());
+      }
+    }
   }
   /**
    * @summary Finish validation for the current segment.
@@ -209,32 +192,6 @@ class Validator {
       }
     }
   }
-  /**
-   * @summary Read a decimal mark.
-   * @param {String} character The character being used as a decimal mark.
-   * @throws {Error} When the current context doesn't accept a decimal mark.
-   */
-  ondecimal(character) {
-    switch (this._regex) {
-    case Validator.regexes.integer:
-      this._regex = Validator.regexes.decimal;
-      this._value += '.';
-      break;
-    case Validator.regexes.plain:
-    case Validator.regexes.alpha:
-    case Validator.regexes.alphanumeric:
-      this._value += character;
-      break;
-    case Validator.regexes.decimal:
-      throw Validator.errors.secondDecimalMark();
-    }
-  }
-  /**
-   * @summary Read some data.
-   */
-  ondata(chunk, start, stop) {
-    this._value += chunk.slice(start, stop);
-  }
 }
 
 Validator.states = {
@@ -246,33 +203,14 @@ Validator.states = {
   all: 5
 };
 
-Validator.regexes = {
-  plain: /[A-Z0-9.,\-()/= ]*/g,
-  alphanumeric: /[A-Z0-9.,\-()/= ]*/g,
-  alpha: /[A-Z.,\-()/= ]*/g,
-  integer: /[0-9]*/g,
-  decimal: /[0-9]*/g
-};
-
-Validator.types = {
-  alpha: 0,
-  numeric: 1,
-  alphanumeric: 2
-};
-
 Validator.errors = {
-  invalidFormatString: function (formatString) {
-    return new Error('Invalid format string ' + formatString);
-  },
-  secondDecimalMark: function () {
-    let message = 'Cannot accept a second decimal mark while parsing a number';
-    return new Error(message);
-  },
-  invalidData: function (data, format) {
+  invalidData: function (data) {
     let message = '';
     message += 'Could not accept ' + data;
-    message += ' with format ' + format;
     return new Error(message);
+  },
+  invalidFormatString: function (formatString) {
+    return new Error('Invalid format string ' + formatString);
   },
   tooFewComponents: function (element, requires, count) {
     let message = '';

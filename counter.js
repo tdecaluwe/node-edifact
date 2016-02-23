@@ -18,12 +18,6 @@ class Counter {
       component: 0
     };
   }
-  get regex() {
-    return Counter.regexes.plain;
-  }
-  get value() {
-    return this._value;
-  }
   onopensegment(segment) {
     this._counts.segment += 1;
   }
@@ -31,18 +25,12 @@ class Counter {
     this._counts.element += 1;
     this._counts.component = 0;
   }
-  oncomponent() {
+  onopencomponent() {}
+  onclosecomponent() {
     this._counts.component += + 1;
-    this._value = '';
   }
   onclosesegment(segment) {
     this._counts.element = 0;
-  }
-  ondecimal(character) {
-    this._value += character;
-  }
-  ondata(chunk, start, stop) {
-    this._value += chunk.slice(start, stop);
   }
 }
 
