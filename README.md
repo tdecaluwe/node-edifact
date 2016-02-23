@@ -6,7 +6,7 @@
 Currently supported functionality:
 
 * An ES6 streaming parser reading UN/EDIFACT messages.
-* Provide your own hooks do get the parser to do something useful.
+* Provide your own event listeners to get the parser to do something useful.
 * Construct structured javascript objects from UN/EDIFACT messages.
 * Support for the UNA header and custom separators.
 * Validating data elements and components accepted by a given segment.
@@ -19,9 +19,7 @@ This library further intends to support:
 
 ## Usage
 
-This example parses a document and translates it to a javascript array of
-segments. Each segment is an object containing a `name` and an `elements`
-array. An element is an array of components.
+This example parses a document and translates it to a javascript array `result` containing segments. Each segment is an object containing a `name` and an `elements` array. An element is an array of components.
 
 ```javascript
 var Parser = require('edifact/parser.js');
@@ -38,26 +36,26 @@ validator.define(...);
 // Parsed segments will be collected in the result array.
 var result = [], elements, components;
 
-parser.onopensegment = function (segment) {
+parser.on('opensegment', function (segment) {
   // Started a new segment.
   elements = [];
   result.push({ name: segment, elements: elements });
-}
+});
 
-parser.onelement = function () {
+parser.on('element', function () {
   // Parsed a new element.
   components = [];
   elements.push(components);
-}
+});
 
-parser.oncomponent = function (value) {
+parser.on('component', function (data) {
   // Got a new component.
   components.push(value);
-}
+});
 
-parser.onclosesegment = function (segment) {
+parser.on('closesegment', function () {
   // Closed a segment.
-}
+});
 
 parser.write(doc).close();
 ```
@@ -115,279 +113,77 @@ A working example using segment and element definitions can be found in the `exa
 
 ### Performance
 
-A significant performance improvement was included in the 1.0 release, resulting in a threefold increase in parsing speed. Parsing speed including validation but without matching against a segment table is around 20Mbps. Around 30% of the time spent seems to be needed for the validation part.
+Parsing speed including validation but without matching against a segment table is around 20Mbps. Around 30% of the time spent seems to be needed for the validation part.
+
+If performance is critical the event callbacks can also be directly defined as methods on the `Parser` instance. Defining an event callback `on('opensegment', callback)` then becomes:
+
+```
+let parser = new Parser();
+let callback = function (segment) { ... };
+
+parser.onopensegment = callback;
+```
+
+Keep in mind that this avoids any `opensegment` events to be produced and as such, also it's associated overhead.
+
+## Classes
+
+| Class | Description |
+| ----- | ----------- |
+| [Parser](#Parser) | The `Parser` class encapsulates an online parsing algorithm. By itself it doesn't do anything useful, however the parser can be extended through several event callbacks. |
+| [Tracker](#Tracker) | A utility class which validates segment order against a given message structure. |
+| [Validator](#Validator) | The `Validator` can be used as an add-on to the `Parser` class, to enable validation of segments, elements and components. This class implements a tolerant validator, only segments and elements for which definitions are provided will be validated. Other segments or elements will pass through untouched. Validation includes:<ul><li>Checking data element counts, including mandatory elements.</li><li>Checking component counts, including mandatory components.</li><li>Checking components against their required format.</li> |
+| [Counter](#Counter) | The `Counter` class can be used as a validator for the `Parser` class. However it doesn't perform any validation, it only keeps track of segment, element and component counts. Component counts are reset when starting a new element, just like element counts are reset when closing the segment. |
+
 ## Reference
 
-### Classes
-
-<dl>
-<dt><a href="#Counter">Counter</a></dt>
-<dd><p>The <code>Counter</code> class can be used as a validator for the <code>Parser</code> class.
-However it doesn&#39;t perform any validation, it only keeps track of segment,
-element and component counts. Component counts are reset when starting a new
-element, just like element counts are reset when closing the segment.</p>
-</dd>
-<dt><a href="#Parser">Parser</a></dt>
-<dd><p>The <code>Parser</code> class encapsulates an online parsing algorithm, similar to a
-SAX-parser. By itself it doesn&#39;t do anything useful, however several
-callbacks can be provided for different parsing events.</p>
-</dd>
-<dt><a href="#Reader">Reader</a></dt>
-<dd><p>The <code>Reader</code> class is included for backwards compatibility. It translates an
-UN/EDIFACT document to an array of segments. Each segment has a <code>name</code> and
-<code>elements</code> property where <code>elements</code> is an array consisting of component
-arrays. The class exposes a <code>parse()</code> method which accepts the document as a
-string.</p>
-</dd>
-<dt><a href="#Tracker">Tracker</a></dt>
-<dd><p>A utility class which validates segment order against a given message
-structure.</p>
-</dd>
-<dt><a href="#Validator">Validator</a></dt>
-<dd><p>The <code>Validator</code> can be used as an add-on to <code>Parser</code> class, to enable
-validation of segments, elements and components. This class implements a
-tolerant validator, only segments and elemens for which definitions are
-provided will be validated. Other segments or elements will pass through
-untouched. Validation includes:</p>
-<ul>
-<li>Checking data element counts, including mandatory elements.</li>
-<li>Checking component counts, including mandatory components.</li>
-<li>Checking components against they&#39;re required format.</li>
-</ul>
-</dd>
-</dl>
-
-<a name="Counter"></a>
-### Counter
-The `Counter` class can be used as a validator for the `Parser` class.
-However it doesn't perform any validation, it only keeps track of segment,
-element and component counts. Component counts are reset when starting a new
-element, just like element counts are reset when closing the segment.
-
-**Kind**: global class  
 <a name="Parser"></a>
 ### Parser
-The `Parser` class encapsulates an online parsing algorithm, similar to a
-SAX-parser. By itself it doesn't do anything useful, however several
-callbacks can be provided for different parsing events.
 
-**Kind**: global class  
+A parser capable of accepting data formatted as an UN/EDIFACT interchange. The constructor accepts a `Validator` instance as an optional argument:
 
-* [Parser](#Parser)
-    * [new Parser([validator])](#new_Parser_new)
-    * [.close()](#Parser+close)
-    * [.write(chunk)](#Parser+write)
+```
+new Parser([validator])
+```
 
-<a name="new_Parser_new"></a>
-#### new Parser([validator])
-
-| Param | Type | Description |
-| --- | --- | --- |
-| [validator] | <code>[Validator](#Validator)</code> | Accepts a validator class for handling data validation. |
-
-<a name="Parser+close"></a>
-#### parser.close()
-**Kind**: instance method of <code>[Parser](#Parser)</code>  
-**Summary**: Ends the EDI interchange.  
-**Throws**:
-
-- <code>Error</code> If more data is expected.
-
-<a name="Parser+write"></a>
-#### parser.write(chunk)
-**Kind**: instance method of <code>[Parser](#Parser)</code>  
-**Summary**: Write some data to the parser.  
-
-| Param | Type | Description |
-| --- | --- | --- |
-| chunk | <code>String</code> | A chunk of UN/EDIFACT data. |
-
-<a name="Reader"></a>
-### Reader
-The `Reader` class is included for backwards compatibility. It translates an
-UN/EDIFACT document to an array of segments. Each segment has a `name` and
-`elements` property where `elements` is an array consisting of component
-arrays. The class exposes a `parse()` method which accepts the document as a
-string.
-
-**Kind**: global class  
-
-* [Reader](#Reader)
-    * [.define(definitions)](#Reader+define)
-    * [.parse(document)](#Reader+parse) ⇒ <code>Array</code>
-
-<a name="Reader+define"></a>
-#### reader.define(definitions)
-Provide the underlying `Validator` with segment or element definitions.
-
-**Kind**: instance method of <code>[Reader](#Reader)</code>  
-**Summary**: Define segment and element structures.  
-
-| Param | Type | Description |
-| --- | --- | --- |
-| definitions | <code>Object</code> | An object containing the definitions. |
-
-<a name="Reader+parse"></a>
-#### reader.parse(document) ⇒ <code>Array</code>
-**Kind**: instance method of <code>[Reader](#Reader)</code>  
-**Summary**: Parse a UN/EDIFACT document  
-**Returns**: <code>Array</code> - An array of segment objects.  
-
-| Param | Type | Description |
-| --- | --- | --- |
-| document | <code>String</code> | The input document. |
+| Function | Description |
+| -------- | ----------- |
+| `on(event,callback)` | Add a listener for a specific event. The event can be any of `opensegment`, `element`, `component` and `closesegment`. |
+| `write(chunk)` | Write a chunk of data to the parser |
+| `close()` | Terminate the EDI interchange |
 
 <a name="Tracker"></a>
 ### Tracker
-A utility class which validates segment order against a given message
-structure.
 
-**Kind**: global class  
+A utility class which validates segment order against a given message structure. The constructor accepts a segment table as it's first argument:
 
-* [Tracker](#Tracker)
-    * [new Tracker(table)](#new_Tracker_new)
-    * [.advance()](#Tracker+advance)
-    * [.accept(segment)](#Tracker+accept)
+```
+new Tracker(table)
+```
 
-<a name="new_Tracker_new"></a>
-#### new Tracker(table)
-
-| Param | Type | Description |
-| --- | --- | --- |
-| table | <code>Array</code> | The segment table to track against. |
-
-<a name="Tracker+advance"></a>
-#### tracker.advance()
-**Kind**: instance method of <code>[Tracker](#Tracker)</code>  
-**Summary**: Advance the tracker to the next segment in the table.  
-**Throws**:
-
-- <code>Error</code> Throws when the end of the segment table is reached.
-
-<a name="Tracker+accept"></a>
-#### tracker.accept(segment)
-**Kind**: instance method of <code>[Tracker](#Tracker)</code>  
-**Summary**: Match a segment to the message structure and update the current
-position of the tracker.  
-**Throws**:
-
-- <code>Error</code> Throws if a mandatory segment was omitted.
-- <code>Error</code> Throws if unidentified segments are encountered.
-- <code>Error</code> Throws if a segment is repeated too much.
-
-
-| Param | Type | Description |
-| --- | --- | --- |
-| segment | <code>String</code> | The segment name. |
+| Function | Description |
+| -------- | ----------- |
+| `advance()` | Advance the tracker to the next position in the segment table. This means the tracker will wrap to the beginning of the segment group if the repetition limit was not exceeded. |
+| `accept(segment)` | Match a segment to the message structure and update the current position of the tracker. |
 
 <a name="Validator"></a>
 ### Validator
-The `Validator` can be used as an add-on to `Parser` class, to enable
-validation of segments, elements and components. This class implements a
-tolerant validator, only segments and elemens for which definitions are
-provided will be validated. Other segments or elements will pass through
-untouched. Validation includes:
-* Checking data element counts, including mandatory elements.
-* Checking component counts, including mandatory components.
-* Checking components against they're required format.
 
-**Kind**: global class  
+The `Validator` can be used to validate segments, elements and components. It keeps track of element and component counts and checks if the component types match those in the segment definition.
 
-* [Validator](#Validator)
-    * [.disable()](#Validator+disable)
-    * [.enable()](#Validator+enable)
-    * [.define(definitions)](#Validator+define)
-    * [.format()](#Validator+format) ⇒ <code>Object</code>
-    * [.regex()](#Validator+regex) ⇒ <code>RegExp</code>
-    * [.onopensegment(segment)](#Validator+onopensegment)
-    * [.onelement()](#Validator+onelement)
-    * [.oncomponent()](#Validator+oncomponent)
-    * [.onclosesegment()](#Validator+onclosesegment)
-    * [.ondecimal(character)](#Validator+ondecimal)
-    * [.ondata()](#Validator+ondata)
-    * [.value()](#Validator+value) ⇒ <code>String</code>
+```
+new Validator()
+```
 
-<a name="Validator+disable"></a>
-#### validator.disable()
-**Kind**: instance method of <code>[Validator](#Validator)</code>  
-**Summary**: Disable validation.  
-<a name="Validator+enable"></a>
-#### validator.enable()
-**Kind**: instance method of <code>[Validator](#Validator)</code>  
-**Summary**: Enable validation on the next segment.  
-<a name="Validator+define"></a>
-#### validator.define(definitions)
-To define a segment or element the definitions object should contain the
-name as a key, and an object describing it's structure as a value. This
-object contains the `requires` key to define the number of mandatory
-elements or components. The key `elements` should be included containing a
-list of element names to describe a segment. Similarly, an element
-definition contains a `components` array describing the format of the
-components.
+| Function | Description |
+| -------- | ----------- |
+| `disable()` | Disable validation. |
+| `enable()` | Enable validation. |
+| `define(definitions)` | Provision the validator with an array of segment and element definitions. |
+| `onopensegment(segment)` | Start validation of a new segment |
+| `onelement()` | Add an element |
+| `onopencomponent(buffer)` | Open a component |
+| `onclosecomponent(buffer)` | Close a component |
+| `onclosesegment()` | Finish the segment |
 
-To simplify things, a non-composite element is regarded as an element
-having only one component.
-
-**Kind**: instance method of <code>[Validator](#Validator)</code>  
-**Summary**: Define segment and element structures.  
-
-| Param | Type | Description |
-| --- | --- | --- |
-| definitions | <code>Object</code> | An object containing the definitions. |
-
-<a name="Validator+format"></a>
-#### validator.format() ⇒ <code>Object</code>
-**Kind**: instance method of <code>[Validator](#Validator)</code>  
-**Summary**: Request a component definition associated with a format string.  
-**Returns**: <code>Object</code> - A component definition.  
-<a name="Validator+regex"></a>
-#### validator.regex() ⇒ <code>RegExp</code>
-**Kind**: instance method of <code>[Validator](#Validator)</code>  
-**Summary**: Request a regex usable for accepting component data.  
-<a name="Validator+onopensegment"></a>
-#### validator.onopensegment(segment)
-**Kind**: instance method of <code>[Validator](#Validator)</code>  
-**Summary**: Open a new segment.  
-
-| Param | Type | Description |
-| --- | --- | --- |
-| segment | <code>String</code> | The segment name. |
-
-<a name="Validator+onelement"></a>
-#### validator.onelement()
-**Kind**: instance method of <code>[Validator](#Validator)</code>  
-**Summary**: Start validation for a new element.  
-<a name="Validator+oncomponent"></a>
-#### validator.oncomponent()
-**Kind**: instance method of <code>[Validator](#Validator)</code>  
-**Summary**: Start validation for a new component.  
-<a name="Validator+onclosesegment"></a>
-#### validator.onclosesegment()
-**Kind**: instance method of <code>[Validator](#Validator)</code>  
-**Summary**: Finish validation for the current segment.  
-<a name="Validator+ondecimal"></a>
-#### validator.ondecimal(character)
-**Kind**: instance method of <code>[Validator](#Validator)</code>  
-**Summary**: Read a decimal mark.  
-**Throws**:
-
-- <code>Error</code> When the current context doesn't accept a decimal mark.
-
-
-| Param | Type | Description |
-| --- | --- | --- |
-| character | <code>String</code> | The character being used as a decimal mark. |
-
-<a name="Validator+ondata"></a>
-#### validator.ondata()
-**Kind**: instance method of <code>[Validator](#Validator)</code>  
-**Summary**: Read some data.  
-<a name="Validator+value"></a>
-#### validator.value() ⇒ <code>String</code>
-**Kind**: instance method of <code>[Validator](#Validator)</code>  
-**Summary**: Get the value currently stored in the buffer.  
-**Returns**: <code>String</code> - The value in the component buffer.  
-**Throws**:
-
-- <code>Error</code> If the buffer doesn't contain a valid component.
-
+The `buffer` argument to both `onopencomponent()` and `onclosecomponent()` should provide three methods `alpha()`, `alphanumeric()`, and `numeric()` allowing the mode of the buffer to be set. It should also expose a `length()` method to check the length of the data currently in the buffer.
