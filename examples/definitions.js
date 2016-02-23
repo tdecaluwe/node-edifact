@@ -4,7 +4,6 @@ let edifact = require('../index.js');
 
 let validator = new edifact.Validator();
 let parser = new edifact.Parser(validator);
-parser.encoding('UNOA');
 
 validator.define(require('../segments.js'));
 validator.define(require('../elements.js'));
@@ -59,9 +58,11 @@ parser.on('component', function (value) {
   components.push(value);
 });
 
-parser.encoding('UNOA');
 result = [];
+
+parser.encoding('UNOA');
 parser.write(document);
+parser.end();
 
 for (let i = 0; i < result.length; i++) {
   console.log(result[i].name + ': ' + result[i].elements);

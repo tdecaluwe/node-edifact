@@ -10,24 +10,24 @@ describe('Parser.write', function () {
     counter = new Counter();
     parser = new Parser(counter);
     expect(parser.write).toEqual(jasmine.any(Function));
-    expect(parser.close).toEqual(jasmine.any(Function));
+    expect(parser.end).toEqual(jasmine.any(Function));
   });
   it('should accept a valid UNA header', function () {
     expect(function() { parser.write('UNA:+.? \''); }).not.toThrow();
-    expect(function() { parser.close(); }).not.toThrow();
+    expect(function() { parser.end(); }).not.toThrow();
   });
   it('should use special characters as defined in the UNA header', function () {
     parser.write('UNA+:.? ;');
     expect(function() { parser.write('SEG:+:;'); }).not.toThrow();
-    expect(function() { parser.close(); }).not.toThrow();
+    expect(function() { parser.end(); }).not.toThrow();
   });
   it('should accept an empty segment', function () {
     expect(function() { parser.write('SEG\''); }).not.toThrow();
-    expect(function() { parser.close(); }).not.toThrow();
+    expect(function() { parser.end(); }).not.toThrow();
   });
   it('shouldn\'t accept an empty segment without a terminator', function () {
     expect(function() { parser.write('SEG'); }).not.toThrow();
-    expect(function() { parser.close(); }).toThrow();
+    expect(function() { parser.end(); }).toThrow();
   });
   it('should call onopensegment when starting a new segment', function () {
     let hook = jasmine.createSpy('hook');

@@ -57,7 +57,8 @@ parser.on('closesegment', function () {
   // Closed a segment.
 });
 
-parser.write(doc).close();
+parser.write(doc)
+parser.end();
 ```
 
 ## Installation
@@ -150,7 +151,7 @@ new Parser([validator])
 | -------- | ----------- |
 | `on(event,callback)` | Add a listener for a specific event. The event can be any of `opensegment`, `element`, `component` and `closesegment`. |
 | `write(chunk)` | Write a chunk of data to the parser |
-| `close()` | Terminate the EDI interchange |
+| `end()` | Terminate the EDI interchange |
 
 <a name="Tracker"></a>
 ### Tracker

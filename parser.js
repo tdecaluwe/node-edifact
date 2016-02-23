@@ -54,7 +54,7 @@ class Parser extends EventEmitter {
    * @summary Ends the EDI interchange.
    * @throws {Error} If more data is expected.
    */
-  close() {
+  end() {
     if (this.state !== Parser.states.segment && this._segment !== '') {
       throw Parser.errors.incompleteMessage();
     } else {
@@ -173,8 +173,6 @@ class Parser extends EventEmitter {
       // Consume the control character.
       index++;
     }
-    // Allow chained calls.
-    return this;
   }
 }
 
