@@ -1,6 +1,6 @@
 'use strict'
 
-import {Tracker} from "../tracker.js";
+import Tracker from "../tracker.js";
 
 describe('Tracker', function () {
   let tracker;

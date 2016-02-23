@@ -1,11 +1,17 @@
 'use strict'
 
-import {Validator} from "../index.js";
-import * as segments from "../segments.js";
-import * as elements from "../elements.js";
+import Validator from "../validator.js";
+import segments from "../segments.js";
+import elements from "../elements.js";
 
 describe('Validator', function () {
   let validator;
+  let buffer = {
+    alpha: function () {},
+    alphanumeric: function () {},
+    numeric: function () {},
+    length: function () { return 0; }
+  };
   beforeEach(function() {
     validator = new Validator();
     validator.define(elements);
@@ -15,13 +21,14 @@ describe('Validator', function () {
     it('GIN', function () {
       validator.onopensegment('GIN');
       validator.onelement();
-      validator.oncomponent();
+      validator.onopencomponent(buffer);
+      validator.onclosecomponent(buffer);
       expect(function () { validator.onelement(); }).not.toThrow();
       expect(function () { validator.onelement(); }).toThrow();
-      validator.oncomponent();
+      validator.onopencomponent(buffer);
+      validator.onclosecomponent(buffer);
       expect(function () { validator.onclosesegment(); }).not.toThrow();
       expect(function () { validator.onelement(); }).not.toThrow();
     });
   });
 });
-

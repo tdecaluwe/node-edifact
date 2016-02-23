@@ -1,6 +1,7 @@
 'use strict'
 
-import {Counter, Parser} from "../index.js";
+import Counter from "../counter.js";
+import Parser from "../parser.js";
 
 describe('Parser.write', function () {
   let parser;
@@ -67,5 +68,11 @@ describe('Parser.write', function () {
     expect(hook.calls.count()).toEqual(1);
     parser.write('\'');
     expect(hook.calls.count()).toEqual(2);
+  });
+  it('should read characters preceded by the release character as data', function () {
+    let component;
+    parser.oncomponent = function (data) { component = data; };
+    parser.write('SEG+??\'');
+    expect(component).toEqual('?');
   });
 });

@@ -4,6 +4,7 @@ let edifact = require('../index.js');
 
 let validator = new edifact.Validator();
 let parser = new edifact.Parser(validator);
+parser.encoding('UNOA');
 
 validator.define(require('../segments.js'));
 validator.define(require('../elements.js'));
@@ -41,20 +42,24 @@ let result;
 let elements;
 let components;
 
-parser.onopensegment = function (segment) {
+parser.on('opensegment', function (segment) {
   elements = [];
   result.push({ name: segment, elements: elements });
-}
+});
 
-parser.onelement = function () {
+parser.on('closesegment', function (segment) {});
+
+
+parser.on('element', function () {
   components = [];
   elements.push(components);
-}
+});
 
-parser.oncomponent = function (value) {
+parser.on('component', function (value) {
   components.push(value);
-}
+});
 
+parser.encoding('UNOA');
 result = [];
 parser.write(document);
 
