@@ -1,12 +1,12 @@
 'use strict'
 
-let edifact = require('../index.js');
+let edifact = require('edifact');
 
 let validator = new edifact.Validator();
 let parser = new edifact.Parser(validator);
 
-validator.define(require('../segments.js'));
-validator.define(require('../elements.js'));
+validator.define(require('edifact/segments.js'));
+validator.define(require('edifact/elements.js'));
 
 let document = '';
 
