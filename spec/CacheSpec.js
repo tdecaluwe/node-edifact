@@ -1,6 +1,6 @@
 'use strict'
 
-import {Cache} from "../index.js";
+import Cache from "../cache.js";
 
 describe('Cache', function () {
   let cache;

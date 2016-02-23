@@ -103,4 +103,4 @@ class Tracker {
   }
 };
 
-module.exports.Tracker = Tracker;
+module.exports = Tracker;
