@@ -91,7 +91,7 @@ class Validator {
       return this._formats[formatString];
     } else {
       let parts;
-      if (parts = /^(a|an|n)(\.\.)?([1-9][0-9]*)?$/.exec(formatString)) {
+      if ((parts = /^(a|an|n)(\.\.)?([1-9][0-9]*)?$/.exec(formatString))) {
         let max = parseInt(parts[3]);
         let min = parts[2] === '..' ? 0 : max;
         let alpha, numeric;
@@ -123,7 +123,8 @@ class Validator {
     case Validator.states.elements:
     case Validator.states.segments:
     case Validator.states.enable:
-      if (this._segment = this._segments[segment]) {
+      // Try to retrieve a segment definition if validation is not turned off.
+      if ((this._segment = this._segments[segment])) {
         this._state = Validator.states.enter;
       } else {
         this._state = Validator.states.segments;
@@ -138,12 +139,15 @@ class Validator {
   onelement() {
     switch (this._state) {
     case Validator.states.all:
+      // Check component count of the previous enter.
       if (this._counts.component < this._element.requires) {
         throw Validator.errors.tooFewComponents(this._segment.elements[this._counts.element], this._element.requires, this._counts.component);
       }
+      // Fall through to continue with element count validation.
     case Validator.states.enter:
+      // Skip component count checks for the first element.
     case Validator.states.elements:
-      if (this._element = this._elements[this._segment.elements[this._counts.element]]) {
+      if ((this._element = this._elements[this._segment.elements[this._counts.element]])) {
         this._state = Validator.states.all;
       } else {
         this._state = Validator.states.elements;
@@ -162,9 +166,11 @@ class Validator {
   onopencomponent(buffer) {
     switch (this._state) {
     case Validator.states.all:
+      // Retrieve a component definition if validation is set to all.
       this._component = this.format(this._element.components[this._counts.component]);
       this._minimum = this._component.minimum;
       this._maximum = this._component.maximum;
+      // Set the corresponding buffer mode.
       if (this._component.alpha) {
         if (this._component.numeric) {
           buffer.alphanumeric();
@@ -180,6 +186,7 @@ class Validator {
       }
       break;
     default:
+      // Set the buffer to it's default mode.
       buffer.alphanumeric();
     }
     this._counts.component += 1;
@@ -189,6 +196,7 @@ class Validator {
 
     switch (this._state) {
     case Validator.states.all:
+      // Component validation is only needed when validation is set to all.
       length = buffer.length();
       if (length < this._minimum || length > this._maximum) {
         throw Validator.errors.invalidData(buffer.content());
@@ -204,6 +212,7 @@ class Validator {
       if (this._counts.component < this._element.requires) {
         throw Validator.errors.tooFewComponents(this._segment.elements[this._counts.element], this._element.requires, this._counts.component);
       }
+      // Fall through to continue with element count validation.
     case Validator.states.elements:
       if (this._counts.element < this._segment.requires) {
         throw Validator.errors.tooFewElements(segment, this._segment.requires, this._counts.element);
@@ -233,14 +242,16 @@ Validator.errors = {
   tooFewComponents: function (element, requires, count) {
     let message = '';
     message += 'Element ' + element;
-    message += ' requires at least ' + requires + ' components';
+    message += ' only got ' + count + ' components';
+    message += ' but requires at least ' + requires;
     return new Error(message);
   },
   tooFewElements: function (segment, requires, count) {
     let message = '';
     message += 'Segment ' + segment;
-    message += ' requires at least ' + requires + ' elements';
-    return new Error();
+    message += ' only got ' + count + ' elements';
+    message += ' but requires at least ' + requires;
+    return new Error(message);
   }
 };
 

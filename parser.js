@@ -96,8 +96,7 @@ class Parser extends EventEmitter {
    * @param {String} chunk A chunk of UN/EDIFACT data.
    */
   write(chunk) {
-    // The begin and end position of the current token.
-    let start = 0;
+    // The position of the parser.
     let index = 0;
     if (this.state === Parser.states.continued) {
       this.state = Parser.states.modeset;
@@ -105,10 +104,9 @@ class Parser extends EventEmitter {
     while (index < chunk.length) {
       switch (this.state) {
       case Parser.states.empty:
-        if (this.una(chunk)) {
-          this.state = Parser.states.segment;
-          index = 9;
-        }
+        index = this.una(chunk) ? 9 : 0;
+        this.state = Parser.states.segment;
+        break;
       case Parser.states.segment:
         index = this._tokenizer.segment(chunk, index);
         // Determine the next parser state.
@@ -147,7 +145,7 @@ class Parser extends EventEmitter {
       case Parser.states.modeset:
       case Parser.states.continued:
       case Parser.states.data:
-        index = this._tokenizer.data(chunk, start = index);
+        index = this._tokenizer.data(chunk, index);
         // Determine the next parser state.
         switch (chunk.charCodeAt(index) || this._configuration.EOT) {
         case this._configuration.CDS:
@@ -222,12 +220,10 @@ Parser.errors = {
 }
 
 Parser.defaultValidator = {
-  onopensegment: function (segment) {},
+  onopensegment: function () {},
   onelement: function () {},
   oncomponent: function () {},
-  onclosesegment: function (segment) {},
-  ondata: function (chunk, start, index) {},
-  ondecimal: function (character) {}
+  onclosesegment: function () {}
 };
 
 module.exports = Parser;
