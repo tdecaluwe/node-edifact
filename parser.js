@@ -73,7 +73,10 @@ class Parser extends EventEmitter {
    * @throws {Error} If more data is expected.
    */
   end() {
-    if (this.state !== Parser.states.segment && this._segment !== '') {
+    // The stream can only be closed if the last segment is complete. This
+    // means the parser is currently in a state accepting segment data, but no
+    // data was read so far.
+    if (this.state !== Parser.states.segment || this._tokenizer.buffer !== '') {
       throw Parser.errors.incompleteMessage();
     } else {
       this.state = Parser.states.empty;
