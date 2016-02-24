@@ -79,7 +79,7 @@ class Tokenizer {
     this.buffer += chunk.charAt(index);
   }
   decimal(chunk, index) {
-    let result = ',';
+    let result = '.';
 
     switch (this._regex) {
     case this._regexes.numeric:
