@@ -174,4 +174,20 @@ describe('Tracker', function () {
     expect(function () { tracker.accept('AAA'); }).not.toThrow();
     expect(function () { tracker.accept('CCC'); }).toThrow();
   });
+  it('can repeat a group containing a maximally included subgroup', function () {
+    // The subgroup, which is included a maximal number of times, will prompt
+    // the tracker to leave, without being in a probing state. This test makes
+    // sure this situation does not interfere with the parent group.
+    tracker = new Tracker([
+      { content: [
+        { content: 'AAA', mandatory: false, repetition: 5 },
+        { content: [
+          { content: 'BBB', mandatory: false, repetition: 5 }
+        ], mandatory: false, repetition: 1}
+      ], mandatory: false, repetition: 5}
+    ]);
+    expect(function () { tracker.accept('AAA'); }).not.toThrow();
+    expect(function () { tracker.accept('BBB'); }).not.toThrow();
+    expect(function () { tracker.accept('AAA'); }).not.toThrow();
+  });
 });

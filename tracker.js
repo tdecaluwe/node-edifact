@@ -118,7 +118,9 @@ class Tracker {
             if (!current.mandatory() || current.count > 1) {
               optionals.pop();
             }
-            probe--;
+            // Decrease the probing level only if the tracker is currently in a
+            // probing state.
+            probe = probe > 0 ? probe - 1 : 0;
             // Make sure the tracker won't enter the current group again by
             // setting an appropriate count value on the groups pointer.
             current.count = current.repetition();
