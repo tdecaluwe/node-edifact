@@ -64,6 +64,4 @@ parser.encoding('UNOA');
 parser.write(document);
 parser.end();
 
-for (let i = 0; i < result.length; i++) {
-  console.log(result[i].name + ': ' + result[i].elements);
-}
+result;

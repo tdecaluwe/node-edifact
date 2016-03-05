@@ -164,8 +164,8 @@ new Tracker(table)
 
 | Function | Description |
 | -------- | ----------- |
-| `advance()` | Advance the tracker to the next position in the segment table. This means the tracker will wrap to the beginning of the segment group if the repetition limit was not exceeded. |
 | `accept(segment)` | Match a segment to the message structure and update the current position of the tracker. |
+| `reset()` | Reset the tracker to the initial position of the current segment table. |
 
 <a name="Validator"></a>
 ### Validator
