@@ -42,14 +42,7 @@ class Pointer {
   repetition() {
     return this.array[this.position].repetition;
   }
-  toString() {
-    if (Array.isArray(this.array[this.position].content)) {
-      return 'group';
-    } else {
-      return 'segment ' + this.array[this.position].content;
-    }
-  }
-};
+}
 
 /**
  * A utility class which validates segment order against a given message
@@ -63,28 +56,9 @@ class Tracker {
    * @private
    */
   constructor(table) {
-    this.stack = [];
-    this.level = 0;
-    this.pointer = new Pointer(table, 0);
-    this.stack.push(this.pointer);
+    this.stack = [new Pointer(table, 0)];
   }
-  /**
-   * @summary Advance the tracker to the next segment in the table.
-   * @throws {Error} Throws when the end of the segment table is reached.
-   */
-  advance() {
-    // Advance to the next item in the current group.
-    this.pointer.position += 1;
-    this.pointer.count = 0;
-    if (this.pointer.position === this.pointer.array.length) {
-      // We reached the end of this group.
-      this.stack.pop();
-      if (this.stack.length === 0) {
-        throw new Error('Reached the end of the segment table');
-      }
-      this.pointer = this.stack[this.stack.length - 1];
-    }
-  }
+  /* eslint-disable complexity */
   /**
    * @summary Match a segment to the message structure and update the current
    * position of the tracker.
@@ -94,31 +68,70 @@ class Tracker {
    * @throws {Error} Throws if a segment is repeated too much.
    */
   accept(segment) {
-    // Pop pointers which do not allow more repetitions of the stack.
-    while (this.pointer.count === this.pointer.repetition()) {
-      this.advance();
-    }
-    while (segment !== this.pointer.content()) {
-      let repeatable = this.pointer.count === 0 || this.stack.length < this.level;
-      // Check if we are omitting mandatory content.
-      if (this.level === this.stack.length) {
-        if (this.pointer.mandatory() === true && this.pointer.count === 0) {
-          throw new Error('A mandatory ' + this.pointer + ' is missing');
+    let current = this.stack[this.stack.length - 1];
+    let optionals = [];
+    let probe = 0;
+    while (segment !== current.content() || current.count === current.repetition()) {
+      if (Array.isArray(current.content()) && current.count < current.repetition()) {
+        // Enter the subgroup.
+        probe++;
+        if (!current.mandatory()) {
+          optionals.push(this.stack.length);
+        }
+        current.count++;
+        current = new Pointer(current.content(), 0);
+        this.stack.push(current);
+      } else {
+        // Check if we are omitting mandatory content.
+        if (current.mandatory() && current.count === 0) {
+          if (optionals.length === 0) {
+            // We will never encounter groups here, so we can safely use the
+            // name of the segment stored in it's content property.
+            throw new Error('A mandatory segment ' + current.content() + ' is missing');
+          } else {
+            // If we are omitting mandatory content inside a conditional group,
+            // we just skip the entire group.
+            probe = probe - this.stack.length;
+            this.stack.length = optionals.pop();
+            current = this.stack[this.stack.length - 1];
+            probe = probe + this.stack.length;
+          }
+        }
+        current.position++;
+        current.count = 0;
+        if (current.position === current.array.length) {
+          this.stack.pop();
+          current = this.stack[this.stack.length - 1];
+          if (this.stack.length === 0) {
+            throw new Error('Reached the end of the segment table');
+          }
+          if (probe === 0 && current.count < current.repetition()) {
+            // If we are not currently probing (meaning the tracker actually
+            // accepted the group), we should retry the current group, except if
+            // the maximum number of repetitions was reached.
+            probe++;
+            optionals = [this.stack.length];
+            current.count++;
+            current = new Pointer(current.content(), 0);
+            this.stack.push(current);
+          } else {
+            if (!current.mandatory() || current.count > 1) {
+              optionals.pop();
+            }
+            // Decrease the probing level only if the tracker is currently in a
+            // probing state.
+            probe = probe > 0 ? probe - 1 : 0;
+            // Make sure the tracker won't enter the current group again by
+            // setting an appropriate count value on the groups pointer.
+            current.count = current.repetition();
+          }
         }
       }
-      if (Array.isArray(this.pointer.content()) && repeatable) {
-        // Enter the subgroup.
-        this.level = this.level < this.stack.length ? this.level : this.stack.length;
-        this.pointer.count += 1;
-        this.pointer = new Pointer(this.pointer.content(), 0);
-        this.stack.push(this.pointer);
-      } else {
-        this.advance();
-      }
     }
-    this.level = this.stack.length;
-    this.pointer.count += 1;
+    current.count += 1;
+    return;
   }
-};
+  /* eslint-enable complexity */
+}
 
 module.exports = Tracker;
