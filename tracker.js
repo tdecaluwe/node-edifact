@@ -58,6 +58,14 @@ class Tracker {
   constructor(table) {
     this.stack = [new Pointer(table, 0)];
   }
+  /**
+   * Reset the tracker to the initial position of the current segment table.
+   */
+  reset() {
+    this.stack.length = 1;
+    this.stack[0].position = 0;
+    this.stack[0].count = 0;
+  }
   /* eslint-disable complexity */
   /**
    * @summary Match a segment to the message structure and update the current
