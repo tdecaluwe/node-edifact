@@ -44,10 +44,4 @@ class Cache {
   }
 }
 
-Cache.errors = {
-  notFound: function (key) {
-    return new Error('Couldn\'t find object with key' + key + ' in cache');
-  }
-};
-
 module.exports = Cache;
