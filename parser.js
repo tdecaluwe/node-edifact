@@ -18,180 +18,185 @@
 
 'use strict'
 
-let Configuration = require('./configuration.js');
-let Tokenizer = require('./tokenizer.js');
+var Configuration = require('./configuration.js');
+var Tokenizer = require('./tokenizer.js');
 
-let EventEmitter = require('events');
+var EventEmitter = require('events');
 
 /**
  * The `Parser` class encapsulates an online parsing algorithm, similar to a
  * SAX-parser. By itself it doesn't do anything useful, however several
  * callbacks can be provided for different parsing events.
+ *
+ * @constructs Parser
+ * @param {Validator} [validator] Accepts a validator class for handling
+ * data validation.
  */
-class Parser extends EventEmitter {
-  /**
-   * @summary Constructs a new parser.
-   * @param {Validator} [validator] Accepts a validator class for handling
-   * data validation.
-   * @constructs Parser
-   * @private
-   */
-  constructor(validator) {
-    super();
-    this._validator = validator || Parser.defaultValidator;
-    this._configuration = new Configuration();
-    this._tokenizer = new Tokenizer(this._configuration);
-    this.state = Parser.states.empty;
-    this.buffer = '';
-  }
-  onopensegment(segment) {
-    this.emit('opensegment', segment);
-  }
-  onclosesegment() {
-    this.emit('closesegment');
-  }
-  onelement() {
-    this.emit('element');
-  }
-  oncomponent(data) {
-    this.emit('component', data);
-  }
-  /**
-   * Set an encoding level.
-   * @param {String} level - The encoding level name.
-   */
-  encoding(level) {
-    let previous = this._configuration.level;
+var Parser = function (validator) {
+  EventEmitter.apply(this);
+  this._validator = validator || Parser.defaultValidator;
+  this._configuration = new Configuration();
+  this._tokenizer = new Tokenizer(this._configuration);
+  this.state = Parser.states.empty;
+  this.buffer = '';
+}
 
-    this._configuration.encoding(level);
-    if (this._configuration.level !== previous) {
-      this._tokenizer.configure(this._configuration);
-    }
+Parser.prototype = Object.create(EventEmitter.prototype);
+
+Parser.prototype.onopensegment = function (segment) {
+  this.emit('opensegment', segment);
+}
+
+Parser.prototype.onclosesegment = function () {
+  this.emit('closesegment');
+}
+
+Parser.prototype.onelement = function () {
+  this.emit('element');
+}
+
+Parser.prototype.oncomponent = function (data) {
+  this.emit('component', data);
+}
+
+/**
+ * Set an encoding level.
+ * @param {String} level - The encoding level name.
+ */
+Parser.prototype.encoding = function (level) {
+  var previous = this._configuration.level;
+
+  this._configuration.encoding(level);
+  if (this._configuration.level !== previous) {
+    this._tokenizer.configure(this._configuration);
   }
-  /**
-   * @summary Ends the EDI interchange.
-   * @throws {Error} If more data is expected.
-   */
-  end() {
-    // The stream can only be closed if the last segment is complete. This
-    // means the parser is currently in a state accepting segment data, but no
-    // data was read so far.
-    if (this.state !== Parser.states.segment || this._tokenizer.buffer !== '') {
-      throw Parser.errors.incompleteMessage();
-    } else {
-      this.state = Parser.states.empty;
-    }
+}
+
+/**
+ * @summary Ends the EDI interchange.
+ * @throws {Error} If more data is expected.
+ */
+Parser.prototype.end = function () {
+  // The stream can only be closed if the last segment is complete. This
+  // means the parser is currently in a state accepting segment data, but no
+  // data was read so far.
+  if (this.state !== Parser.states.segment || this._tokenizer.buffer !== '') {
+    throw Parser.errors.incompleteMessage();
+  } else {
+    this.state = Parser.states.empty;
   }
-  una(chunk) {
-    if (/^UNA....\ ./g.test(chunk)) {
-      this._configuration.CDS = chunk.charCodeAt(3);
-      this._configuration.DES = chunk.charCodeAt(4);
-      this._configuration.DM = chunk.charCodeAt(5);
-      this._configuration.RC = chunk.charCodeAt(6);
-      this._configuration.ST = chunk.charCodeAt(8);
-      return true;
-    } else {
-      return false;
-    }
+}
+
+Parser.prototype.una = function (chunk) {
+  if (/^UNA....\ ./g.test(chunk)) {
+    this._configuration.CDS = chunk.charCodeAt(3);
+    this._configuration.DES = chunk.charCodeAt(4);
+    this._configuration.DM = chunk.charCodeAt(5);
+    this._configuration.RC = chunk.charCodeAt(6);
+    this._configuration.ST = chunk.charCodeAt(8);
+    return true;
+  } else {
+    return false;
   }
-  /**
-   * @summary Write some data to the parser.
-   * @param {String} chunk A chunk of UN/EDIFACT data.
-   */
-  write(chunk) {
-    // The position of the parser.
-    let index = 0;
-    if (this.state === Parser.states.continued) {
-      this.state = Parser.states.modeset;
-    }
-    while (index < chunk.length) {
-      switch (this.state) {
-      case Parser.states.empty:
-        index = this.una(chunk) ? 9 : 0;
+}
+
+/**
+ * @summary Write some data to the parser.
+ * @param {String} chunk A chunk of UN/EDIFACT data.
+ */
+Parser.prototype.write = function (chunk) {
+  // The position of the parser.
+  var index = 0;
+  if (this.state === Parser.states.continued) {
+    this.state = Parser.states.modeset;
+  }
+  while (index < chunk.length) {
+    switch (this.state) {
+    case Parser.states.empty:
+      index = this.una(chunk) ? 9 : 0;
+      this.state = Parser.states.segment;
+      break;
+    case Parser.states.segment:
+      index = this._tokenizer.segment(chunk, index);
+      // Determine the next parser state.
+      switch (chunk.charCodeAt(index) || this._configuration.EOT) {
+      case this._configuration.DES:
+        this._validator.onopensegment(this._tokenizer.buffer);
+        this.onopensegment(this._tokenizer.buffer);
+        this.state = Parser.states.element;
+        this._tokenizer.buffer = '';
+        break;
+      case this._configuration.ST:
+        this._validator.onopensegment(this._tokenizer.buffer);
+        this.onopensegment(this._tokenizer.buffer);
+        this._validator.onclosesegment(this);
+        this.onclosesegment();
         this.state = Parser.states.segment;
+        this._tokenizer.buffer = '';
         break;
-      case Parser.states.segment:
-        index = this._tokenizer.segment(chunk, index);
-        // Determine the next parser state.
-        switch (chunk.charCodeAt(index) || this._configuration.EOT) {
-        case this._configuration.DES:
-          this._validator.onopensegment(this._tokenizer.buffer);
-          this.onopensegment(this._tokenizer.buffer);
-          this.state = Parser.states.element;
-          this._tokenizer.buffer = '';
-          break;
-        case this._configuration.ST:
-          this._validator.onopensegment(this._tokenizer.buffer);
-          this.onopensegment(this._tokenizer.buffer);
-          this._validator.onclosesegment(this);
-          this.onclosesegment();
-          this.state = Parser.states.segment;
-          this._tokenizer.buffer = '';
-          break;
-        case this._configuration.EOT:
-        case this._configuration.CR:
-        case this._configuration.LF:
-          break;
-        default:
-          throw Parser.errors.invalidControlAfterSegment(this._tokenizer.buffer, chunk.charAt(index));
-        }
+      case this._configuration.EOT:
+      case this._configuration.CR:
+      case this._configuration.LF:
         break;
-      case Parser.states.element:
-        // Start reading a new element.
-        this._validator.onelement();
-        this.onelement();
-        // Fall through to process the first component.
-      case Parser.states.component:
-        // Start reading a new component.
-        this._validator.onopencomponent(this._tokenizer);
-        // Fall through to process the available component data.
-      case Parser.states.modeset:
-      case Parser.states.continued:
-      case Parser.states.data:
-        index = this._tokenizer.data(chunk, index);
-        // Determine the next parser state.
-        switch (chunk.charCodeAt(index) || this._configuration.EOT) {
-        case this._configuration.CDS:
-          this._validator.onclosecomponent(this._tokenizer);
-          this.oncomponent(this._tokenizer.buffer);
-          this.state = Parser.states.component;
-          this._tokenizer.buffer = '';
-          break;
-        case this._configuration.DES:
-          this._validator.onclosecomponent(this._tokenizer);
-          this.oncomponent(this._tokenizer.buffer);
-          this.state = Parser.states.element;
-          this._tokenizer.buffer = '';
-          break;
-        case this._configuration.ST:
-          this._validator.onclosecomponent(this._tokenizer);
-          this.oncomponent(this._tokenizer.buffer);
-          this._validator.onclosesegment();
-          this.onclosesegment();
-          this.state = Parser.states.segment;
-          this._tokenizer.buffer = '';
-          break;
-        case this._configuration.DM:
-          this._tokenizer.decimal(chunk, index);
-          this.state = Parser.states.data;
-          break;
-        case this._configuration.RC:
-          index++;
-          this._tokenizer.release(chunk, index);
-          this.state = Parser.states.data;
-          break;
-        case this._configuration.EOT:
-        case this._configuration.CR:
-        case this._configuration.LF:
-          this.state = Parser.states.data;
-          break;
-        default:
-          throw Parser.errors.invalidCharacter(chunk.charAt(index), index);
-        }
+      default:
+        throw Parser.errors.invalidControlAfterSegment(this._tokenizer.buffer, chunk.charAt(index));
       }
-      // Consume the control character.
-      index++;
+      break;
+    case Parser.states.element:
+      // Start reading a new element.
+      this._validator.onelement();
+      this.onelement();
+      // Fall through to process the first component.
+    case Parser.states.component:
+      // Start reading a new component.
+      this._validator.onopencomponent(this._tokenizer);
+      // Fall through to process the available component data.
+    case Parser.states.modeset:
+    case Parser.states.continued:
+    case Parser.states.data:
+      index = this._tokenizer.data(chunk, index);
+      // Determine the next parser state.
+      switch (chunk.charCodeAt(index) || this._configuration.EOT) {
+      case this._configuration.CDS:
+        this._validator.onclosecomponent(this._tokenizer);
+        this.oncomponent(this._tokenizer.buffer);
+        this.state = Parser.states.component;
+        this._tokenizer.buffer = '';
+        break;
+      case this._configuration.DES:
+        this._validator.onclosecomponent(this._tokenizer);
+        this.oncomponent(this._tokenizer.buffer);
+        this.state = Parser.states.element;
+        this._tokenizer.buffer = '';
+        break;
+      case this._configuration.ST:
+        this._validator.onclosecomponent(this._tokenizer);
+        this.oncomponent(this._tokenizer.buffer);
+        this._validator.onclosesegment();
+        this.onclosesegment();
+        this.state = Parser.states.segment;
+        this._tokenizer.buffer = '';
+        break;
+      case this._configuration.DM:
+        this._tokenizer.decimal(chunk, index);
+        this.state = Parser.states.data;
+        break;
+      case this._configuration.RC:
+        index++;
+        this._tokenizer.release(chunk, index);
+        this.state = Parser.states.data;
+        break;
+      case this._configuration.EOT:
+      case this._configuration.CR:
+      case this._configuration.LF:
+        this.state = Parser.states.data;
+        break;
+      default:
+        throw Parser.errors.invalidCharacter(chunk.charAt(index), index);
+      }
     }
+    // Consume the control character.
+    index++;
   }
 }
 
@@ -209,13 +214,13 @@ Parser.errors = {
     return new Error('Cannot close an incomplete message');
   },
   invalidCharacter: function (character, index) {
-    let message = '';
+    var message = '';
     message += 'Invalid character ' + character;
     message += ' at position ' + index;
     return new Error(message);
   },
   invalidControlAfterSegment: function (segment, character) {
-    let message = '';
+    var message = '';
     message += 'Invalid character ' + character;
     message += ' after reading segment name ' + segment;
     return new Error(message);
