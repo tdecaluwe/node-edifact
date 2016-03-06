@@ -18,30 +18,31 @@
 
 'use strict'
 
-class Cache {
-  constructor(size) {
-    this._data = {};
-    this._queue = new Array(size + 1);
-    this._begin = 0;
-    this._end = size;
-  }
-  insert(key, value) {
-    if (!this.contains(key)) {
-      if ((this._end + 2 - this._begin)%this._queue.length === 0) {
-        delete this._data[this._queue[this._begin]];
-        this._begin = (this._begin + 1)%this._queue.length;
-      }
-      this._end = (this._end + 1)%this._queue.length;
-      this._queue[this._end] = key;
+var Cache = function (size) {
+  this._data = {};
+  this._queue = new Array(size + 1);
+  this._begin = 0;
+  this._end = size;
+}
+
+Cache.prototype.insert = function (key, value) {
+  if (!this.contains(key)) {
+    if ((this._end + 2 - this._begin)%this._queue.length === 0) {
+      delete this._data[this._queue[this._begin]];
+      this._begin = (this._begin + 1)%this._queue.length;
     }
-    this._data[key] = value;
+    this._end = (this._end + 1)%this._queue.length;
+    this._queue[this._end] = key;
   }
-  contains(key) {
-    return this._data.hasOwnProperty(key);
-  }
-  get(key) {
-    return this._data[key];
-  }
+  this._data[key] = value;
+}
+
+Cache.prototype.contains = function (key) {
+  return this._data.hasOwnProperty(key);
+}
+
+Cache.prototype.get = function (key) {
+  return this._data[key];
 }
 
 module.exports = Cache;
