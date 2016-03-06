@@ -1,6 +1,6 @@
 'use strict'
 
-import Cache from "../cache.js";
+let Cache = require('../cache.js');
 
 describe('Cache', function () {
   let cache;

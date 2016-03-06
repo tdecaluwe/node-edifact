@@ -1,6 +1,6 @@
 'use strict'
 
-import Tracker from "../tracker.js";
+let Tracker = require('../tracker.js');
 
 describe('Tracker', function () {
   let tracker;

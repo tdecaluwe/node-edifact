@@ -1,6 +1,6 @@
 'use strict'
 
-import Parser from "../parser.js";
+let Parser = require('../parser.js');
 
 describe('Parser.write', function () {
   let parser;
