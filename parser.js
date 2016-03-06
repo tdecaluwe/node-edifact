@@ -230,7 +230,8 @@ Parser.errors = {
 Parser.defaultValidator = {
   onopensegment: function () {},
   onelement: function () {},
-  oncomponent: function () {},
+  onopencomponent: function () {},
+  onclosecomponent: function () {},
   onclosesegment: function () {}
 };
 
