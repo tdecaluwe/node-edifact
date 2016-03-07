@@ -1,6 +1,6 @@
 'use strict'
 
-import Tracker from "../tracker.js";
+let Tracker = require('../tracker.js');
 
 describe('Tracker', function () {
   let tracker;
@@ -16,6 +16,16 @@ describe('Tracker', function () {
       { content: 'BBB', mandatory: false, repetition: 1 }
     ]);
     expect(function () { tracker.accept('BBB'); }).toThrow();
+  });
+  it('can accept the first segment again after a reset', function () {
+    tracker = new Tracker([
+      { content: 'AAA', mandatory: false, repetition: 1 },
+      { content: 'BBB', mandatory: false, repetition: 1 }
+    ]);
+    expect(function () { tracker.accept('AAA'); }).not.toThrow();
+    expect(function () { tracker.accept('BBB'); }).not.toThrow();
+    tracker.reset();
+    expect(function () { tracker.accept('AAA'); }).not.toThrow();
   });
   describe('expecting a mandatory repeatable segment', function () {
     // Such a segment defines a repetition property higher than one. However
