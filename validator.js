@@ -51,7 +51,7 @@ Validator.prototype.disable = function () {
  * @summary Enable validation on the next segment.
  */
 Validator.prototype.enable = function () {
-  this._state = Validator.states.enable;
+  this._state = Validator.states.segments;
 }
 
 /**
@@ -71,10 +71,10 @@ Validator.prototype.enable = function () {
  */
 Validator.prototype.define = function (definitions) {
   for (var key in definitions) {
-    if (definitions[key].elements && key.length === 3) {
+    if (definitions[key].elements) {
       this._segments[key] = definitions[key];
     }
-    if (definitions[key].components && key.length === 4) {
+    if (definitions[key].components) {
       this._elements[key] = definitions[key];
     }
   }
@@ -125,7 +125,10 @@ Validator.prototype.onopensegment = function (segment) {
   case Validator.states.enable:
     // Try to retrieve a segment definition if validation is not turned off.
     if ((this._segment = this._segments[segment])) {
-      this._state = Validator.states.enter;
+      // The onelement function will close the previous element, however we
+      // don't want the component counts to be checked. To disable them we put
+      // the validator in the elements state.
+      this._state = Validator.states.elements;
     } else {
       this._state = Validator.states.segments;
     }
@@ -225,12 +228,22 @@ Validator.prototype.onclosesegment = function (segment) {
 }
 
 Validator.states = {
+  // Setting validation to none will disable the validator completely. The
+  // validator will not even try to obtain a segment description for segments
+  // encountered. Almost all overhead is eliminated in this state.
   none: 0,
-  enable: 1,
-  segments: 2,
-  elements: 3,
+  // The segments state implies no segment definition was found for the current
+  // segment, so validation should be disabled for its elements and components.
+  // Normal validation should be resumed, however, as of the next segment.
+  segments: 1,
+  // The elements state is equivalent to the segments state, but validation is
+  // only temporary disabled for the current element. Normal validation resumes
+  // as of the next element.
+  elements: 2,
   enter: 4,
-  all: 5
+  // Validation is enabled for all entities, including segments, elements and
+  // components.
+  all: 3
 };
 
 Validator.errors = {
