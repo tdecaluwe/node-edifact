@@ -1,14 +1,12 @@
 'use strict'
 
-import Counter from "../counter.js";
-import Parser from "../parser.js";
+let Parser = require('../parser.js');
 
 describe('Parser.write', function () {
   let parser;
   let counter;
   beforeEach(function() {
-    counter = new Counter();
-    parser = new Parser(counter);
+    parser = new Parser();
     expect(parser.write).toEqual(jasmine.any(Function));
     expect(parser.end).toEqual(jasmine.any(Function));
   });

@@ -1,7 +1,7 @@
 { "name": "edifact"
-, "version": "1.2.3"
+, "version": "1.2.6"
 , "description": "JavaScript parser for UN/EDIFACT documents."
-, "keywords": ["edifact", "edi"]
+, "keywords": ["edifact", "edi", "eancom"]
 , "main": "index.js"
 , "engines":
   { "node": ">=4.0"
@@ -15,7 +15,12 @@
   { "name": "Tom De Caluwé"
   , "email": "decaluwe.t@gmail.com"
   }
-, "devDependencies": { "jasmine-es6": "^0.1.4" }
-, "scripts": { "test": "node-modules/.bin/jasmine" }
+, "devDependencies":
+  { "jasmine": "^2.4"
+  , "istanbul": "^0.4"
+  }
+, "scripts":
+  { "test": "istanbul cover -i \"[^ies]*.js\" --include-all-sources jasmine"
+  }
 , "tonicExampleFilename": "examples/definitions.js"
 }

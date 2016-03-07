@@ -18,7 +18,7 @@
 
 'use strict'
 
-let segments = {
+var segments = {
   'ALI': { requires: 0, elements: ['3239', '9213', '4183', '4183', '4183', '4183', '4183'] },
   'BGM': { requires: 0, elements: ['C002', 'C106', '1225', '4343', '1373', '3453'] },
   'CED': { requires: 2, elements: ['1501', 'C079', '9448'] },

@@ -1,6 +1,6 @@
 'use strict'
 
-import Cache from "../cache.js";
+let Cache = require('../cache.js');
 
 describe('Cache', function () {
   let cache;
@@ -36,6 +36,15 @@ describe('Cache', function () {
       expect(cache.contains('c')).toEqual(true);
       expect(cache.contains('d')).toEqual(true);
       expect(cache.contains('e')).toEqual(true);
+    });
+    it('should keep two inserted keys after repeatedly inserting a third one', function() {
+      cache.insert('a', 'value');
+      cache.insert('b', 'value');
+      cache.insert('c', 'value');
+      cache.insert('c', 'value');
+      cache.insert('c', 'value');
+      expect(cache.contains('a')).toEqual(true);
+      expect(cache.contains('b')).toEqual(true);
     });
   });
   describe('after adding a key', function () {

@@ -1,14 +1,14 @@
 'use strict'
 
-let edifact = require('edifact');
+var edifact = require('edifact');
 
-let validator = new edifact.Validator();
-let parser = new edifact.Parser(validator);
+var validator = new edifact.Validator();
+var parser = new edifact.Parser(validator);
 
 validator.define(require('edifact/segments.js'));
 validator.define(require('edifact/elements.js'));
 
-let document = '';
+var document = '';
 
 document += 'UNB+UNOA:1+005435656:1+006415160:1+060515:1434+00000000000778\'';
 document += 'UNH+00000000000117+INV\n\rOIC:D:97B:UN\'';
@@ -37,9 +37,9 @@ document += 'MOA+8:525\'';
 document += 'UNT+23+00000000000117\'';
 document += 'UNZ+1+00000000000778\'';
 
-let result;
-let elements;
-let components;
+var result;
+var elements;
+var components;
 
 parser.on('opensegment', function (segment) {
   elements = [];
@@ -64,6 +64,4 @@ parser.encoding('UNOA');
 parser.write(document);
 parser.end();
 
-for (let i = 0; i < result.length; i++) {
-  console.log(result[i].name + ': ' + result[i].elements);
-}
+result;
