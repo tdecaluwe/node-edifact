@@ -156,7 +156,7 @@ var elements = {
   '9213': { requires: 1, components: ['an..3'] },
   '9308': { requires: 1, components: ['an..35'] },
   '9448': { requires: 1, components: ['an..35'] },
-  '9450': { requires: 1, components: ['an..35'] },
+  '9450': { requires: 1, components: ['an..35'] }
 };
 
 module.exports = elements;

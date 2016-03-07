@@ -63,7 +63,7 @@ var segments = {
   'UNH': { requires: 2, elements: ['0065', '0052', '0054', '0051', '0057', '0110'] },
   'UNS': { requires: 1, elements: ['0081'] },
   'UNT': { requires: 2, elements: ['0074', '0062'] },
-  'UNZ': { requires: 2, elements: ['0036', '0020'] },
+  'UNZ': { requires: 2, elements: ['0036', '0020'] }
 };
 
 module.exports = segments;

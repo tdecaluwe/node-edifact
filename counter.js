@@ -32,7 +32,7 @@ var Counter = function () {
   };
 }
 
-Counter.prototype.onopensegment = function (segment) {
+Counter.prototype.onopensegment = function () {
   this.counts.segment += 1;
 }
 
@@ -47,7 +47,7 @@ Counter.prototype.onclosecomponent = function () {
   this.counts.component += + 1;
 }
 
-Counter.prototype.onclosesegment = function (segment) {
+Counter.prototype.onclosesegment = function () {
   this.counts.element = 0;
 }
 
