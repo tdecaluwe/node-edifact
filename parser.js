@@ -114,8 +114,11 @@ Parser.prototype.write = function (chunk) {
     switch (this.state) {
     case Parser.states.empty:
       index = this.una(chunk) ? 9 : 0;
+      // If the first segment is interrupted by, for example, a line break, the
+      // parser will remain in the same state as it has here. Since we don't
+      // want the parser to detect another UNA header, in such a case, we put it
+      // in the segment state.
       this.state = Parser.states.segment;
-      break;
     case Parser.states.segment:
       index = this._tokenizer.segment(chunk, index);
       // Determine the next parser state.
