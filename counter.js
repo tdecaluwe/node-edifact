@@ -25,7 +25,7 @@
  * element, just like element counts are reset when closing the segment.
  */
 var Counter = function () {
-  this._counts = {
+  this.counts = {
     segment: 0,
     element: 0,
     component: 0
@@ -33,22 +33,22 @@ var Counter = function () {
 }
 
 Counter.prototype.onopensegment = function (segment) {
-  this._counts.segment += 1;
+  this.counts.segment += 1;
 }
 
 Counter.prototype.onelement = function () {
-  this._counts.element += 1;
-  this._counts.component = 0;
+  this.counts.element += 1;
+  this.counts.component = 0;
 }
 
 Counter.prototype.onopencomponent = function () {}
 
 Counter.prototype.onclosecomponent = function () {
-  this._counts.component += + 1;
+  this.counts.component += + 1;
 }
 
 Counter.prototype.onclosesegment = function (segment) {
-  this._counts.element = 0;
+  this.counts.element = 0;
 }
 
 module.exports = Counter;
