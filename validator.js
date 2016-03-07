@@ -141,11 +141,14 @@ Validator.prototype.onopensegment = function (segment) {
  * @summary Start validation for a new element.
  */
 Validator.prototype.onelement = function () {
+  let name;
+
   switch (this._state) {
   case Validator.states.all:
     // Check component count of the previous enter.
-    if (this._counts.component < this._element.requires) {
-      throw Validator.errors.tooFewComponents(this._segment.elements[this._counts.element], this._element.requires, this._counts.component);
+    if (this._counts.component < this._element.requires || this._counts.component > this._element.components.length) {
+      name = this._segment.elements[this._counts.element];
+      throw Validator.errors.countError('Element', name, this._element, this._counts.component);
     }
     // Fall through to continue with element count validation.
   case Validator.states.enter:
@@ -214,15 +217,19 @@ Validator.prototype.onclosecomponent = function (buffer) {
  * @summary Finish validation for the current segment.
  */
 Validator.prototype.onclosesegment = function (segment) {
+  let name;
+
   switch (this._state) {
   case Validator.states.all:
-    if (this._counts.component < this._element.requires) {
-      throw Validator.errors.tooFewComponents(this._segment.elements[this._counts.element], this._element.requires, this._counts.component);
+    if (this._counts.component < this._element.requires || this._counts.component > this._element.components.length) {
+      name = this._segment.elements[this._counts.element];
+      throw Validator.errors.countError('Element', name, this._element, this._counts.component);
     }
     // Fall through to continue with element count validation.
   case Validator.states.elements:
-    if (this._counts.element < this._segment.requires) {
-      throw Validator.errors.tooFewElements(segment, this._segment.requires, this._counts.element);
+    if (this._counts.element < this._segment.requires || this._counts.element > this._segment.elements.length) {
+      name = segment;
+      throw Validator.errors.countError('Segment', name, this._segment, this._counts.element);
     }
   }
 }
@@ -255,19 +262,21 @@ Validator.errors = {
   invalidFormatString: function (formatString) {
     return new Error('Invalid format string ' + formatString);
   },
-  tooFewComponents: function (element, requires, count) {
-    var message = '';
-    message += 'Element ' + element;
-    message += ' only got ' + count + ' components';
-    message += ' but requires at least ' + requires;
-    return new Error(message);
-  },
-  tooFewElements: function (segment, requires, count) {
-    var message = '';
-    message += 'Segment ' + segment;
-    message += ' only got ' + count + ' elements';
-    message += ' but requires at least ' + requires;
-    return new Error(message);
+  countError: function (type, name, definition, count) {
+    var array;
+    var start = type + ' ' + name, end;
+    if (type === 'Segment') {
+      array = 'elements';
+    } else {
+      array = 'components';
+    }
+    if (count < definition.requires) {
+      start += ' only';
+      end = ' but requires at least ' + definition.requires;
+    } else {
+      end = ' but accepts at most ' + definition[array].length;
+    }
+    return new Error(start + ' got ' + count + ' ' + array + end);
   }
 };
 
