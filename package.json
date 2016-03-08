@@ -1,10 +1,10 @@
 { "name": "edifact"
-, "version": "1.2.6"
+, "version": "1.2.7"
 , "description": "JavaScript parser for UN/EDIFACT documents."
 , "keywords": ["edifact", "edi", "eancom"]
 , "main": "index.js"
 , "engines":
-  { "node": ">=4.0"
+  { "node": ">=0.12"
   }
 , "repository":
   { "type": "git"
