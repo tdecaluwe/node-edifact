@@ -141,7 +141,7 @@ Validator.prototype.onopensegment = function (segment) {
  * @summary Start validation for a new element.
  */
 Validator.prototype.onelement = function () {
-  let name;
+  var name;
 
   switch (this._state) {
   case Validator.states.all:
@@ -217,7 +217,7 @@ Validator.prototype.onclosecomponent = function (buffer) {
  * @summary Finish validation for the current segment.
  */
 Validator.prototype.onclosesegment = function (segment) {
-  let name;
+  var name;
 
   switch (this._state) {
   case Validator.states.all:
