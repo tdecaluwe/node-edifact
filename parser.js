@@ -21,7 +21,7 @@
 var Configuration = require('./configuration.js');
 var Tokenizer = require('./tokenizer.js');
 
-var EventEmitter = require('events');
+var Writable = require('stream').Writable;
 
 /**
  * The `Parser` class encapsulates an online parsing algorithm, similar to a
@@ -33,15 +33,23 @@ var EventEmitter = require('events');
  * data validation.
  */
 var Parser = function (validator) {
-  EventEmitter.apply(this);
+  Writable.call(this, {
+    write: function (chunk, encoding, callback) {
+      this.parse(chunk);
+      callback();
+    },
+    decodeStrings: false
+  });
   this._validator = validator || Parser.defaultValidator;
   this._configuration = new Configuration();
   this._tokenizer = new Tokenizer(this._configuration);
-  this.state = Parser.states.empty;
-  this.buffer = '';
+  this.state = Parser.states.una;
+  this.on('pipe', function (source) {
+    source.setEncoding('utf8');
+  });
 }
 
-Parser.prototype = Object.create(EventEmitter.prototype);
+Parser.prototype = Object.create(Writable.prototype);
 
 Parser.prototype.onopensegment = function (segment) {
   this.emit('opensegment', segment);
@@ -76,14 +84,14 @@ Parser.prototype.encoding = function (level) {
  * @summary Ends the EDI interchange.
  * @throws {Error} If more data is expected.
  */
-Parser.prototype.end = function () {
-  // The stream can only be closed if the last segment is complete. This
-  // means the parser is currently in a state accepting segment data, but no
-  // data was read so far.
+Parser.prototype.reset = function () {
+  // The stream can only be reset if the last segment is complete. This means
+  // the parser is currently in a state accepting segment data, but no data was
+  // read so far.
   if (this.state !== Parser.states.segment || this._tokenizer.buffer !== '') {
     throw Parser.errors.incompleteMessage();
   } else {
-    this.state = Parser.states.empty;
+    this.state = Parser.states.una;
   }
 }
 
@@ -106,23 +114,21 @@ Parser.prototype.una = function (chunk) {
  * @summary Write some data to the parser.
  * @param {String} chunk A chunk of UN/EDIFACT data.
  */
-Parser.prototype.write = function (chunk) {
+Parser.prototype.parse = function (chunk) {
   // The position of the parser.
   var index = 0;
-  if (this.state === Parser.states.continued) {
-    this.state = Parser.states.modeset;
-  }
   while (index < chunk.length) {
     switch (this.state) {
-    case Parser.states.empty:
+    case Parser.states.una:
       index = this.una(chunk) ? 9 : 0;
       // If the first segment is interrupted by, for example, a line break, the
-      // parser will remain in the same state as it has here. Since we don't
-      // want the parser to detect another UNA header, in such a case, we put it
+      // parser will remain in the same state as it is here. Since we don't
+      // want the parser to detect another UNA header in such a case, we put it
       // in the segment state.
       this.state = Parser.states.segment;
       // Continue to read the first segment, otherwise the index increment add
       // the end of the loop would cause the parser to skip the first character.
+    case Parser.states.unb:
     case Parser.states.segment:
       index = this._tokenizer.segment(chunk, index);
       // Determine the next parser state.
@@ -158,7 +164,6 @@ Parser.prototype.write = function (chunk) {
       // Start reading a new component.
       this._validator.onopencomponent(this._tokenizer);
       // Fall through to process the available component data.
-    case Parser.states.modeset:
     case Parser.states.continued:
     case Parser.states.data:
       index = this._tokenizer.data(chunk, index);
@@ -210,11 +215,11 @@ Parser.prototype.write = function (chunk) {
 /* eslint-enable complexity */
 
 Parser.states = {
-  empty: 0,
-  segment: 1,
-  element: 2,
-  component: 3,
-  modeset: 4,
+  una: 0,
+  unb: 1,
+  segment: 2,
+  element: 3,
+  component: 4,
   data: 5
 };
 
