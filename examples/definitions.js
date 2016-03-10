@@ -46,7 +46,7 @@ parser.on('opensegment', function (segment) {
   result.push({ name: segment, elements: elements });
 });
 
-parser.on('closesegment', function (segment) {});
+parser.on('closesegment', function () {});
 
 
 parser.on('element', function () {

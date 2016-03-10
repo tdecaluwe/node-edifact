@@ -100,6 +100,8 @@ Parser.prototype.una = function (chunk) {
   }
 }
 
+/* eslint-disable complexity */
+
 /**
  * @summary Write some data to the parser.
  * @param {String} chunk A chunk of UN/EDIFACT data.
@@ -119,6 +121,8 @@ Parser.prototype.write = function (chunk) {
       // want the parser to detect another UNA header, in such a case, we put it
       // in the segment state.
       this.state = Parser.states.segment;
+      // Continue to read the first segment, otherwise the index increment add
+      // the end of the loop would cause the parser to skip the first character.
     case Parser.states.segment:
       index = this._tokenizer.segment(chunk, index);
       // Determine the next parser state.
@@ -202,6 +206,8 @@ Parser.prototype.write = function (chunk) {
     index++;
   }
 }
+
+/* eslint-enable complexity */
 
 Parser.states = {
   empty: 0,
