@@ -18,6 +18,15 @@
 
 'use strict'
 
+var checkComponents = function (validator) {
+  var name;
+
+  if (validator._counts.component < validator._element.requires || validator._counts.component > validator._element.components.length) {
+    name = validator._segment.elements[validator._counts.element];
+    throw Validator.errors.countError('Element', name, validator._element, validator._counts.component);
+  }
+}
+
 /**
  * The `Validator` can be used as an add-on to `Parser` class, to enable
  * validation of segments, elements and components. This class implements a
@@ -141,15 +150,11 @@ Validator.prototype.onopensegment = function (segment) {
  * @summary Start validation for a new element.
  */
 Validator.prototype.onelement = function () {
-  var name;
 
   switch (this._state) {
   case Validator.states.all:
     // Check component count of the previous enter.
-    if (this._counts.component < this._element.requires || this._counts.component > this._element.components.length) {
-      name = this._segment.elements[this._counts.element];
-      throw Validator.errors.countError('Element', name, this._element, this._counts.component);
-    }
+    checkComponents(this);
     // Fall through to continue with element count validation.
   case Validator.states.enter:
     // Skip component count checks for the first element.
@@ -217,19 +222,13 @@ Validator.prototype.onclosecomponent = function (buffer) {
  * @summary Finish validation for the current segment.
  */
 Validator.prototype.onclosesegment = function (segment) {
-  var name;
-
   switch (this._state) {
   case Validator.states.all:
-    if (this._counts.component < this._element.requires || this._counts.component > this._element.components.length) {
-      name = this._segment.elements[this._counts.element];
-      throw Validator.errors.countError('Element', name, this._element, this._counts.component);
-    }
+    checkComponents(this);
     // Fall through to continue with element count validation.
   case Validator.states.elements:
     if (this._counts.element < this._segment.requires || this._counts.element > this._segment.elements.length) {
-      name = segment;
-      throw Validator.errors.countError('Segment', name, this._segment, this._counts.element);
+      throw Validator.errors.countError('Segment', segment, this._segment, this._counts.element);
     }
   }
 }

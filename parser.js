@@ -23,6 +23,24 @@ var Tokenizer = require('./tokenizer.js');
 
 var EventEmitter = require('events');
 
+var opensegment = function (parser) {
+  parser._validator.onopensegment(parser._tokenizer.buffer);
+  parser.onopensegment(parser._tokenizer.buffer);
+  parser._tokenizer.buffer = '';
+}
+
+var closecomponent = function (parser) {
+  parser._validator.onclosecomponent(parser._tokenizer);
+  parser.oncomponent(parser._tokenizer.buffer);
+  parser._tokenizer.buffer = '';
+}
+
+var closesegment = function (parser) {
+  parser._validator.onclosesegment();
+  parser.onclosesegment();
+  parser.state = Parser.states.segment;
+}
+
 /**
  * The `Parser` class encapsulates an online parsing algorithm, similar to a
  * SAX-parser. By itself it doesn't do anything useful, however several
@@ -118,7 +136,7 @@ Parser.prototype.write = function (chunk) {
       // want the parser to detect another UNA header in such a case, we put it
       // in the segment state.
       this.state = Parser.states.segment;
-      // Continue to read the first segment, otherwise the index increment add
+      // Fall through to read the next segment, otherwise the index increment at
       // the end of the loop would cause the parser to skip the first character.
     case Parser.states.unb:
     case Parser.states.segment:
@@ -126,25 +144,19 @@ Parser.prototype.write = function (chunk) {
       // Determine the next parser state.
       switch (chunk.charCodeAt(index) || this._configuration.EOT) {
       case this._configuration.DES:
-        this._validator.onopensegment(this._tokenizer.buffer);
-        this.onopensegment(this._tokenizer.buffer);
+        opensegment(this);
         this.state = Parser.states.element;
-        this._tokenizer.buffer = '';
         break;
       case this._configuration.ST:
-        this._validator.onopensegment(this._tokenizer.buffer);
-        this.onopensegment(this._tokenizer.buffer);
-        this._validator.onclosesegment(this);
-        this.onclosesegment();
-        this.state = Parser.states.segment;
-        this._tokenizer.buffer = '';
+        opensegment(this);
+        closesegment(this);
         break;
       case this._configuration.EOT:
       case this._configuration.CR:
       case this._configuration.LF:
         break;
       default:
-        throw Parser.errors.invalidControlAfterSegment(this._tokenizer.buffer, chunk.charAt(index));
+        throw Parser.errors.invalidCharacter(chunk.charAt(index), index);
       }
       break;
     case Parser.states.element:
@@ -156,44 +168,35 @@ Parser.prototype.write = function (chunk) {
       // Start reading a new component.
       this._validator.onopencomponent(this._tokenizer);
       // Fall through to process the available component data.
-    case Parser.states.continued:
     case Parser.states.data:
       index = this._tokenizer.data(chunk, index);
+      // Avoid opening a new component if the component data is interrupted by
+      // a control character, like a decimal mark.
+      this.state = Parser.states.data;
       // Determine the next parser state.
       switch (chunk.charCodeAt(index) || this._configuration.EOT) {
       case this._configuration.CDS:
-        this._validator.onclosecomponent(this._tokenizer);
-        this.oncomponent(this._tokenizer.buffer);
+        closecomponent(this);
         this.state = Parser.states.component;
-        this._tokenizer.buffer = '';
         break;
       case this._configuration.DES:
-        this._validator.onclosecomponent(this._tokenizer);
-        this.oncomponent(this._tokenizer.buffer);
+        closecomponent(this);
         this.state = Parser.states.element;
-        this._tokenizer.buffer = '';
         break;
       case this._configuration.ST:
-        this._validator.onclosecomponent(this._tokenizer);
-        this.oncomponent(this._tokenizer.buffer);
-        this._validator.onclosesegment();
-        this.onclosesegment();
-        this.state = Parser.states.segment;
-        this._tokenizer.buffer = '';
+        closecomponent(this);
+        closesegment(this);
         break;
       case this._configuration.DM:
         this._tokenizer.decimal(chunk, index);
-        this.state = Parser.states.data;
         break;
       case this._configuration.RC:
         index++;
         this._tokenizer.release(chunk, index);
-        this.state = Parser.states.data;
         break;
       case this._configuration.EOT:
       case this._configuration.CR:
       case this._configuration.LF:
-        this.state = Parser.states.data;
         break;
       default:
         throw Parser.errors.invalidCharacter(chunk.charAt(index), index);
@@ -223,12 +226,6 @@ Parser.errors = {
     var message = '';
     message += 'Invalid character ' + character;
     message += ' at position ' + index;
-    return new Error(message);
-  },
-  invalidControlAfterSegment: function (segment, character) {
-    var message = '';
-    message += 'Invalid character ' + character;
-    message += ' after reading segment name ' + segment;
     return new Error(message);
   }
 }
