@@ -50,6 +50,8 @@ Tokenizer.prototype.configure = function (configuration) {
       numeric: this._regexes.numeric,
       decimal: this._regexes.decimal
     });
+
+    this.alphanumeric();
   }
 
   return this;

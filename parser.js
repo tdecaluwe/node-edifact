@@ -93,6 +93,7 @@ Parser.prototype.una = function (chunk) {
     this._configuration.DM = chunk.charCodeAt(5);
     this._configuration.RC = chunk.charCodeAt(6);
     this._configuration.ST = chunk.charCodeAt(8);
+    this._tokenizer.configure(this._configuration);
     return true;
   } else {
     return false;
