@@ -21,7 +21,7 @@
 var Configuration = require('./configuration.js');
 var Tokenizer = require('./tokenizer.js');
 
-var Writable = require('stream').Writable;
+var EventEmitter = require('events');
 
 /**
  * The `Parser` class encapsulates an online parsing algorithm, similar to a
@@ -33,23 +33,14 @@ var Writable = require('stream').Writable;
  * data validation.
  */
 var Parser = function (validator) {
-  Writable.call(this, {
-    write: function (chunk, encoding, callback) {
-      this.parse(chunk);
-      callback();
-    },
-    decodeStrings: false
-  });
+  EventEmitter.call(this);
   this._validator = validator || Parser.defaultValidator;
   this._configuration = new Configuration();
   this._tokenizer = new Tokenizer(this._configuration);
   this.state = Parser.states.una;
-  this.on('pipe', function (source) {
-    source.setEncoding('utf8');
-  });
 }
 
-Parser.prototype = Object.create(Writable.prototype);
+Parser.prototype = Object.create(EventEmitter.prototype);
 
 Parser.prototype.onopensegment = function (segment) {
   this.emit('opensegment', segment);
@@ -84,7 +75,7 @@ Parser.prototype.encoding = function (level) {
  * @summary Ends the EDI interchange.
  * @throws {Error} If more data is expected.
  */
-Parser.prototype.reset = function () {
+Parser.prototype.end = function () {
   // The stream can only be reset if the last segment is complete. This means
   // the parser is currently in a state accepting segment data, but no data was
   // read so far.
@@ -114,7 +105,7 @@ Parser.prototype.una = function (chunk) {
  * @summary Write some data to the parser.
  * @param {String} chunk A chunk of UN/EDIFACT data.
  */
-Parser.prototype.parse = function (chunk) {
+Parser.prototype.write = function (chunk) {
   // The position of the parser.
   var index = 0;
   while (index < chunk.length) {
