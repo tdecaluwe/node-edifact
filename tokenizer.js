@@ -44,11 +44,9 @@ Tokenizer.prototype.configure = function (configuration) {
     charset = configuration.charset();
     exclude = configuration.delimiters();
 
-    this._regexes.alphanumeric = Tokenizer.compile(charset, exclude);
-
-    Tokenizer.cache.insert(configuration.toString(), {
+    Tokenizer.cache.insert(configuration.toString(), this._regexes = {
       alpha: this._regexes.alpha,
-      alphanumeric: this._regexes.alphanumeric,
+      alphanumeric: Tokenizer.compile(charset, exclude),
       numeric: this._regexes.numeric,
       decimal: this._regexes.decimal
     });
