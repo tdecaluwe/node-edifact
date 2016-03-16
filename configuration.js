@@ -71,7 +71,7 @@ Configuration.prototype.delimiters = function () {
   // Sort the array of excluded characters using a sorting network.
   compareAndSwap(exclude, 1, 2);
   compareAndSwap(exclude, 3, 4);
-  compareAndSwap(exclude, 1, 2);
+  compareAndSwap(exclude, 1, 3);
   compareAndSwap(exclude, 0, 2);
   compareAndSwap(exclude, 2, 4);
   compareAndSwap(exclude, 0, 3);
