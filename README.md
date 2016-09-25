@@ -148,7 +148,7 @@ such, also it's associated overhead.
 ## Classes
 
 | Class | Description |
-| ----- | ----------- |
+| ----: | :---------- |
 | [Parser](#Parser) | The `Parser` class encapsulates an online parsing algorithm. By itself it doesn't do anything useful, however the parser can be extended through several event callbacks. |
 | [Tracker](#Tracker) | A utility class which validates segment order against a given message structure. |
 | [Validator](#Validator) | The `Validator` can be used as an add-on to the `Parser` class, to enable validation of segments, elements and components. This class implements a tolerant validator, only segments and elements for which definitions are provided will be validated. Other segments or elements will pass through untouched. Validation includes:<ul><li>Checking data element counts, including mandatory elements.</li><li>Checking component counts, including mandatory components.</li><li>Checking components against their required format.</li> |
@@ -167,7 +167,7 @@ new Parser([validator])
 ```
 
 | Function | Description |
-| -------- | ----------- |
+| -------: | :---------- |
 | `on(event,callback)` | Add a listener for a specific event. The event can be any of `opensegment`, `element`, `component` and `closesegment`. |
 | `write(chunk)` | Write a chunk of data to the parser |
 | `end()` | Terminate the EDI interchange |
@@ -183,7 +183,7 @@ new Tracker(table)
 ```
 
 | Function | Description |
-| -------- | ----------- |
+| -------: | :---------- |
 | `accept(segment)` | Match a segment to the message structure and update the current position of the tracker. |
 | `reset()` | Reset the tracker to the initial position of the current segment table. |
 
@@ -199,7 +199,7 @@ new Validator()
 ```
 
 | Function | Description |
-| -------- | ----------- |
+| -------: | :---------- |
 | `disable()` | Disable validation. |
 | `enable()` | Enable validation. |
 | `define(definitions)` | Provision the validator with an array of segment and element definitions. |
