@@ -60,6 +60,18 @@ Tracker.prototype.reset = function () {
   this.stack[0].count = 0;
 }
 
+/**
+ * Try to accept the next segment.
+ *
+ * @param {String} segment The segment name.
+ * @throws {Error} Throws if a mandatory segment was omitted.
+ * @throws {Error} Throws if unidentified segments are encountered.
+ * @throws {Error} Throws if a segment is repeated too much.
+ */
+Tracker.prototype.accept = function (segment) {
+  this.match(segment);
+}
+
 /* eslint-disable complexity */
 
 /**
@@ -71,11 +83,16 @@ Tracker.prototype.reset = function () {
  * @throws {Error} Throws if unidentified segments are encountered.
  * @throws {Error} Throws if a segment is repeated too much.
  */
-Tracker.prototype.accept = function (segment) {
+Tracker.prototype.match = function (segment) {
   var current = this.stack[this.stack.length - 1];
+  // Keep a separate stack with the depths of all the optional groups
+  // encountered. To be used to quickly reset to the nearest optional group.
   var optionals = [];
+  // The probe variable corresponds to the current depth relative to the last
+  // group confirmed as entered.
   var probe = 0;
   while (segment !== current.content() || current.count === current.repetition()) {
+    // Check if the current position points to a segment group we have to enter.
     if (Array.isArray(current.content()) && current.count < current.repetition()) {
       // Enter the subgroup.
       probe++;
@@ -89,8 +106,8 @@ Tracker.prototype.accept = function (segment) {
       // Check if we are omitting mandatory content.
       if (current.mandatory() && current.count === 0) {
         if (optionals.length === 0) {
-          // We will never encounter groups here, so we can safely use the
-          // name of the segment stored in it's content property.
+          // We will never encounter groups here, so we can safely use the name
+          // of the segment stored in it's content property.
           throw new Error('A mandatory segment ' + current.content() + ' is missing');
         } else {
           // If we are omitting mandatory content inside a conditional group,
