@@ -18,7 +18,7 @@
  * node-edifact. If not, see <http://www.gnu.org/licenses/>.
  */
 
-'use strict'
+'use strict';
 
 var Configuration = function (config) {
   config = config || {};
@@ -33,7 +33,7 @@ var Configuration = function (config) {
   this.EOT = 4;
 
   this.level = 'UNOA';
-}
+};
 
 /**
  * Set the encoding level.
@@ -46,7 +46,7 @@ Configuration.prototype.encoding = function (level) {
   } else {
     throw Configuration.errors.invalidEncoding(level);
   }
-}
+};
 
 /**
  * Return an array containing the ranges accepted by this configurations
@@ -54,7 +54,8 @@ Configuration.prototype.encoding = function (level) {
  */
 Configuration.prototype.charset = function () {
   return Configuration.charsets[this.level];
-}
+};
+
 /**
  * Return a sorted array containing the code points of the control characters
  * used by this configuration.
@@ -82,12 +83,13 @@ Configuration.prototype.delimiters = function () {
   compareAndSwap(exclude, 1, 2);
 
   return exclude;
-}
+};
+
 Configuration.prototype.toString = function () {
   var result = this.level;
   result += String.fromCharCode(this.CDS, this.DES, this.DM, this.RC, this.ST);
   return result;
-}
+};
 
 Configuration.charsets = {
   UNOA: [[32, 35], [37, 64], [65, 91]],
@@ -102,6 +104,6 @@ Configuration.errors = {
     var message = 'No definition found for character encoding level ' + level;
     return new Error(message);
   }
-}
+};
 
 module.exports = Configuration;

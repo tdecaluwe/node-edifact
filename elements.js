@@ -18,7 +18,7 @@
  * node-edifact. If not, see <http://www.gnu.org/licenses/>.
  */
 
-'use strict'
+'use strict';
 
 var elements = {
   'C002': { requires: 0, components: ['an..3', 'an..17', 'an..3', 'an..35'] },

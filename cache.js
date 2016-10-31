@@ -18,14 +18,14 @@
  * node-edifact. If not, see <http://www.gnu.org/licenses/>.
  */
 
-'use strict'
+'use strict';
 
 var Cache = function (size) {
   this._data = {};
   this._queue = new Array(size + 1);
   this._begin = 0;
   this._end = size;
-}
+};
 
 Cache.prototype.insert = function (key, value) {
   if (!this.contains(key)) {
@@ -37,14 +37,14 @@ Cache.prototype.insert = function (key, value) {
     this._queue[this._end] = key;
   }
   this._data[key] = value;
-}
+};
 
 Cache.prototype.contains = function (key) {
   return this._data.hasOwnProperty(key);
-}
+};
 
 Cache.prototype.get = function (key) {
   return this._data[key];
-}
+};
 
 module.exports = Cache;

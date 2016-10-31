@@ -18,7 +18,7 @@
  * node-edifact. If not, see <http://www.gnu.org/licenses/>.
  */
 
-'use strict'
+'use strict';
 
 module.exports.Counter = require('./counter.js');
 module.exports.Validator = require('./validator.js');

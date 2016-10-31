@@ -102,7 +102,7 @@ Validator.prototype.format = function (formatString) {
   } else {
     var parts;
     if ((parts = /^(a|an|n)(\.\.)?([1-9][0-9]*)?$/.exec(formatString))) {
-      var max = parseInt(parts[3]);
+      var max = parseInt(parts[3], 10);
       var min = parts[2] === '..' ? 0 : max;
       var alpha, numeric;
       switch (parts[1]) {
@@ -115,9 +115,14 @@ Validator.prototype.format = function (formatString) {
       case 'an':
         alpha = true;
         numeric = true;
-        break;
       }
-      return this._formats[formatString] = { alpha: alpha, numeric: numeric, minimum: min, maximum: max };
+      this._formats[formatString] = {
+        alpha: alpha,
+        numeric: numeric,
+        minimum: min,
+        maximum: max
+      };
+      return this._formats[formatString];
     } else {
       throw Validator.errors.invalidFormatString(formatString);
     }

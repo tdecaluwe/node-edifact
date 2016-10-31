@@ -18,7 +18,7 @@
  * node-edifact. If not, see <http://www.gnu.org/licenses/>.
  */
 
-'use strict'
+'use strict';
 
 /**
  * A utility class representing the current position in a segment group.
@@ -29,15 +29,15 @@ var Pointer = function (array, position) {
   this.array = array;
   this.position = position || 0;
   this.count = 0;
-}
+};
 
 Pointer.prototype.content = function () {
   return this.array[this.position].content;
-}
+};
 
 Pointer.prototype.mandatory = function () {
   return this.array[this.position].mandatory;
-}
+};
 
 Pointer.prototype.repetition = function () {
   return this.array[this.position].repetition;

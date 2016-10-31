@@ -18,7 +18,7 @@
  * node-edifact. If not, see <http://www.gnu.org/licenses/>.
  */
 
- 'use strict'
+ 'use strict';
 
 var EventEmitter = require('events');
 
@@ -49,11 +49,11 @@ Translator.prototype.pipe = function (destination) {
     translator.emit('finish');
   });
   destination.emit('pipe', this);
-}
+};
 
 Translator.prototype.decode = function (chunk, encoding, callback) {
   this._destination.write(this._iconv.decode(chunk, this.encoding), encoding, callback);
-}
+};
 
 Translator.prototype.setEncoding = function (encoding) {
   try {
@@ -65,23 +65,24 @@ Translator.prototype.setEncoding = function (encoding) {
     this.encoding = encoding;
     this.write = this.decode;
   }
-}
+};
 
 // Implement a writable stream interface by forwarding the necessary methods to
 // the actual destination.
 Translator.prototype.write = function (chunk, encoding, callback) {
   this._destination.write(chunk, encoding, callback);
-}
+};
+
 Translator.prototype.cork = function () {
   this._destination.cork();
-}
+};
 
 Translator.prototype.uncork = function () {
   this._destination.uncork();
-}
+};
 
 Translator.prototype.end = function (chunk, encoding, callback) {
   this._destination.end(chunk, encoding, callback);
-}
+};
 
 module.exports = Translator;

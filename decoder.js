@@ -18,7 +18,7 @@
  * node-edifact. If not, see <http://www.gnu.org/licenses/>.
  */
 
-'use strict'
+'use strict';
 
 var Parser = require('./parser.js');
 
@@ -43,7 +43,7 @@ var Decoder = function (validator) {
   });
   this._cork = false;
   this._size = 0;
-}
+};
 
 Decoder.prototype = Object.create(Parser.prototype);
 
@@ -58,11 +58,11 @@ Decoder.prototype.write = function (chunk, encoding, callback) {
     }
   }
   return this._size < 16384;
-}
+};
 
 Decoder.prototype.cork = function () {
   this._cork = true;
-}
+};
 
 Decoder.prototype.uncork = function () {
   for (var i = 0; i < this._buffer.length; i++) {
@@ -75,7 +75,7 @@ Decoder.prototype.uncork = function () {
   this._buffer.length = 0;
   this._cork = false;
   this.emit('drain');
-}
+};
 
 Decoder.prototype.end = function (chunk, encoding, callback) {
   if (chunk !== undefined) {
@@ -84,6 +84,6 @@ Decoder.prototype.end = function (chunk, encoding, callback) {
   this.uncork();
   Parser.prototype.end.call(this);
   this.emit('finish');
-}
+};
 
 module.exports = Decoder;

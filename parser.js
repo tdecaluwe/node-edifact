@@ -18,7 +18,7 @@
  * node-edifact. If not, see <http://www.gnu.org/licenses/>.
  */
 
-'use strict'
+'use strict';
 
 var Configuration = require('./configuration.js');
 var Tokenizer = require('./tokenizer.js');
@@ -29,19 +29,19 @@ var opensegment = function (parser) {
   parser._validator.onopensegment(parser._tokenizer.buffer);
   parser.onopensegment(parser._tokenizer.buffer);
   parser._tokenizer.buffer = '';
-}
+};
 
 var closecomponent = function (parser) {
   parser._validator.onclosecomponent(parser._tokenizer);
   parser.oncomponent(parser._tokenizer.buffer);
   parser._tokenizer.buffer = '';
-}
+};
 
 var closesegment = function (parser) {
   parser._validator.onclosesegment();
   parser.onclosesegment();
   parser.state = Parser.states.segment;
-}
+};
 
 /**
  * The `Parser` class encapsulates an online parsing algorithm, similar to a
@@ -58,9 +58,25 @@ var Parser = function (validator) {
   this._configuration = new Configuration();
   this._tokenizer = new Tokenizer(this._configuration);
   this.state = Parser.states.una;
-}
+};
 
 Parser.prototype = Object.create(EventEmitter.prototype);
+
+Parser.prototype.onopensegment = function (segment) {
+  this.emit('opensegment', segment);
+};
+
+Parser.prototype.onclosesegment = function () {
+  this.emit('closesegment');
+};
+
+Parser.prototype.onelement = function () {
+  this.emit('element');
+};
+
+Parser.prototype.oncomponent = function (data) {
+  this.emit('component', data);
+};
 
 /**
  * Set an encoding level.
@@ -73,7 +89,7 @@ Parser.prototype.encoding = function (level) {
   if (this._configuration.level !== previous) {
     this._tokenizer.configure(this._configuration);
   }
-}
+};
 
 /**
  * @summary Ends the EDI interchange.
@@ -88,7 +104,7 @@ Parser.prototype.end = function () {
   } else {
     this.state = Parser.states.una;
   }
-}
+};
 
 Parser.prototype.una = function (chunk) {
   if (/^UNA....\ ./g.test(chunk)) {
@@ -102,7 +118,7 @@ Parser.prototype.una = function (chunk) {
   } else {
     return false;
   }
-}
+};
 
 /* eslint-disable complexity */
 
@@ -191,7 +207,7 @@ Parser.prototype.write = function (chunk) {
     // Consume the control character.
     index++;
   }
-}
+};
 
 /* eslint-enable complexity */
 
@@ -214,6 +230,14 @@ Parser.errors = {
     message += ' at position ' + index;
     return new Error(message);
   }
-}
+};
+
+Parser.defaultValidator = {
+  onopensegment: function () {},
+  onelement: function () {},
+  onopencomponent: function () {},
+  onclosecomponent: function () {},
+  onclosesegment: function () {}
+};
 
 module.exports = Parser;

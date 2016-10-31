@@ -18,10 +18,13 @@
  * node-edifact. If not, see <http://www.gnu.org/licenses/>.
  */
 
-'use strict'
+'use strict';
 
 var Parser = require('./parser.js');
 var Validator = require('./validator.js');
+
+var segments = require('./segments.js');
+var elements = require('./elements.js');
 
 /**
  * The `Reader` class is included for backwards compatibility. It translates an
@@ -34,8 +37,8 @@ var Reader = function () {
   var result = [], elements, components;
   this._validator = new Validator();
   this._parser = new Parser(this._validator);
-  this._validator.define(require('./segments.js'));
-  this._validator.define(require('./elements.js'));
+  this._validator.define(segments);
+  this._validator.define(elements);
   this._result = result;
   this._parser.onopensegment = function (segment) {
     elements = [];
@@ -48,7 +51,7 @@ var Reader = function () {
   this._parser.oncomponent = function (value) {
     components.push(value);
   }
-}
+};
 
 /**
  * Provide the underlying `Validator` with segment or element definitions.
@@ -58,7 +61,7 @@ var Reader = function () {
  */
 Reader.prototype.define = function (definitions) {
   this._validator.define(definitions);
-}
+};
 
 /**
  * @summary Parse a UN/EDIFACT document
@@ -68,6 +71,6 @@ Reader.prototype.define = function (definitions) {
 Reader.prototype.parse = function (document) {
   this._parser.write(document).close();
   return this._result;
-}
+};
 
 module.exports = Reader;

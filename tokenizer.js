@@ -18,7 +18,7 @@
  * node-edifact. If not, see <http://www.gnu.org/licenses/>.
  */
 
-'use strict'
+'use strict';
 
 var Cache = require('./cache.js');
 
@@ -33,7 +33,7 @@ var Tokenizer = function (configuration) {
   this._regex = this._regexes.alphanumeric;
 
   this.buffer = '';
-}
+};
 
 Tokenizer.prototype.configure = function (configuration) {
   var charset;
@@ -57,7 +57,7 @@ Tokenizer.prototype.configure = function (configuration) {
   }
 
   return this;
-}
+};
 
 Tokenizer.prototype.segment = function (chunk, index) {
   var code;
@@ -71,18 +71,18 @@ Tokenizer.prototype.segment = function (chunk, index) {
   this.buffer += chunk.slice(start, index);
 
   return index;
-}
+};
 
 Tokenizer.prototype.data = function (chunk, index) {
   this._regex.lastIndex = index;
   this._regex.test(chunk);
   this.buffer += chunk.slice(index, this._regex.lastIndex);
   return this._regex.lastIndex;
-}
+};
 
 Tokenizer.prototype.release = function (chunk, index) {
   this.buffer += chunk.charAt(index);
-}
+};
 
 Tokenizer.prototype.decimal = function (chunk, index) {
   var result = '.';
@@ -99,27 +99,27 @@ Tokenizer.prototype.decimal = function (chunk, index) {
     throw Tokenizer.errors.secondDecimalMark();
   }
   this.buffer += result;
-}
+};
 
 Tokenizer.prototype.alpha = function () {
   this._regex = this._regexes.alpha;
-}
+};
 
 Tokenizer.prototype.alphanumeric = function () {
   this._regex = this._regexes.alphanumeric;
-}
+};
 
 Tokenizer.prototype.numeric = function () {
   this._regex = this._regexes.numeric;
-}
+};
 
 Tokenizer.prototype.length = function () {
   return this.buffer.length - (this._regex === this._regexes.decimal ? 1 : 0);
-}
+};
 
 Tokenizer.prototype.content = function () {
   return this.buffer;
-}
+};
 
 Tokenizer.compile = function (ranges, chars) {
   var output = '';
@@ -141,7 +141,7 @@ Tokenizer.compile = function (ranges, chars) {
     i++;
   }
   return new RegExp('[' + output + ']*', 'g');
-}
+};
 
 Tokenizer.cache = new Cache(40);
 
@@ -157,6 +157,6 @@ Tokenizer.errors = {
     var message = 'Cannot accept a second decimal mark while parsing a number';
     return new Error(message);
   }
-}
+};
 
 module.exports = Tokenizer;
