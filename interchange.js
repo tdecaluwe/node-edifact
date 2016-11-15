@@ -18,30 +18,40 @@
 
 'use strict'
 
+var Writable = require('stream').Writable;
+var Tracker = require('./tracker.js');
+
 /**
  * Construct a new letterbox accepting EDIFACT envelopes. A letterbox is a
  * Writable stream accepting segment objects. Enveloping is optional, so a
  * single message will also be accepted. Groups inside an envelope are optional
  * as well. When used however, every message should be in a group.
  *
- * @constructs Letterbox
+ * @constructs Interchange
  */
-var Letterbox = function () {
-  var letterbox = this;
+var Interchange = function (path) {
+  var that = this;
+
+  Writable.call(this, {
+    write: this.accept,
+    objectMode: true
+  });
+
+  this.path = path;
 
   this.depth = {};
   this.depth.current = 0;
   this.depth.minimum = 0;
   this.depth.maximum = 2;
 
-  this.next = function () {
-    letterbox.depth.current -= 1;
+  this.next = function (segment) {
+    that.depth.current -= 1;
   };
 }
 
-module.exports = Letterbox;
+Interchange.prototype = Object.create(Writable.prototype);
 
-function open_envelope(name, level) {
+function openEnvelope(name, level) {
   var message = '';
   var depth = this.depth.current + 1;
 
@@ -57,7 +67,7 @@ function open_envelope(name, level) {
   }
 }
 
-function close_envelope(name, level) {
+function closeEnvelope(name, level) {
   var message = '';
   var depth = this.depth.current - 1;
 
@@ -69,24 +79,19 @@ function close_envelope(name, level) {
   }
 }
 
-/**
- * Accept a segment.
- *
- * @param {String} segment A segment object.
- */
-Letterbox.prototype.write = function (segment) {
+Interchange.prototype.accept = function (segment) {
   // Most of the time we are tracking segments in a message. To optimize for
   // this case we start by detecting if we are currently in the middle of a
   // message. We can do this with only one comparison.
   if (this.depth.current > this.depth.maximum) {
-    this.track(segment);
+    this.tracker.accept(segment.name);
   } else {
     switch (segment.name) {
     case 'UNB':
-      open_envelope.call(this, 'interchange', 0);
+      openEnvelope.call(this, 'interchange', 0);
       break;
     case 'UNG':
-      open_envelope.call(this, 'group', 1);
+      openEnvelope.call(this, 'group', 1);
       break;
     case 'UNH':
       if (this.depth.current < this.depth.minimum) {
@@ -94,21 +99,26 @@ Letterbox.prototype.write = function (segment) {
       } else {
         this.depth.maximum = this.depth.current;
         this.depth.current += 1;
-        this.track(segment);
+        this.setup(segment);
       }
       break;
     case 'UNE':
-      close_envelope.call(this, 'group', 1);
+      closeEnvelope.call(this, 'group', 1);
       break;
     case 'UNZ':
-      close_envelope.call(this, 'interchange', 0);
+      closeEnvelope.call(this, 'interchange', 0);
       break;
     default:
       throw Error('Did not expect a ' + segment + ' segment');
     }
   }
+}
+
+Interchange.prototype.setup = function (segment) {
+  this.cork();
+  this.tracker = new Tracker(require(this.path + '/' + segment.components[1]));
+  this.tracker.accept(segment.name);
+  this.uncork();
 };
 
-Letterbox.prototype.track = function () {};
-
-module.exports = Letterbox;
+module.exports = Interchange;
