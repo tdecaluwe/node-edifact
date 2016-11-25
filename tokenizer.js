@@ -51,6 +51,8 @@ Tokenizer.prototype.configure = function (configuration) {
       decimal: this._regexes.decimal
     };
 
+    this.alphanumeric();
+
     Tokenizer.cache.insert(configuration.toString(), this._regexes);
   }
 
