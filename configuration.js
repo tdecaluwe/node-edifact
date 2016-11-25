@@ -1,22 +1,24 @@
 /**
  * @author Tom De Caluwé
  * @copyright 2016 Tom De Caluwé
- * @license Apache-2.0
+ * @license GPL-3.0
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * This file is part of node-edifact.
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * The node-edifact library is free software: you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or (at your
+ * option) any later version.
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Foobar is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+ * A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * node-edifact. If not, see <http://www.gnu.org/licenses/>.
  */
 
-'use strict'
+'use strict';
 
 var Configuration = function (config) {
   config = config || {};
@@ -31,7 +33,7 @@ var Configuration = function (config) {
   this.EOT = 4;
 
   this.level = 'UNOA';
-}
+};
 
 /**
  * Set the encoding level.
@@ -44,7 +46,7 @@ Configuration.prototype.encoding = function (level) {
   } else {
     throw Configuration.errors.invalidEncoding(level);
   }
-}
+};
 
 /**
  * Return an array containing the ranges accepted by this configurations
@@ -52,7 +54,8 @@ Configuration.prototype.encoding = function (level) {
  */
 Configuration.prototype.charset = function () {
   return Configuration.charsets[this.level];
-}
+};
+
 /**
  * Return a sorted array containing the code points of the control characters
  * used by this configuration.
@@ -80,19 +83,20 @@ Configuration.prototype.delimiters = function () {
   compareAndSwap(exclude, 1, 2);
 
   return exclude;
-}
+};
+
 Configuration.prototype.toString = function () {
   var result = this.level;
   result += String.fromCharCode(this.CDS, this.DES, this.DM, this.RC, this.ST);
   return result;
-}
+};
 
 Configuration.charsets = {
   UNOA: [[32, 35], [37, 64], [65, 91]],
   UNOB: [[32, 35], [37, 64], [65, 91], [97, 123]],
-  UNOC: [[32, 128], [160, 256]],
-  UNOY: [[32, 128], [160, 1114112]],
-  UCS2: [[32, 128], [160, 55296], [57344, 65536]]
+  UNOC: [[32, 127], [160, 256]],
+  UNOY: [[32, 127], [160, 1114112]],
+  UCS2: [[32, 127], [160, 55296], [57344, 65536]]
 };
 
 Configuration.errors = {
@@ -100,6 +104,6 @@ Configuration.errors = {
     var message = 'No definition found for character encoding level ' + level;
     return new Error(message);
   }
-}
+};
 
 module.exports = Configuration;

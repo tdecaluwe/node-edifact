@@ -1,25 +1,30 @@
 /**
  * @author Tom De Caluwé
  * @copyright 2016 Tom De Caluwé
- * @license Apache-2.0
+ * @license GPL-3.0
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * This file is part of node-edifact.
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * The node-edifact library is free software: you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or (at your
+ * option) any later version.
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Foobar is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+ * A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * node-edifact. If not, see <http://www.gnu.org/licenses/>.
  */
 
-'use strict'
+'use strict';
 
 var Parser = require('./parser.js');
 var Validator = require('./validator.js');
+
+var segments = require('./segments.js');
+var elements = require('./elements.js');
 
 /**
  * The `Reader` class is included for backwards compatibility. It translates an
@@ -32,8 +37,8 @@ var Reader = function () {
   var result = [], elements, components;
   this._validator = new Validator();
   this._parser = new Parser(this._validator);
-  this._validator.define(require('./segments.js'));
-  this._validator.define(require('./elements.js'));
+  this._validator.define(segments);
+  this._validator.define(elements);
   this._result = result;
   this._parser.onopensegment = function (segment) {
     elements = [];
@@ -46,7 +51,7 @@ var Reader = function () {
   this._parser.oncomponent = function (value) {
     components.push(value);
   }
-}
+};
 
 /**
  * Provide the underlying `Validator` with segment or element definitions.
@@ -56,7 +61,7 @@ var Reader = function () {
  */
 Reader.prototype.define = function (definitions) {
   this._validator.define(definitions);
-}
+};
 
 /**
  * @summary Parse a UN/EDIFACT document
@@ -66,6 +71,6 @@ Reader.prototype.define = function (definitions) {
 Reader.prototype.parse = function (document) {
   this._parser.write(document).close();
   return this._result;
-}
+};
 
 module.exports = Reader;

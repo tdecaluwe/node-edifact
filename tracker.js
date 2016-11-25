@@ -1,22 +1,24 @@
 /**
  * @author Tom De Caluwé
  * @copyright 2016 Tom De Caluwé
- * @license Apache-2.0
+ * @license GPL-3.0
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * This file is part of node-edifact.
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * The node-edifact library is free software: you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or (at your
+ * option) any later version.
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Foobar is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+ * A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * node-edifact. If not, see <http://www.gnu.org/licenses/>.
  */
 
-'use strict'
+'use strict';
 
 /**
  * A utility class representing the current position in a segment group.
@@ -27,15 +29,15 @@ var Pointer = function (array, position) {
   this.array = array;
   this.position = position || 0;
   this.count = 0;
-}
+};
 
 Pointer.prototype.content = function () {
   return this.array[this.position].content;
-}
+};
 
 Pointer.prototype.mandatory = function () {
   return this.array[this.position].mandatory;
-}
+};
 
 Pointer.prototype.repetition = function () {
   return this.array[this.position].repetition;
@@ -60,6 +62,18 @@ Tracker.prototype.reset = function () {
   this.stack[0].count = 0;
 }
 
+/**
+ * Try to accept the next segment.
+ *
+ * @param {String} segment The segment name.
+ * @throws {Error} Throws if a mandatory segment was omitted.
+ * @throws {Error} Throws if unidentified segments are encountered.
+ * @throws {Error} Throws if a segment is repeated too much.
+ */
+Tracker.prototype.accept = function (segment) {
+  this.match(segment);
+}
+
 /* eslint-disable complexity */
 
 /**
@@ -71,11 +85,16 @@ Tracker.prototype.reset = function () {
  * @throws {Error} Throws if unidentified segments are encountered.
  * @throws {Error} Throws if a segment is repeated too much.
  */
-Tracker.prototype.accept = function (segment) {
+Tracker.prototype.match = function (segment) {
   var current = this.stack[this.stack.length - 1];
+  // Keep a separate stack with the depths of all the optional groups
+  // encountered. To be used to quickly reset to the nearest optional group.
   var optionals = [];
+  // The probe variable corresponds to the current depth relative to the last
+  // group confirmed as entered.
   var probe = 0;
   while (segment !== current.content() || current.count === current.repetition()) {
+    // Check if the current position points to a segment group we have to enter.
     if (Array.isArray(current.content()) && current.count < current.repetition()) {
       // Enter the subgroup.
       probe++;
@@ -89,8 +108,8 @@ Tracker.prototype.accept = function (segment) {
       // Check if we are omitting mandatory content.
       if (current.mandatory() && current.count === 0) {
         if (optionals.length === 0) {
-          // We will never encounter groups here, so we can safely use the
-          // name of the segment stored in it's content property.
+          // We will never encounter groups here, so we can safely use the name
+          // of the segment stored in it's content property.
           throw new Error('A mandatory segment ' + current.content() + ' is missing');
         } else {
           // If we are omitting mandatory content inside a conditional group,
