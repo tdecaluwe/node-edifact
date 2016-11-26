@@ -1,5 +1,5 @@
 { "name": "edifact"
-, "version": "1.2.7"
+, "version": "1.2.8"
 , "description": "JavaScript parser for UN/EDIFACT documents."
 , "keywords": ["edifact", "edi", "eancom"]
 , "main": "index.js"
