@@ -1,26 +1,28 @@
-{ "name": "edifact"
-, "version": "1.2.8"
-, "description": "JavaScript parser for UN/EDIFACT documents."
-, "keywords": ["edifact", "edi", "eancom"]
-, "main": "index.js"
-, "engines":
-  { "node": ">=0.12"
-  }
-, "repository":
-  { "type": "git"
-  , "url": "https://github.com/tdecaluwe/node-edifact.git"
-  }
-, "license": "Apache-2.0"
-, "author":
-  { "name": "Tom De Caluwé"
-  , "email": "decaluwe.t@gmail.com"
-  }
-, "devDependencies":
-  { "jasmine": "^2.4"
-  , "istanbul": "^0.4"
-  }
-, "scripts":
-  { "test": "istanbul cover -i \"[^ies]*.js\" --include-all-sources jasmine"
-  }
-, "tonicExampleFilename": "examples/definitions.js"
+{
+  "name": "edifact",
+  "version": "1.2.8",
+  "description": "JavaScript parser for UN/EDIFACT documents.",
+  "keywords": ["edifact", "edi", "eancom"],
+  "main": "index.js",
+  "engines": {
+    "node": ">=0.12"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/tdecaluwe/node-edifact.git"
+  },
+  "license": "Apache-2.0",
+  "author": {
+    "name": "Tom De Caluwé",
+    "email": "decaluwe.t@gmail.com"
+  },
+  "devDependencies": {
+    "jasmine": "^2.4",
+    "istanbul": "^0.4"
+  },
+  "scripts": {
+    "test": "jasmine",
+    "coverage": "istanbul cover -i \"[^ies]*.js\" --include-all-sources jasmine"
+  },
+  "tonicExampleFilename": "examples/definitions.js"
 }

@@ -1,5 +1,6 @@
 [![view on npm](http://img.shields.io/npm/v/edifact.svg)](https://www.npmjs.org/package/edifact)
 [![npm module downloads per month](http://img.shields.io/npm/dm/edifact.svg)](https://www.npmjs.org/package/edifact)
+[![circleci status](https://img.shields.io/circleci/project/github/tdecaluwe/node-edifact.svg)](https://circleci.com/gh/tdecaluwe/node-edifact)
 
 # node-edifact
 
