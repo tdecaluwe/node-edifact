@@ -39,6 +39,7 @@ Tokenizer.prototype.configure = function (configuration) {
 
   if (Tokenizer.cache.contains(configuration.toString())) {
     this._regexes = Tokenizer.cache.get(configuration.toString());
+    this.alphanumeric();
   } else {
     // Reconfigure if the charset was changed.
     charset = configuration.charset();
