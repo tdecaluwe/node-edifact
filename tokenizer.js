@@ -28,7 +28,6 @@ var Tokenizer = function (configuration) {
   };
 
   this.configure(configuration);
-  this._regex = this._regexes.alphanumeric;
 
   this.buffer = '';
 }
@@ -51,10 +50,10 @@ Tokenizer.prototype.configure = function (configuration) {
       decimal: this._regexes.decimal
     };
 
-    this.alphanumeric();
-
     Tokenizer.cache.insert(configuration.toString(), this._regexes);
   }
+
+  this.alphanumeric();
 
   return this;
 }
