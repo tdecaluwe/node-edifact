@@ -64,7 +64,8 @@ Reader.prototype.define = function (definitions) {
  * @returns {Array} An array of segment objects.
  */
 Reader.prototype.parse = function (document) {
-  this._parser.write(document).close();
+  this._parser.write(document);
+  this._parser.close();
   return this._result;
 }
 
