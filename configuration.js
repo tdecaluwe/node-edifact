@@ -26,6 +26,7 @@ var Configuration = function (config) {
   this.CDS = config.componentDataSeparator || 58;
   this.DM = config.decimalMark || 46;
   this.RC = config.releaseCharacter || 63;
+  this.MIN = 45;
   this.LF = 10;
   this.CR = 13;
   this.EOT = 4;

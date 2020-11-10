@@ -201,13 +201,10 @@ Validator.prototype.onopencomponent = function (buffer) {
 }
 
 Validator.prototype.onclosecomponent = function (buffer) {
-  var length;
-
   switch (this._state) {
   case Validator.states.all:
     // Component validation is only needed when validation is set to all.
-    length = buffer.length();
-    if (length < this._minimum || length > this._maximum) {
+    if (buffer.length < this._minimum || buffer.length > this._maximum) {
       throw Validator.errors.invalidData(buffer.content());
     }
   }

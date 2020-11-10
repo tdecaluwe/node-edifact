@@ -28,8 +28,16 @@ var Tokenizer = function (configuration) {
   };
 
   this.configure(configuration);
+  this.reset();
+}
 
+Tokenizer.prototype = {
+  get length () { return this.buffer.length - this.offset; }
+};
+
+Tokenizer.prototype.reset = function () {
   this.buffer = '';
+  this.offset = 0;
 }
 
 Tokenizer.prototype.configure = function (configuration) {
@@ -83,12 +91,26 @@ Tokenizer.prototype.release = function (chunk, index) {
   this.buffer += chunk.charAt(index);
 }
 
+Tokenizer.prototype.minus = function () {
+  switch (this._regex) {
+  case this._regexes.decimal:
+  case this._regexes.numeric:
+    this.offset += 1;
+    if (this.buffer.length !== 0) {
+      throw Tokenizer.errors.unexpectedMinus();
+    }
+  }
+
+  this.buffer += '-';
+}
+
 Tokenizer.prototype.decimal = function (chunk, index) {
   var result = '.';
 
   switch (this._regex) {
   case this._regexes.numeric:
     this._regex = this._regexes.decimal;
+    this.offset += 1;
     break;
   case this._regexes.alpha:
   case this._regexes.alphanumeric:
@@ -97,6 +119,7 @@ Tokenizer.prototype.decimal = function (chunk, index) {
   case this._regexes.decimal:
     throw Tokenizer.errors.secondDecimalMark();
   }
+
   this.buffer += result;
 }
 
@@ -110,10 +133,6 @@ Tokenizer.prototype.alphanumeric = function () {
 
 Tokenizer.prototype.numeric = function () {
   this._regex = this._regexes.numeric;
-}
-
-Tokenizer.prototype.length = function () {
-  return this.buffer.length - (this._regex === this._regexes.decimal ? 1 : 0);
 }
 
 Tokenizer.prototype.content = function () {
@@ -154,6 +173,10 @@ Tokenizer.modes = {
 Tokenizer.errors = {
   secondDecimalMark: function () {
     var message = 'Cannot accept a second decimal mark while parsing a number';
+    return new Error(message);
+  },
+  unexpectedMinus: function () {
+    var message = 'Can only accept a minus at the start of numeric data';
     return new Error(message);
   }
 }

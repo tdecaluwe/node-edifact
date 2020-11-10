@@ -123,7 +123,7 @@ Parser.prototype.write = function (chunk) {
       // want the parser to detect another UNA header, in such a case, we put it
       // in the segment state.
       this.state = Parser.states.segment;
-      // Continue to read the first segment, otherwise the index increment add
+      // Continue to read the first segment, otherwise the index increment at
       // the end of the loop would cause the parser to skip the first character.
     case Parser.states.segment:
       index = this._tokenizer.segment(chunk, index);
@@ -133,7 +133,7 @@ Parser.prototype.write = function (chunk) {
         this._validator.onopensegment(this._tokenizer.buffer);
         this.onopensegment(this._tokenizer.buffer);
         this.state = Parser.states.element;
-        this._tokenizer.buffer = '';
+        this._tokenizer.reset();
         break;
       case this._configuration.ST:
         this._validator.onopensegment(this._tokenizer.buffer);
@@ -141,7 +141,7 @@ Parser.prototype.write = function (chunk) {
         this._validator.onclosesegment(this);
         this.onclosesegment();
         this.state = Parser.states.segment;
-        this._tokenizer.buffer = '';
+        this._tokenizer.reset();
         break;
       case this._configuration.EOT:
       case this._configuration.CR:
@@ -170,13 +170,13 @@ Parser.prototype.write = function (chunk) {
         this._validator.onclosecomponent(this._tokenizer);
         this.oncomponent(this._tokenizer.buffer);
         this.state = Parser.states.component;
-        this._tokenizer.buffer = '';
+        this._tokenizer.reset();
         break;
       case this._configuration.DES:
         this._validator.onclosecomponent(this._tokenizer);
         this.oncomponent(this._tokenizer.buffer);
         this.state = Parser.states.element;
-        this._tokenizer.buffer = '';
+        this._tokenizer.reset();
         break;
       case this._configuration.ST:
         this._validator.onclosecomponent(this._tokenizer);
@@ -184,7 +184,7 @@ Parser.prototype.write = function (chunk) {
         this._validator.onclosesegment();
         this.onclosesegment();
         this.state = Parser.states.segment;
-        this._tokenizer.buffer = '';
+        this._tokenizer.reset();
         break;
       case this._configuration.DM:
         this._tokenizer.decimal(chunk, index);
@@ -193,6 +193,10 @@ Parser.prototype.write = function (chunk) {
       case this._configuration.RC:
         index++;
         this._tokenizer.release(chunk, index);
+        this.state = Parser.states.data;
+        break;
+      case this._configuration.MIN:
+        this._tokenizer.minus();
         this.state = Parser.states.data;
         break;
       case this._configuration.EOT:
