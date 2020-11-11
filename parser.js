@@ -31,11 +31,13 @@ var EventEmitter = require('events');
  * @constructs Parser
  * @param {Validator} [validator] Accepts a validator class for handling
  * data validation.
+ * @param {Object} [config] - Custom configuration options.
  */
-var Parser = function (validator) {
+var Parser = function (validator, config) {
   EventEmitter.apply(this);
+
   this._validator = validator || Parser.defaultValidator;
-  this._configuration = new Configuration();
+  this._configuration = new Configuration(config);
   this._tokenizer = new Tokenizer(this._configuration);
   this.state = Parser.states.empty;
   this.buffer = '';
@@ -60,14 +62,27 @@ Parser.prototype.oncomponent = function (data) {
 }
 
 /**
+ * Set custom options in the configuration.
+ * @param {Object} config - An object with custom options.
+ */
+Parser.prototype.configure = function (config) {
+  var previous = this._configuration.toString();
+
+  this._configuration.configure(config);
+  if (this._configuration.toString() !== previous) {
+    this._tokenizer.configure(this._configuration);
+  }
+}
+
+/**
  * Set an encoding level.
  * @param {String} level - The encoding level name.
  */
 Parser.prototype.encoding = function (level) {
-  var previous = this._configuration.level;
+  var previous = this._configuration.toString();
 
   this._configuration.encoding(level);
-  if (this._configuration.level !== previous) {
+  if (this._configuration.toString() !== previous) {
     this._tokenizer.configure(this._configuration);
   }
 }

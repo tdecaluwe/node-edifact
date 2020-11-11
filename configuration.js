@@ -19,6 +19,22 @@
 'use strict'
 
 var Configuration = function (config) {
+  this.level = 'UNOA';
+
+  this.MIN = 45;
+  this.LF = 10;
+  this.CR = 13;
+  this.EOT = 4;
+
+  this.configure(config);
+}
+
+/**
+ * Configure custom delimiters.
+ *
+ * @param {Object} config - An object containing custom options.
+ */
+Configuration.prototype.configure = function (config) {
   config = config || {};
 
   this.ST = config.segmentTerminator || 39;
@@ -26,12 +42,6 @@ var Configuration = function (config) {
   this.CDS = config.componentDataSeparator || 58;
   this.DM = config.decimalMark || 46;
   this.RC = config.releaseCharacter || 63;
-  this.MIN = 45;
-  this.LF = 10;
-  this.CR = 13;
-  this.EOT = 4;
-
-  this.level = 'UNOA';
 }
 
 /**
