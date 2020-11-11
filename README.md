@@ -72,17 +72,102 @@ The module can be installed through:
 npm install edifact
 ```
 
-It's only dependency is the node `events` library. Keep in mind that this is an
-ES6 library. It currently can be used with node 4.0 or higher. A suite of tests
+Its only dependency is the node `events` library. Keep in mind that this is an
+ES6 library. It currently can be used with node 6.4 or higher. A suite of tests
 is included which can be run with the `jasmine-es6` package.
 
 ## Overview
 
-This module is build around a central `Parser` class which provides the core
-UN/EDIFACT parsing functionality. It only exposes two methods, the `write()`
-method to write some data to the parser and the `end()` method to close an EDI
+This module is built around a central `Parser` class which provides the core
+UN/EDIFACT parsing functionality. It exposes two methods, the `write()` method
+to write some data to the parser and the `end()` method to close an EDI
 interchange. Data read by the parser can be read by using hooks which will be
 called on specific parsing events.
+
+### Configuring the parser
+
+The `Parser` class currently supports any of the `UNOA`, `UNOB`, `UNOC`, `UNOY`
+and `UCS2` encoding levels. Furthermore, the parser will read any custom
+delimiters from the `UNA` header. If such a header is not present in the
+document, the delimiters can also be configured manually. The delimiters should
+be specified using their character codes. An example:
+
+```javascript
+let parser = new Parser();
+
+parser.encoding('UNOC');
+parser.configure({
+  segmentTerminator: 39,
+  dataElementSeparator: 43,
+  componentDataSeparator: 58,
+  decimalMark: 46,
+  releaseCharacter: 63,
+});
+```
+
+### Parsing events
+
+The parser can be used by listening to the following events:
+
+| Event | Description |
+| ----: | :---------- |
+| `opensegment` | A new segment is started. The name of the segment is passed as the argument. |
+| `element` | A new element is added. This only marks the start of the element, the data will follow through the `component` events. |
+| `component` | A component is added to the element. The data is passed on as an argument. |
+| `closesegment` | The current segment is terminated. |
+
+For all textual fields the data will be passed on literally to the `component`
+event handler. For numeric fields, the decimal mark will be replaced by a point
+(`12,4` becomes `12.4` if the decimal mark is a comma). Keep in mind though that
+all components will be parsed as alphanumeric fields unless a validator is
+used! Only if the component is defined as numeric in the validator can it be
+parsed as such.
+
+### Performance
+
+Parsing speed including validation but without matching against a segment table
+is around 20Mbps. Around 30% of the time spent seems to be needed for the
+validation part.
+
+If performance is critical the event callbacks can also be directly defined as
+methods on the `Parser` instance. Defining an event callback `on('opensegment',
+callback)` then becomes:
+
+```javascript
+let parser = new Parser();
+let callback = function (segment) { ... };
+
+parser.onopensegment = callback;
+```
+
+Keep in mind that this avoids any `opensegment` events to be produced and as
+such, also its associated overhead.
+
+## Message validation
+
+The validation of the message can be seen as two independent tasks:
+
+* On the one hand the data contained in the elements and components need to
+be validated against their format.
+* On the other hand the structure of the segments needs to be validated.
+
+### Data validation
+
+Validation of the element and component data can be achieved through the
+`Validator` class:
+
+```javascript
+var validator = new Validator();
+var parser = new Parser();
+
+validator.define(segments);
+validator.define(elements);
+```
+
+However the `Validator` instance will only validate elements and components
+from segments and elements with a corresponding definition. These definitions
+can be provided through the `define()` method. Read on to learn more about their
+syntax.
 
 ### Segment and element definitions
 
@@ -98,9 +183,11 @@ An example of a segment definition:
 }
 ```
 
-The `requires` property indicates the number of elements which are required to
-obtain a valid segment. The `elements` array contains the names of the elements
-which should be provided. Definitions can also be provided for these elements:
+The `elements` array contains the names of the elements that should be
+provided. The `requires` property indicates the number of elements which are
+required to obtain a valid segment. Any additional elements are considered
+optional. Definitions can also be provided to define the structure of the
+elements:
 
 ```json
 {
@@ -119,32 +206,76 @@ An incomplete set of definitions is included with the library in the files
 `segments.js` and `elements.js` and can be included as follows:
 
 ```javascript
-var segments = require('edifact/segments.js');
-var elements = require('edifact/elements.js');
+var segments = require('edifact/segments');
+var elements = require('edifact/elements');
 ```
 
 A working example using segment and element definitions can be found in the
 `examples` directory.
 
-### Performance
+### Structural validation
 
-Parsing speed including validation but without matching against a segment table
-is around 20Mbps. Around 30% of the time spent seems to be needed for the
-validation part.
+Using a parser in conjuction with a `Validator` instance allows validation of
+isolated segments, elements and components. However, the parser can also be
+extended to validate the message structure. This can be accomplished by using a
+`Tracker` instance that will validate the received segments against a segment
+table. A set of example EDIFACT messages is included in the module in JSON
+format. To extend your parser, the segment can be passed on to the `Tracker` in
+the `opensegment` event handler:
 
-If performance is critical the event callbacks can also be directly defined as
-methods on the `Parser` instance. Defining an event callback `on('opensegment',
-callback)` then becomes:
+```javascript
+var table = require('edifact/messages/APERAK');
 
+var parser = new Parser();
+var tracker = new Tracker(table);
+
+parser.on('opensegment', function (segment) {
+  if (tracker.accept(segment)) doSomething(); // The segment matches.
+});
+
+tracker.on('error', function (segment) {
+  // Handle the error. Reject the message or ignore the segment.
+});
 ```
-let parser = new Parser();
-let callback = function (segment) { ... };
 
-parser.onopensegment = callback;
+Invalid input will generally fall in one of the following categories:
+
+* A mandatory segment is skipped.
+* An invalid segment is provided in the input.
+* A segment is repeated too much.
+
+However, the `Tracker` instance cannot generally discern between those cases
+since it will simply run through the segment table until a match is found. It
+will as a consequence fail in one of the following ways:
+
+* The end of the segment table is reached.
+* The provided segment doesn't match a mandatory segment in the segment table.
+* If either of the above conditions results from a segment that exceeded its
+allowed number of repetitions, the `Tracker` instance will detect this and
+trigger a more appropriate error.
+
+When such a situation is encountered, an `error` event will be fired. It is up
+to the user to handle the error. In the error handler, the current segment can
+be accessed through `this.segment`. The current position in the segment table
+can be retrieved through `this.pointer`.
+
+If you want to build your own segment tables, please take a look in the
+`messages` folder to get the syntax right. Every segment in the segment table is
+of the following format:
+
+```json
+{ "content": "UNH", "mandatory": true, "repetition": 1 }
 ```
 
-Keep in mind that this avoids any `opensegment` events to be produced and as
-such, also it's associated overhead.
+A segment group can be written as follows:
+
+```json
+{ "content": [
+  { "content": "NAD", "mandatory": true, "repetition": 1 },
+  { "content": "CTA", "mandatory": false, "repetition": 9 },
+  { "content": "COM", "mandatory": false, "repetition": 9 }
+], "mandatory": false, "repetition": 9 }
+```
 
 ## Classes
 
@@ -169,7 +300,9 @@ new Parser([validator])
 
 | Function | Description |
 | -------: | :---------- |
-| `on(event,callback)` | Add a listener for a specific event. The event can be any of `opensegment`, `element`, `component` and `closesegment`. |
+| `configure(config)` | Configure any custom delimiters |
+| `encoding(level)` | Set one of the predefined encoding levels |
+| `on(event,callback)` | Add a listener for a specific event. The event can be any of `opensegment`, `element`, `component` and `closesegment` |
 | `write(chunk)` | Write a chunk of data to the parser |
 | `end()` | Terminate the EDI interchange |
 
@@ -185,8 +318,9 @@ new Tracker(table)
 
 | Function | Description |
 | -------: | :---------- |
-| `accept(segment)` | Match a segment to the message structure and update the current position of the tracker. |
-| `reset()` | Reset the tracker to the initial position of the current segment table. |
+| `accept(segment)` | Match a segment to the message structure and update the current position of the tracker |
+| `on(event,callback)` | Use this to add a listener for the `error` event |
+| `reset()` | Reset the tracker to the initial position of the current segment table |
 
 <a name="Validator"></a>
 ### Validator
@@ -201,16 +335,16 @@ new Validator()
 
 | Function | Description |
 | -------: | :---------- |
-| `disable()` | Disable validation. |
-| `enable()` | Enable validation. |
-| `define(definitions)` | Provision the validator with an array of segment and element definitions. |
+| `disable()` | Disable validation |
+| `enable()` | Enable validation |
+| `define(definitions)` | Provision the validator with an array of segment and element definitions |
 | `onopensegment(segment)` | Start validation of a new segment |
 | `onelement()` | Add an element |
-| `onopencomponent(buffer)` | Open a component |
-| `onclosecomponent(buffer)` | Close a component |
+| `onopencomponent(tokenizer)` | Open a component |
+| `onclosecomponent(tokenizer)` | Close a component |
 | `onclosesegment()` | Finish the segment |
 
-The `buffer` argument to both `onopencomponent()` and `onclosecomponent()`
+The `tokenizer` argument to both `onopencomponent()` and `onclosecomponent()`
 should provide three methods `alpha()`, `alphanumeric()`, and `numeric()`
-allowing the mode of the buffer to be set. It should also expose a `length()`
-method to check the length of the data currently in the buffer.
+allowing the mode of the buffer to be set. It should also expose a `length`
+property to check the length of the data currently in the buffer.
