@@ -326,8 +326,12 @@ new Tracker(table)
 ### Validator
 
 The `Validator` can be used to validate segments, elements and components. It
-keeps track of element and component counts and checks if the component types
-match those in the segment definition.
+keeps track of element and component counts and will ensure the correct data
+syntax.
+
+Note that the `Validator` will not throw any errors though, since it only keeps
+the `Parser` from consuming any invalid data. It will be the parser that throws
+the error when it encounters data that it cannot consume.
 
 ```
 new Validator()
@@ -348,3 +352,24 @@ The `tokenizer` argument to both `onopencomponent()` and `onclosecomponent()`
 should provide three methods `alpha()`, `alphanumeric()`, and `numeric()`
 allowing the mode of the buffer to be set. It should also expose a `length`
 property to check the length of the data currently in the buffer.
+
+<a name="Counter"></a>
+### Counter
+
+The `Counter` class implements the same interface as `the `Validator` class and
+can also be used as a validator when constructing a new `Parser` instance.
+However it doesn't perform any validation. It only keeps track of segment,
+element and component counts. Component counts are reset when starting a new
+element, just like element counts are reset when closing the segment.
+
+```
+new Counter()
+```
+
+| Function | Description |
+| -------: | :---------- |
+| `onopensegment()` | Start a new segment |
+| `onelement()` | Add an element |
+| `onopencomponent()` | Open a component |
+| `onclosecomponent()` | Close a component |
+| `onclosesegment()` | Finish the segment |
