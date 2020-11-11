@@ -45,8 +45,6 @@ Tracker.prototype.reset = function () {
   this.stack[0].count = 0;
 }
 
-/* eslint-disable complexity */
-
 /**
  * Match a segment to the message table and update the current
  * position of the tracker.
@@ -74,7 +72,7 @@ Tracker.prototype.accept = function (segment) {
     // Check if the current position is not a group.
     if (content.constructor === String) {
       if (pointer.repetition() === pointer.count && content === segment) {
-        error = new Error(`Segment ${segment} was repeated too much`);
+        error.message = `Segment ${segment} was repeated too much`;
       }
     }
 
@@ -84,6 +82,8 @@ Tracker.prototype.accept = function (segment) {
 
   return result;
 }
+
+/* eslint-disable complexity */
 
 Tracker.prototype.process = function (segment, metadata) {
   var current = this.stack[this.stack.length - 1];
