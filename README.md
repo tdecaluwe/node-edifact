@@ -123,6 +123,21 @@ all components will be parsed as alphanumeric fields unless a validator is
 used! Only if the component is defined as numeric in the validator can it be
 parsed as such.
 
+### Converting EDIFACT to JSON
+
+While the `Parser` class offers a flexible option to write your own EDIFACT
+applications, you might only be looking for an easy way read EDIFACT documents.
+The `Reader` class offers an easy to use interface:
+
+```javascript
+let reader = new Reader({ autoDetectEncoding: true });
+let result = reader.parse(document);
+```
+
+The `parse()` method returns an array of segments. Each segment is an object
+containing a segment `name` and the list of `elements` as an array of arrays
+with the actual component data.
+
 ### Performance
 
 Parsing speed including validation but without matching against a segment table
@@ -282,6 +297,7 @@ A segment group can be written as follows:
 | Class | Description |
 | ----: | :---------- |
 | [Parser](#Parser) | The `Parser` class encapsulates an online parsing algorithm. By itself it doesn't do anything useful, however the parser can be extended through several event callbacks. |
+| [Reader](#Reader) | The `Reader` offers a fast an easy to use interface to convert EDIFACT messages to a JSON structure. |
 | [Tracker](#Tracker) | A utility class which validates segment order against a given message structure. |
 | [Validator](#Validator) | The `Validator` can be used as an add-on to the `Parser` class, to enable validation of segments, elements and components. This class implements a tolerant validator, only segments and elements for which definitions are provided will be validated. Other segments or elements will pass through untouched. Validation includes:<ul><li>Checking data element counts, including mandatory elements.</li><li>Checking component counts, including mandatory components.</li><li>Checking components against their required format.</li> |
 | [Counter](#Counter) | The `Counter` class can be used as a validator for the `Parser` class. However it doesn't perform any validation, it only keeps track of segment, element and component counts. Component counts are reset when starting a new element, just like element counts are reset when closing the segment. |
@@ -305,6 +321,23 @@ new Parser([validator])
 | `on(event,callback)` | Add a listener for a specific event. The event can be any of `opensegment`, `element`, `component` and `closesegment` |
 | `write(chunk)` | Write a chunk of data to the parser |
 | `end()` | Terminate the EDI interchange |
+
+<a name="Parser"></a>
+### Reader
+
+The `Reader` offers a fast an easy to use interface to convert EDIFACT messages
+to a JSON structure. Furthermore, the `Reader` class can also autodetect the
+message encoding (this feature can be turned off by passing
+`autoDetectEncoding: false` as an option to the constructor).
+
+```
+new Reader(options)
+```
+
+| Function | Description |
+| -------: | :---------- |
+| `parse(document)` | Parse a document and return the result as an array of segments. |
+| `define(definitions)` | Provide the underlying `Validator` instance with definitions. |
 
 <a name="Tracker"></a>
 ### Tracker

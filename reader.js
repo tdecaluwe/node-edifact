@@ -28,22 +28,41 @@ var Validator = require('./validator.js');
  * arrays. The class exposes a `parse()` method which accepts the document as a
  * string.
  */
-var Reader = function () {
-  var result = [], elements, components;
+var Reader = function (config) {
+  config = Object.assign({
+    autoDetectEncoding: true
+  }, config);
+
+  var autoDetect = config.autoDetectEncoding;
+
   this._validator = new Validator();
-  this._parser = new Parser(this._validator);
   this._validator.define(require('./segments.js'));
   this._validator.define(require('./elements.js'));
-  this._result = result;
+
+  this._result = [];
+  this._parser = new Parser(this._validator);
+
+  var result = this._result, elements, components;
+  var isSyntaxIdentifier = false;
+
   this._parser.onopensegment = function (segment) {
-    elements = [];
-    result.push({ name: segment, elements: elements });
+    if (autoDetect && segment === 'UNB') {
+      isSyntaxIdentifier = true;
+    }
+
+    result.push({ name: segment, elements: elements = [] });
   }
+
   this._parser.onelement = function () {
-    components = [];
-    elements.push(components);
+    elements.push(components = []);
   }
+
   this._parser.oncomponent = function (value) {
+    if (autoDetect && isSyntaxIdentifier === true) {
+      this.encoding(value);
+      isSyntaxIdentifier = false;
+    }
+
     components.push(value);
   }
 }
@@ -65,8 +84,12 @@ Reader.prototype.define = function (definitions) {
  */
 Reader.prototype.parse = function (document) {
   this._parser.write(document);
-  this._parser.close();
-  return this._result;
+  this._parser.end();
+
+  var segments = Array.from(this._result);
+  this._result.length = 0;
+  
+  return segments;
 }
 
 module.exports = Reader;
