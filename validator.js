@@ -94,21 +94,19 @@ Validator.prototype.format = function (formatString) {
       var max = parseInt(parts[3]);
       var min = parts[2] === '..' ? 0 : max;
       var alpha, numeric;
-      switch (parts[1]) {
-      case 'a':
-        alpha = true;
-        break;
-      case 'n':
-        numeric = true;
-        break;
-      case 'an':
-        alpha = true;
-        numeric = true;
-        break;
-      }
-      return this._formats[formatString] = { alpha: alpha, numeric: numeric, minimum: min, maximum: max };
+
+      if (parts[1] === 'an') alpha = numeric = true;
+      else if (parts[1] === 'a') alpha = true;
+      else if (parts[1] === 'n') numeric = true;
+
+      return this._formats[formatString] = {
+        alpha: alpha,
+        numeric: numeric,
+        minimum: min,
+        maximum: max
+      };
     } else {
-      throw Validator.errors.invalidFormatString(formatString);
+      throw Validator.errors.invalidFormatString({ format: formatString });
     }
   }
 }
@@ -123,6 +121,7 @@ Validator.prototype.onopensegment = function (segment) {
   case Validator.states.elements:
   case Validator.states.segments:
   case Validator.states.enable:
+    this._current = segment;
     // Try to retrieve a segment definition if validation is not turned off.
     if ((this._segment = this._segments[segment])) {
       // The onelement function will close the previous element, however we
@@ -141,20 +140,29 @@ Validator.prototype.onopensegment = function (segment) {
  * @summary Start validation for a new element.
  */
 Validator.prototype.onelement = function () {
+  var maximum, minimum;
   var name;
 
   switch (this._state) {
   case Validator.states.all:
     // Check component count of the previous enter.
-    if (this._counts.component < this._element.requires || this._counts.component > this._element.components.length) {
+    minimum = this._element.requires;
+    maximum = this._element.components.length;
+    if (this._counts.component < minimum || this._counts.component > maximum) {
       name = this._segment.elements[this._counts.element];
-      throw Validator.errors.countError('Element', name, this._element, this._counts.component);
+      throw Validator.errors.countError({
+        type: 'element',
+        name: name,
+        definition: this._element,
+        count: this._counts.component
+      });
     }
     // Fall through to continue with element count validation.
   case Validator.states.enter:
     // Skip component count checks for the first element.
   case Validator.states.elements:
-    if ((this._element = this._elements[this._segment.elements[this._counts.element]])) {
+    name = this._segment.elements[this._counts.element];
+    if ((this._element = this._elements[name])) {
       this._state = Validator.states.all;
     } else {
       this._state = Validator.states.elements;
@@ -166,46 +174,57 @@ Validator.prototype.onelement = function () {
 
 /**
  * @summary Start validation for a new component.
- * @param {Object} buffer - An object which implements the buffer interface.
+ * @param {Object} tokenizer - A tokenizer object.
  *
- * The buffer object should allow the mode to be set to alpha, numeric or
+ * The tokenizer object should allow the mode to be set to alpha, numeric or
  * alphanumeric with their corresponding methods.
  */
-Validator.prototype.onopencomponent = function (buffer) {
+Validator.prototype.onopencomponent = function (tokenizer) {
   switch (this._state) {
   case Validator.states.all:
+    if (this._counts.component + 1 > this._element.components.length) {
+      throw new Validator.errors.countError({
+        type: 'element',
+        name: this._segment.elements[this._counts.element],
+        definition: this._element,
+        count: this._counts.component + 1
+      });
+    }
+
     // Retrieve a component definition if validation is set to all.
-    this._component = this.format(this._element.components[this._counts.component]);
+    let definition = this._element.components[this._counts.component];
+    this._component = this.format(definition);
     this._minimum = this._component.minimum;
     this._maximum = this._component.maximum;
     // Set the corresponding buffer mode.
     if (this._component.alpha) {
       if (this._component.numeric) {
-        buffer.alphanumeric();
+        tokenizer.alphanumeric();
       } else {
-        buffer.alpha();
+        tokenizer.alpha();
       }
     } else {
       if (this._component.numeric) {
-        buffer.numeric();
+        tokenizer.numeric();
       } else {
-        buffer.alphanumeric();
+        tokenizer.alphanumeric();
       }
     }
     break;
   default:
     // Set the buffer to it's default mode.
-    buffer.alphanumeric();
+    tokenizer.alphanumeric();
   }
+
   this._counts.component += 1;
 }
 
-Validator.prototype.onclosecomponent = function (buffer) {
+Validator.prototype.onclosecomponent = function (tokenizer) {
   switch (this._state) {
   case Validator.states.all:
     // Component validation is only needed when validation is set to all.
-    if (buffer.length < this._minimum || buffer.length > this._maximum) {
-      throw Validator.errors.invalidData(buffer.content());
+    if (tokenizer.length < this._minimum || tokenizer.length > this._maximum) {
+      throw Validator.errors.invalidData({ data: tokenizer.content() });
     }
   }
 }
@@ -213,20 +232,34 @@ Validator.prototype.onclosecomponent = function (buffer) {
 /**
  * @summary Finish validation for the current segment.
  */
-Validator.prototype.onclosesegment = function (segment) {
+Validator.prototype.onclosesegment = function () {
+  var minimum, maximum;
   var name;
 
   switch (this._state) {
   case Validator.states.all:
-    if (this._counts.component < this._element.requires || this._counts.component > this._element.components.length) {
-      name = this._segment.elements[this._counts.element];
-      throw Validator.errors.countError('Element', name, this._element, this._counts.component);
+    minimum = this._element.requires;
+    maximum = this._element.components.length;
+    if (this._counts.component < minimum || this._counts.component > maximum) {
+      name = this._current;
+      throw Validator.errors.countError({
+        type: 'element',
+        name: name,
+        definition: this._element,
+        count: this._counts.component
+      });
     }
     // Fall through to continue with element count validation.
   case Validator.states.elements:
-    if (this._counts.element < this._segment.requires || this._counts.element > this._segment.elements.length) {
-      name = segment;
-      throw Validator.errors.countError('Segment', name, this._segment, this._counts.element);
+    minimum = this._segment.requires;
+    maximum = this._segment.elements.length;
+    if (this._counts.element < minimum || this._counts.element > maximum) {
+      throw Validator.errors.countError({
+        type: 'segment',
+        name: this._current,
+        definition: this._segment,
+        count: this._counts.element
+      });
     }
   }
 }
@@ -251,29 +284,29 @@ Validator.states = {
 };
 
 Validator.errors = {
-  invalidData: function (data) {
+  invalidData: function ({ data }) {
     var message = '';
     message += 'Could not accept ' + data;
     return new Error(message);
   },
-  invalidFormatString: function (formatString) {
-    return new Error('Invalid format string ' + formatString);
+  invalidFormatString: function ({ format }) {
+    return new Error('Invalid format string ' + format);
   },
-  countError: function (type, name, definition, count) {
+  countError: function ({ type, name, definition, count }) {
+    var minimum = definition.requires, maximum;
     var array;
-    var start = type + ' ' + name, end;
-    if (type === 'Segment') {
-      array = 'elements';
-    } else {
-      array = 'components';
-    }
+    var start, end;
+    
+    start = `The ${type} ${name}${count < minimum ? ' only' : ''}`;
+    array = type === 'segment' ? 'elements' : 'components';
+
     if (count < definition.requires) {
-      start += ' only';
-      end = ' but requires at least ' + definition.requires;
+      end = 'requires at least ' + definition.requires;
     } else {
-      end = ' but accepts at most ' + definition[array].length;
+      end = 'accepts at most ' + definition[array].length;
     }
-    return new Error(start + ' got ' + count + ' ' + array + end);
+
+    return new Error(`${start} got ${count} ${array} but ${end}`);
   }
 };
 
