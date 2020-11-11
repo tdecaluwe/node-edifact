@@ -18,28 +18,8 @@
 
 'use strict'
 
-/**
- * A utility class representing the current position in a segment group.
- *
- * @private
- */
-var Pointer = function (array, position) {
-  this.array = array;
-  this.position = position || 0;
-  this.count = 0;
-}
-
-Pointer.prototype.content = function () {
-  return this.array[this.position].content;
-}
-
-Pointer.prototype.mandatory = function () {
-  return this.array[this.position].mandatory;
-}
-
-Pointer.prototype.repetition = function () {
-  return this.array[this.position].repetition;
-}
+var EventEmitter = require('events');
+const { listenerCount } = require('process');
 
 /**
  * Construct a new tracker pointing to the first segment in the table.
@@ -48,8 +28,13 @@ Pointer.prototype.repetition = function () {
  * @param {Array} table The segment table to track against.
  */
 var Tracker = function (table) {
+  EventEmitter.apply(this);
+
+  this.table = table;
   this.stack = [new Pointer(table, 0)];
 }
+
+Tracker.prototype = Object.create(EventEmitter.prototype);
 
 /**
  * Reset the tracker to the initial position of the current segment table.
@@ -63,15 +48,44 @@ Tracker.prototype.reset = function () {
 /* eslint-disable complexity */
 
 /**
- * Match a segment to the message structure and update the current
+ * Match a segment to the message table and update the current
  * position of the tracker.
  *
  * @param {String} segment The segment name.
- * @throws {Error} Throws if a mandatory segment was omitted.
- * @throws {Error} Throws if unidentified segments are encountered.
- * @throws {Error} Throws if a segment is repeated too much.
+ * 
+ * If the tracker cannot succesfully match the segment, an `error` event will
+ * be fired. If this event is handled, the tracker will rewind to it's last
+ * known position and essentially ignore the segment.
  */
 Tracker.prototype.accept = function (segment) {
+  var metadata = {segment: segment}, result = false;
+  // Make a backup of the current pointer stack.
+  var backup = this.stack.map(function (pointer) {
+    return new Pointer(pointer.array, pointer.position, pointer.count);
+  });
+
+  try {
+    result = this.process(segment, metadata);
+  } catch (error) {
+    var extended = Object.assign(Object.create(this), metadata);
+    var pointer = backup[backup.length - 1];
+    var content = pointer.content();
+
+    // Check if the current position is not a group.
+    if (content.constructor === String) {
+      if (pointer.repetition() === pointer.count && content === segment) {
+        error = new Error(`Segment ${segment} was repeated too much`);
+      }
+    }
+
+    this.stack = backup;
+    extended.emit('error', error);
+  }
+
+  return result;
+}
+
+Tracker.prototype.process = function (segment, metadata) {
   var current = this.stack[this.stack.length - 1];
   var optionals = [];
   var probe = 0;
@@ -89,9 +103,12 @@ Tracker.prototype.accept = function (segment) {
       // Check if we are omitting mandatory content.
       if (current.mandatory() && current.count === 0) {
         if (optionals.length === 0) {
-          // We will never encounter groups here, so we can safely use the
-          // name of the segment stored in it's content property.
-          throw new Error('A mandatory segment ' + current.content() + ' is missing');
+          // The current pointer now points to a mandatory segment that does not
+          // match the one that is currently being processed. We will never
+          // encounter groups here, so we can safely use the name of the segment
+          // stored in it's content property.
+          metadata.pointer = current;
+          throw new Error(`A mandatory segment ${current.content()} is missing`);
         } else {
           // If we are omitting mandatory content inside a conditional group,
           // we just skip the entire group.
@@ -105,10 +122,13 @@ Tracker.prototype.accept = function (segment) {
       current.count = 0;
       if (current.position === current.array.length) {
         this.stack.pop();
-        current = this.stack[this.stack.length - 1];
         if (this.stack.length === 0) {
-          throw new Error('Reached the end of the segment table');
+          metadata.pointer = new Pointer(this.table, this.table.length);
+          this.stack.push(this.pointer);
+          throw new Error(`End of segment table reached`);
         }
+        // Get the pointer to the enclosing group from the stack.
+        current = this.stack[this.stack.length - 1];
         if (probe === 0 && current.count < current.repetition()) {
           // If we are not currently probing (meaning the tracker actually
           // accepted the group), we should retry the current group, except if
@@ -133,9 +153,32 @@ Tracker.prototype.accept = function (segment) {
     }
   }
   current.count += 1;
-  return;
+  return true;
 }
 
 /* eslint-enable complexity */
+
+/**
+ * A utility class representing the current position in a segment group.
+ *
+ * @private
+ */
+var Pointer = function (array, position, count) {
+  this.array = array;
+  this.position = position || 0;
+  this.count = count || 0;
+}
+
+Pointer.prototype.content = function () {
+  return this.array[this.position].content;
+}
+
+Pointer.prototype.mandatory = function () {
+  return this.array[this.position].mandatory;
+}
+
+Pointer.prototype.repetition = function () {
+  return this.array[this.position].repetition;
+}
 
 module.exports = Tracker;
