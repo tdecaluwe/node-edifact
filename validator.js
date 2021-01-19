@@ -149,7 +149,7 @@ Validator.prototype.onelement = function () {
     minimum = this._element.requires;
     maximum = this._element.components.length;
     if (this._counts.component < minimum || this._counts.component > maximum) {
-      name = this._segment.elements[this._counts.element];
+      name = this._segment.elements[this._counts.element - 1];
       throw Validator.errors.countError({
         type: 'element',
         name: name,
